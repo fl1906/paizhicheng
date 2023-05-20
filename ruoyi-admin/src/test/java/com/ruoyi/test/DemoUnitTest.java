@@ -1,6 +1,6 @@
-package com.ruoyi.test;
+package top.flya.test;
 
-import com.ruoyi.common.config.RuoYiConfig;
+import top.flya.common.config.RuoYiConfig;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

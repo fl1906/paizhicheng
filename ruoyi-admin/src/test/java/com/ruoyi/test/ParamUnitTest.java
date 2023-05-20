@@ -1,6 +1,6 @@
-package com.ruoyi.test;
+package top.flya.test;
 
-import com.ruoyi.common.enums.UserType;
+import top.flya.common.enums.UserType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

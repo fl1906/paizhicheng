@@ -1,11 +1,11 @@
-package com.ruoyi.web.controller.system;
+package top.flya.web.controller.system;
 
 import cn.dev33.satoken.annotation.SaIgnore;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.R;
-import com.ruoyi.common.core.domain.model.RegisterBody;
-import com.ruoyi.system.service.ISysConfigService;
-import com.ruoyi.system.service.SysRegisterService;
+import top.flya.common.core.controller.BaseController;
+import top.flya.common.core.domain.R;
+import top.flya.common.core.domain.model.RegisterBody;
+import top.flya.system.service.ISysConfigService;
+import top.flya.system.service.SysRegisterService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;

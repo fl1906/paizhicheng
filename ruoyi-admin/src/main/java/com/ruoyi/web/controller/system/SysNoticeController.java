@@ -1,14 +1,14 @@
-package com.ruoyi.web.controller.system;
+package top.flya.web.controller.system;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.PageQuery;
-import com.ruoyi.common.core.domain.R;
-import com.ruoyi.common.core.page.TableDataInfo;
-import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.system.domain.SysNotice;
-import com.ruoyi.system.service.ISysNoticeService;
+import top.flya.common.annotation.Log;
+import top.flya.common.core.controller.BaseController;
+import top.flya.common.core.domain.PageQuery;
+import top.flya.common.core.domain.R;
+import top.flya.common.core.page.TableDataInfo;
+import top.flya.common.enums.BusinessType;
+import top.flya.system.domain.SysNotice;
+import top.flya.system.service.ISysNoticeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;

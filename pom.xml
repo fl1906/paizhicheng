@@ -84,6 +84,14 @@
     <dependencyManagement>
         <dependencies>
 
+
+
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-http</artifactId>
+                <version>5.8.18</version>
+            </dependency>
+
             <!-- SpringBoot的依赖配置-->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
@@ -347,7 +355,7 @@
         <module>ruoyi-job</module>
         <module>ruoyi-generator</module>
         <module>ruoyi-common</module>
-        <module>ruoyi-demo</module>
+        <module>PaiZhiCheng</module>
         <module>ruoyi-extend</module>
         <module>ruoyi-oss</module>
         <module>ruoyi-sms</module>

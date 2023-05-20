@@ -1,20 +1,20 @@
-package com.ruoyi.web.controller.monitor;
+package top.flya.web.controller.monitor;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
-import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.constant.CacheConstants;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.R;
-import com.ruoyi.common.core.domain.dto.UserOnlineDTO;
-import com.ruoyi.common.core.page.TableDataInfo;
-import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.common.utils.StreamUtils;
-import com.ruoyi.common.utils.StringUtils;
-import com.ruoyi.common.utils.redis.RedisUtils;
-import com.ruoyi.system.domain.SysUserOnline;
+import top.flya.common.annotation.Log;
+import top.flya.common.constant.CacheConstants;
+import top.flya.common.core.controller.BaseController;
+import top.flya.common.core.domain.R;
+import top.flya.common.core.domain.dto.UserOnlineDTO;
+import top.flya.common.core.page.TableDataInfo;
+import top.flya.common.enums.BusinessType;
+import top.flya.common.utils.StreamUtils;
+import top.flya.common.utils.StringUtils;
+import top.flya.common.utils.redis.RedisUtils;
+import top.flya.system.domain.SysUserOnline;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,4 +1,4 @@
-package com.ruoyi.test;
+package top.flya.test;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
