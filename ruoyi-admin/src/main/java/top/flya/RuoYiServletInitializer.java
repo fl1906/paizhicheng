@@ -1,4 +1,4 @@
-package com.ruoyi;
+package top.flya;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;

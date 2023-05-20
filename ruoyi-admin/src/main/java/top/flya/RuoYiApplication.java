@@ -1,4 +1,4 @@
-package com.ruoyi;
+package top.flya;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
