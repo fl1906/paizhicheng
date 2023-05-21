@@ -11,7 +11,7 @@ import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = true) //活动
-public class Activity extends FLBaseEntity{
+public class Activity extends FLBaseEntity {
 
     @TableId(value = "activity_id", type = com.baomidou.mybatisplus.annotation.IdType.AUTO)
     private String activityId; //活动id
@@ -24,13 +24,24 @@ public class Activity extends FLBaseEntity{
 
     private String startTime;  // 开始时间
 
+    private String endDate;  // 结束日期
+
     private long saleEndTime;  // 销售结束时间
 
     private String showTime;  // 展示时间
+
+    private String coverImage;  // 封面图片
 
     @TableField(exist = false)
     private List<Intro> introList;  // 简介列表
 
     @TableField(exist = false) //标签列表
     private List<Tag> tagList;
+
+    @TableField(exist = false)
+    private List<Artist> artistList;  // 艺人列表
+
+    @TableField(exist = false)
+    private Organizer organizerList;  // 主办方列表
+
 }
