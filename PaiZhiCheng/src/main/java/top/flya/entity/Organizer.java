@@ -1,25 +1,30 @@
 package top.flya.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
 @Data
-public class Organizer {
-    @JsonProperty("organizer_tickets")
-    private List<OrganizerTicket> organizerTickets;  // 组织者票务列表
+@EqualsAndHashCode(callSuper = true) //活动主办方
+@TableName("pzc_organizer")
+public class Organizer extends FLBaseEntity{ //活动主办方
 
-    @JsonProperty("id")
-    private int id;  // ID
+    @TableId(value = "organizer_id", type = com.baomidou.mybatisplus.annotation.IdType.AUTO)
+    private Integer organizerId;  // ID
 
-    @JsonProperty("phone")
     private String phone;  // 电话号码
 
-    @JsonProperty("name")
     private String name;  // 名称
 
-    @JsonProperty("logo")
     private String logo;  // 组织者标志图片
+
+    private String content; //主办方介绍
+
+    @TableField(exist = false)
+    private List<OrganizerTicket> organizerTickets;  // 组织者票务列表
 
 }
