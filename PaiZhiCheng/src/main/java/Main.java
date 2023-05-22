@@ -2,7 +2,6 @@ import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
-import netscape.javascript.JSObject;
 import top.flya.entity.Event;
 
 import java.util.ArrayList;
