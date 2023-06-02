@@ -16,9 +16,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="region" column="region"/>
         <result property="status" column="status"/>
         <result property="ext1" column="ext1"/>
-        <result property="createBy" column="create_by"/>
+     <!--        <result property="createBy" column="create_by"/>-->
         <result property="createTime" column="create_time"/>
-        <result property="updateBy" column="update_by"/>
+  <!--        <result property="updateBy" column="update_by"/>-->
         <result property="updateTime" column="update_time"/>
         <result property="remark" column="remark"/>
     </resultMap>

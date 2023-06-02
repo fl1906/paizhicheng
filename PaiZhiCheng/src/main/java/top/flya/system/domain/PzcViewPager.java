@@ -23,7 +23,7 @@ public class PzcViewPager extends BaseEntity {
     /**
      * 轮播图id
      */
-    @TableId(value = "view_pager_id")
+    @TableId(value = "view_pager_id", type = IdType.AUTO)
     private Integer viewPagerId;
     /**
      * 轮播图名称

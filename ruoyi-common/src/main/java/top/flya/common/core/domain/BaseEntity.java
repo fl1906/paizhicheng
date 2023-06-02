@@ -29,11 +29,11 @@ public class BaseEntity implements Serializable {
     @TableField(exist = false)
     private String searchValue;
 
-    /**
-     * 创建者
-     */
-    @TableField(fill = FieldFill.INSERT)
-    private String createBy;
+//    /**
+//     * 创建者
+//     */
+//    @TableField(fill = FieldFill.INSERT)
+//    private String createBy;
 
     /**
      * 创建时间
@@ -41,11 +41,11 @@ public class BaseEntity implements Serializable {
     @TableField(fill = FieldFill.INSERT)
     private Date createTime;
 
-    /**
-     * 更新者
-     */
-    @TableField(fill = FieldFill.INSERT_UPDATE)
-    private String updateBy;
+//    /**
+//     * 更新者
+//     */
+//    @TableField(fill = FieldFill.INSERT_UPDATE)
+//    private String updateBy;
 
     /**
      * 更新时间

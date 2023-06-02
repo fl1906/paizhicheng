@@ -10,9 +10,9 @@
         <result property="noticeType" column="notice_type"/>
         <result property="noticeContent" column="notice_content"/>
         <result property="status" column="status"/>
-        <result property="createBy" column="create_by"/>
+     <!--        <result property="createBy" column="create_by"/>-->
         <result property="createTime" column="create_time"/>
-        <result property="updateBy" column="update_by"/>
+  <!--        <result property="updateBy" column="update_by"/>-->
         <result property="updateTime" column="update_time"/>
         <result property="remark" column="remark"/>
     </resultMap>
