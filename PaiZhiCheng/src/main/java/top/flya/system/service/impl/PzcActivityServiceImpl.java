@@ -89,8 +89,12 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
         lqw.between(params.get("beginUpdateTime") != null && params.get("endUpdateTime") != null,
             PzcActivity::getUpdateTime, params.get("beginUpdateTime"), params.get("endUpdateTime"));
         lqw.eq(bo.getState() != null, PzcActivity::getState, bo.getState());
-        lqw.eq(bo.getOrganizerList() != null && bo.getOrganizerList().getOrganizerId() != null, PzcActivity::getOrganizerId, bo.getOrganizerList().getOrganizerId());
-        return lqw;
+       if(bo.getOrganizerList()!=null)
+       {
+           lqw.eq(bo.getOrganizerList().getOrganizerId() != null, PzcActivity::getOrganizerId, bo.getOrganizerList().getOrganizerId());
+       }
+
+       return lqw;
     }
 
     /**

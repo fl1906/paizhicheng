@@ -2,6 +2,7 @@ package top.flya.system.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 import top.flya.common.core.page.TableDataInfo;
 import top.flya.common.core.domain.PageQuery;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -9,6 +10,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import top.flya.system.common.BatchUtils;
 import top.flya.system.domain.bo.PzcArtistBo;
 import top.flya.system.domain.vo.PzcArtistVo;
 import top.flya.system.domain.PzcArtist;
@@ -19,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Collection;
 
+
 /**
  * 艺人Service业务层处理
  *
@@ -27,9 +30,13 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class PzcArtistServiceImpl implements IPzcArtistService {
 
     private final PzcArtistMapper baseMapper;
+
+    private final BatchUtils batchUtils;
+
 
     /**
      * 查询艺人
@@ -46,6 +53,7 @@ public class PzcArtistServiceImpl implements IPzcArtistService {
     public TableDataInfo<PzcArtistVo> queryPageList(PzcArtistBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<PzcArtist> lqw = buildQueryWrapper(bo);
         Page<PzcArtistVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        result.setRecords(batchUtils.transformToPzcArtistVo(result.getRecords()));
         return TableDataInfo.build(result);
     }
 

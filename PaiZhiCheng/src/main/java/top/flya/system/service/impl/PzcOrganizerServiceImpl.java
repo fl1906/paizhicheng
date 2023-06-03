@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import top.flya.system.common.BatchUtils;
 import top.flya.system.domain.bo.PzcOrganizerBo;
 import top.flya.system.domain.vo.PzcOrganizerVo;
 import top.flya.system.domain.PzcOrganizer;
@@ -30,6 +31,7 @@ import java.util.Collection;
 public class PzcOrganizerServiceImpl implements IPzcOrganizerService {
 
     private final PzcOrganizerMapper baseMapper;
+    private final BatchUtils batchUtils;
 
     /**
      * 查询活动主办方
@@ -46,6 +48,7 @@ public class PzcOrganizerServiceImpl implements IPzcOrganizerService {
     public TableDataInfo<PzcOrganizerVo> queryPageList(PzcOrganizerBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<PzcOrganizer> lqw = buildQueryWrapper(bo);
         Page<PzcOrganizerVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        result.setRecords(batchUtils.transformToPzcOrganizerVo(result.getRecords()));
         return TableDataInfo.build(result);
     }
 

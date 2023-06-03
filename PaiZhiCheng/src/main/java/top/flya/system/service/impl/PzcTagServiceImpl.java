@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import top.flya.system.common.BatchUtils;
 import top.flya.system.domain.bo.PzcTagBo;
 import top.flya.system.domain.vo.PzcTagVo;
 import top.flya.system.domain.PzcTag;
@@ -30,6 +31,7 @@ import java.util.Collection;
 public class PzcTagServiceImpl implements IPzcTagService {
 
     private final PzcTagMapper baseMapper;
+    private final BatchUtils batchUtils;
 
     /**
      * 查询活动标签
@@ -46,6 +48,7 @@ public class PzcTagServiceImpl implements IPzcTagService {
     public TableDataInfo<PzcTagVo> queryPageList(PzcTagBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<PzcTag> lqw = buildQueryWrapper(bo);
         Page<PzcTagVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        result.setRecords(batchUtils.transformToPzcTagVo(result.getRecords()));
         return TableDataInfo.build(result);
     }
 
