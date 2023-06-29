@@ -33,6 +33,10 @@ public class Activity extends FLBaseEntity {
 
     private String coverImage;  // 封面图片
 
+    private Integer classify; //属于哪个分类
+
+    private Integer region; // 0 国内 1 国外
+
     @TableField(exist = false)
     private List<Intro> introList;  // 简介列表
 

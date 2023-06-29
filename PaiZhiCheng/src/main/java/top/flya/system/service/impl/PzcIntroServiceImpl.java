@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import top.flya.system.common.BatchUtils;
 import top.flya.system.domain.bo.PzcIntroBo;
 import top.flya.system.domain.vo.PzcIntroVo;
 import top.flya.system.domain.PzcIntro;
@@ -31,6 +32,8 @@ public class PzcIntroServiceImpl implements IPzcIntroService {
 
     private final PzcIntroMapper baseMapper;
 
+    private final BatchUtils batchUtils;
+
     /**
      * 查询活动介绍
      */
@@ -46,6 +49,7 @@ public class PzcIntroServiceImpl implements IPzcIntroService {
     public TableDataInfo<PzcIntroVo> queryPageList(PzcIntroBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<PzcIntro> lqw = buildQueryWrapper(bo);
         Page<PzcIntroVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        result.setRecords(batchUtils.transformToPzcIntroVo(result.getRecords()));
         return TableDataInfo.build(result);
     }
 

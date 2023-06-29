@@ -1,13 +1,11 @@
 package top.flya.system.common;
 
 
+import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.stereotype.Component;
-import top.flya.system.domain.vo.PzcArtistVo;
-import top.flya.system.domain.vo.PzcOrganizerVo;
-import top.flya.system.domain.vo.PzcTagVo;
-import top.flya.system.domain.vo.SysOssVo;
+import top.flya.system.domain.vo.*;
 import top.flya.system.service.ISysOssService;
 
 import javax.annotation.Resource;
@@ -116,6 +114,33 @@ public class BatchUtils {
             // 将处理后的元素收集到一个新的 List 中
             .collect(Collectors.toList());
     }
+
+    public List<PzcIntroVo> transformToPzcIntroVo(List<PzcIntroVo> introList){
+        log.info("transform introList start: {}", JSONUtil.toJsonPrettyStr(introList));
+        // 获取所有旧的 imageUrl
+        List<String> oldImageUrls = introList.stream()
+            .map(PzcIntroVo::getImageFullUrl)
+            .collect(Collectors.toList());
+        // 批量查询新的 imageUrl
+        Map<Long, String> newImageUrls = getNewImageUrls(oldImageUrls);
+        // 使用 Stream API 进行处理
+        return introList.stream()
+            // 对列表中的每个元素进行处理
+            .map(intro -> {
+                // 从 Map 中获取新的 imageUrl
+                String newImageUrl = newImageUrls.get(Long.parseLong(intro.getImageFullUrl()));
+                // 创建一个新的 PzcArtistVo 对象，使用查询到的新 imageUrl
+                return new PzcIntroVo(
+                    intro.getIntroId(),
+                    intro.getContent(),
+                    newImageUrl
+                );
+            })
+            // 将处理后的元素收集到一个新的 List 中
+            .collect(Collectors.toList());
+
+    }
+
 
 
 

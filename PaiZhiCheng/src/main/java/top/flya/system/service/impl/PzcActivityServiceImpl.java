@@ -101,11 +101,14 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
      * 新增活动
      */
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public Boolean insertByBo(PzcActivityBo bo) {
         PzcActivity add = BeanUtil.toBean(bo, PzcActivity.class);
         validEntityBeforeSave(add);
-
+        boolean flag = baseMapper.insert(add) > 0;
+        if (flag) {
+            bo.setActivityId(add.getActivityId());
+        }
         //这里关联其他表的保存
         if (bo.getIntroList().size() != 0) {
             bo.getIntroList().forEach(intro -> {
@@ -185,7 +188,6 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
             });
 
         }
-
         if (bo.getOrganizerList() != null) {
 
             PzcOrganizer organizer = bo.getOrganizerList();
@@ -199,12 +201,6 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
             }
             add.setOrganizerId(organizer.getOrganizerId());
         }
-
-        boolean flag = baseMapper.insert(add) > 0;
-        if (flag) {
-            bo.setActivityId(add.getActivityId());
-        }
-
 
         return flag;
     }

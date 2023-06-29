@@ -65,7 +65,7 @@ public class PzcActivityBo extends BaseEntity {
      * 销售结束时间
      */
 //    @NotNull(message = "销售结束时间不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Long saleEndTime;
+    private String saleEndTime;
 
     /**
      * 展示时间
