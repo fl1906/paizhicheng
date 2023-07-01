@@ -2,6 +2,7 @@ package top.flya.system.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 import top.flya.common.core.page.TableDataInfo;
 import top.flya.common.core.domain.PageQuery;
@@ -28,6 +29,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class PzcActivityServiceImpl implements IPzcActivityService {
 
     private final PzcActivityMapper baseMapper;
@@ -104,14 +106,24 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
     @Transactional
     public Boolean insertByBo(PzcActivityBo bo) {
         PzcActivity add = BeanUtil.toBean(bo, PzcActivity.class);
+        if (bo.getActivityId() != null) {
+            throw new RuntimeException("活动id在创建时不能填写");
+        }
         add.setOrganizerId(bo.getOrganizerList().getOrganizerId());
-        add.setActivityId(null);
         validEntityBeforeSave(add);
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {
             bo.setActivityId(add.getActivityId());
         }
-        //这里关联其他表的保存
+        saveActivityConfigs(bo);
+        return flag;
+    }
+
+
+    @Transactional //这里关联其他表的保存
+    public void saveActivityConfigs(PzcActivityBo bo)
+    {
+
         if (bo.getIntroList().size() != 0) {
             bo.getIntroList().forEach(intro -> {
                 //首先查询这个介绍是否存在
@@ -127,7 +139,8 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
                 lqw2.eq(PzcActivityConnIntro::getIntroId, intro.getIntroId());
                 PzcActivityConnIntro pzcActivityConnIntro1 = pzcActivityConnIntroMapper.selectOne(lqw2);
                 if (pzcActivityConnIntro1 != null) {
-                    throw new RuntimeException("介绍已经关联 id is " + intro.getIntroId() + "无需重复关联");
+//                    throw new RuntimeException("介绍已经关联 id is " + intro.getIntroId() + "无需重复关联");
+                    return;
                 }
 
                 PzcActivityConnIntro pzcActivityConnIntro = new PzcActivityConnIntro();
@@ -153,7 +166,8 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
                 lqw2.eq(PzcActivityConnArtist::getArtistId, artist.getArtistId());
                 PzcActivityConnArtist pzcActivityConnArtist1 = pzcActivityConnArtistMapper.selectOne(lqw2);
                 if (pzcActivityConnArtist1 != null) {
-                    throw new RuntimeException("艺术家已经关联 id is " + artist.getArtistId() + "无需重复关联");
+//                    throw new RuntimeException("艺术家已经关联 id is " + artist.getArtistId() + "无需重复关联");
+                    return;
                 }
 
                 PzcActivityConnArtist pzcActivityConnArtist = new PzcActivityConnArtist();
@@ -179,7 +193,8 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
                 lqw2.eq(PzcActivityConnTag::getTagId, tag.getTagId());
                 PzcActivityConnTag pzcActivityConnTag1 = pzcActivityConnTagMapper.selectOne(lqw2);
                 if (pzcActivityConnTag1 != null) {
-                    throw new RuntimeException("标签已经关联 id is " + tag.getTagId() + "无需重复关联");
+//                    throw new RuntimeException("标签已经关联 id is " + tag.getTagId() + "无需重复关联");
+                    return;
                 }
 
                 PzcActivityConnTag pzcActivityConnTag = new PzcActivityConnTag();
@@ -190,38 +205,39 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
             });
 
         }
-        if (bo.getOrganizerList() != null) {
-
-            PzcOrganizer organizer = bo.getOrganizerList();
-
-            //首先查询这个组织是否存在
-            LambdaQueryWrapper<PzcOrganizer> lqw = Wrappers.lambdaQuery();
-            lqw.eq(PzcOrganizer::getOrganizerId, organizer.getOrganizerId());
-            PzcOrganizer pzcOrganizer = pzcOrganizerMapper.selectOne(lqw);
-            if (pzcOrganizer == null) {
-                throw new RuntimeException("活动组织者不存在 id is " + organizer.getOrganizerId());
-            }
-            add.setOrganizerId(organizer.getOrganizerId());
-        }
-
-        return flag;
     }
 
     /**
      * 修改活动
      */
     @Override
+    @Transactional
     public Boolean updateByBo(PzcActivityBo bo) {
         PzcActivity update = BeanUtil.toBean(bo, PzcActivity.class);
+        update.setOrganizerId(bo.getOrganizerList().getOrganizerId());
+
         validEntityBeforeSave(update);
-        return baseMapper.updateById(update) > 0;
+
+        boolean flag = baseMapper.updateById(update) > 0;
+        saveActivityConfigs(bo);
+        return flag;
     }
 
     /**
      * 保存前的数据校验
      */
     private void validEntityBeforeSave(PzcActivity entity) {
+        log.info("数据校验开始entity.getOrganizerId is {}", entity.getOrganizerId());
         //TODO 做一些数据校验,如唯一约束
+        if (entity.getOrganizerId() != null) {
+            //首先查询这个组织是否存在
+            LambdaQueryWrapper<PzcOrganizer> lqw = Wrappers.lambdaQuery();
+            lqw.eq(PzcOrganizer::getOrganizerId, entity.getOrganizerId());
+            PzcOrganizer pzcOrganizer = pzcOrganizerMapper.selectOne(lqw);
+            if (pzcOrganizer == null) {
+                throw new RuntimeException("活动组织者不存在 id is " + entity.getOrganizerId());
+            }
+        }
     }
 
     /**

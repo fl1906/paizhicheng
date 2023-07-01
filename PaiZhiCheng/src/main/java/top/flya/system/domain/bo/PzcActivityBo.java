@@ -95,6 +95,7 @@ public class PzcActivityBo extends BaseEntity {
 
     private List<PzcArtist> artistList;  // 艺人列表
 
+    @NotNull(message = "主办方不能为空", groups = { AddGroup.class, EditGroup.class })
     private PzcOrganizer organizerList;  // 主办方列表
 
 
