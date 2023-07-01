@@ -104,6 +104,8 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
     @Transactional
     public Boolean insertByBo(PzcActivityBo bo) {
         PzcActivity add = BeanUtil.toBean(bo, PzcActivity.class);
+        add.setOrganizerId(bo.getOrganizerList().getOrganizerId());
+        add.setActivityId(null);
         validEntityBeforeSave(add);
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {

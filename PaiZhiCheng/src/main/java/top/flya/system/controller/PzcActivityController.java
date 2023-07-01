@@ -38,6 +38,31 @@ public class PzcActivityController extends BaseController {
     private final IPzcActivityService iPzcActivityService;
 
     /**
+     * 新增活动
+     */
+    @SaCheckPermission("system:activity:add")
+    @Log(title = "活动", businessType = BusinessType.INSERT)
+    @RepeatSubmit()
+    @PostMapping()
+    public R<Void> add(@Validated(AddGroup.class) @RequestBody PzcActivityBo bo) {
+        return toAjax(iPzcActivityService.insertByBo(bo));
+    }
+
+    /**
+     * 修改活动
+     */
+    @SaCheckPermission("system:activity:edit")
+    @Log(title = "活动", businessType = BusinessType.UPDATE)
+    @RepeatSubmit()
+    @PutMapping()
+    public R<Void> edit(@Validated(EditGroup.class) @RequestBody PzcActivityBo bo) {
+        return toAjax(iPzcActivityService.updateByBo(bo));
+    }
+
+
+
+
+    /**
      * 查询活动列表
      */
     @SaCheckPermission("system:activity:list")
@@ -69,27 +94,9 @@ public class PzcActivityController extends BaseController {
         return R.ok(iPzcActivityService.queryById(activityId));
     }
 
-    /**
-     * 新增活动
-     */
-    @SaCheckPermission("system:activity:add")
-    @Log(title = "活动", businessType = BusinessType.INSERT)
-    @RepeatSubmit()
-    @PostMapping()
-    public R<Void> add(@Validated(AddGroup.class) @RequestBody PzcActivityBo bo) {
-        return toAjax(iPzcActivityService.insertByBo(bo));
-    }
 
-    /**
-     * 修改活动
-     */
-    @SaCheckPermission("system:activity:edit")
-    @Log(title = "活动", businessType = BusinessType.UPDATE)
-    @RepeatSubmit()
-    @PutMapping()
-    public R<Void> edit(@Validated(EditGroup.class) @RequestBody PzcActivityBo bo) {
-        return toAjax(iPzcActivityService.updateByBo(bo));
-    }
+
+
 
     /**
      * 删除活动

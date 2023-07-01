@@ -85,6 +85,10 @@ public class PzcActivityBo extends BaseEntity {
     private Integer state;
 
 
+    private Integer classify; //属于哪个分类
+
+    private Integer region; // 0 国内 1 国外
+
     private List<PzcIntro> introList;  // 简介列表
 
     private List<PzcTag> tagList;  // 标签列表
