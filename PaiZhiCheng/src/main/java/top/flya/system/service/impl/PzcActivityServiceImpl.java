@@ -244,10 +244,23 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
      * 批量删除活动
      */
     @Override
+    @Transactional
     public Boolean deleteWithValidByIds(Collection<Integer> ids, Boolean isValid) {
         if (isValid) {
             //TODO 做一些业务上的校验,判断是否需要校验
         }
+        //删除活动与其他表的关联关系
+            LambdaQueryWrapper<PzcActivityConnIntro> lqw = Wrappers.lambdaQuery();
+            lqw.in(PzcActivityConnIntro::getActivityId, ids);
+            pzcActivityConnIntroMapper.delete(lqw);
+
+            LambdaQueryWrapper<PzcActivityConnArtist> lqw2 = Wrappers.lambdaQuery();
+            lqw2.in(PzcActivityConnArtist::getActivityId, ids);
+            pzcActivityConnArtistMapper.delete(lqw2);
+
+            LambdaQueryWrapper<PzcActivityConnTag> lqw3 = Wrappers.lambdaQuery();
+            lqw3.in(PzcActivityConnTag::getActivityId, ids);
+            pzcActivityConnTagMapper.delete(lqw3);
         return baseMapper.deleteBatchIds(ids) > 0;
     }
 }
