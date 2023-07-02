@@ -5,8 +5,16 @@ import com.alibaba.excel.annotation.ExcelProperty;
 import top.flya.common.annotation.ExcelDictFormat;
 import top.flya.common.convert.ExcelDictConvert;
 import lombok.Data;
+import top.flya.common.core.validate.AddGroup;
+import top.flya.common.core.validate.EditGroup;
+import top.flya.system.domain.PzcArtist;
+import top.flya.system.domain.PzcIntro;
+import top.flya.system.domain.PzcOrganizer;
+import top.flya.system.domain.PzcTag;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -92,6 +100,20 @@ public class PzcActivityVo {
      */
     @ExcelProperty(value = "删除状态，默认为1表示正常状态")
     private Integer state;
+
+    private Long organizerId; // 主办方id
+
+    private Integer classify; //属于哪个分类
+
+    private Integer region; // 0 国内 1 国外
+
+    private List<PzcIntro> introList;  // 简介列表
+
+    private List<PzcTag> tagList;  // 标签列表
+
+    private List<PzcArtist> artistList;  // 艺人列表
+
+    private PzcOrganizer organizerList;  // 主办方列表
 
 
 }

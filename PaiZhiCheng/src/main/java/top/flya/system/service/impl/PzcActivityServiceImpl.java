@@ -17,6 +17,7 @@ import top.flya.system.domain.vo.PzcActivityVo;
 import top.flya.system.mapper.*;
 import top.flya.system.service.IPzcActivityService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Collection;
@@ -63,8 +64,37 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
     public TableDataInfo<PzcActivityVo> queryPageList(PzcActivityBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<PzcActivity> lqw = buildQueryWrapper(bo);
         Page<PzcActivityVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        result.getRecords().forEach(r->{
+            ArrayList<PzcIntro> introList = new ArrayList<>();
+            ArrayList<PzcArtist> artistList = new ArrayList<>();
+            ArrayList<PzcTag> tagList = new ArrayList<>();
+            pzcActivityConnIntroMapper.selectList(Wrappers.<PzcActivityConnIntro>lambdaQuery().eq(PzcActivityConnIntro::getActivityId, r.getActivityId())).forEach(c->{
+              introList.add(pzcIntroMapper.selectById(c.getIntroId()));
+            });
+            r.setIntroList(introList);
+           pzcActivityConnArtistMapper.selectList(Wrappers.<PzcActivityConnArtist>lambdaQuery().eq(PzcActivityConnArtist::getActivityId, r.getActivityId())).forEach(c->{
+                artistList.add(pzcArtistMapper.selectById(c.getArtistId()));
+           });
+              r.setArtistList(artistList);
+           pzcActivityConnTagMapper.selectVoList(Wrappers.<PzcActivityConnTag>lambdaQuery().eq(PzcActivityConnTag::getActivityId, r.getActivityId())).forEach(c->{
+              tagList.add(pzcTagMapper.selectById(c.getTagId()));
+           });
+            r.setTagList(tagList);
+           r.setOrganizerList(pzcOrganizerMapper.selectOne(Wrappers.<PzcOrganizer>lambdaQuery().eq(PzcOrganizer::getOrganizerId, r.getOrganizerId())));
+        });
         return TableDataInfo.build(result);
     }
+
+    /**
+     * 查询活动列表
+     */
+    @Override
+    public TableDataInfo<PzcActivityVo> queryPageListWx(PzcActivityBo bo, PageQuery pageQuery) {
+        LambdaQueryWrapper<PzcActivity> lqw = buildQueryWrapper(bo);
+        Page<PzcActivityVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        return TableDataInfo.build(result);
+    }
+
 
     /**
      * 查询活动列表
@@ -95,6 +125,11 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
        {
            lqw.eq(bo.getOrganizerList().getOrganizerId() != null, PzcActivity::getOrganizerId, bo.getOrganizerList().getOrganizerId());
        }
+       if(bo.getClassify()!=null)
+       {
+              lqw.eq(true, PzcActivity::getClassify, bo.getClassify());
+       }
+       lqw.eq(bo.getRegion()!=null, PzcActivity::getRegion, bo.getRegion());
 
        return lqw;
     }
@@ -109,6 +144,7 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
         if (bo.getActivityId() != null) {
             throw new RuntimeException("活动id在创建时不能填写");
         }
+        log.info("新增活动 主办方Id为: {}", bo.getOrganizerList().getOrganizerId());
         add.setOrganizerId(bo.getOrganizerList().getOrganizerId());
         validEntityBeforeSave(add);
         boolean flag = baseMapper.insert(add) > 0;

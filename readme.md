@@ -124,6 +124,144 @@
 
 
 
+后台管理活动列表接口 见api fox
+
+
+
+```json
+{
+    "total": 2,
+    "rows": [
+        {
+            "activityId": 47,
+            "address": "河北省海南藏族自治州-",
+            "regionId": 76,
+            "title": "可需值场列",
+            "startTime": "1993-03-17 15:39:25",
+            "endDate": "1978-09-02",
+            "saleEndTime": 1991,
+            "showTime": "1971-04-04 04:37:50",
+            "coverImage": "http://dummyimage.com/400x400",
+            "createTime": "2023-07-02 13:13:14",
+            "updateTime": "2023-07-02 13:13:14",
+            "state": 1,
+            "organizerId": 1,
+            "classify": 0,
+            "region": 0,
+            "introList": [
+                {
+                    "createTime": "2023-06-29 17:42:22",
+                    "updateTime": "2023-06-29 17:42:22",
+                    "introId": 1,
+                    "content": "我是介绍",
+                    "imageFullUrl": "1674352590650974209",
+                    "state": 1
+                }
+            ],
+            "tagList": [
+                {
+                    "createTime": "2023-06-03 16:26:01",
+                    "updateTime": "2023-06-03 16:26:01",
+                    "tagId": 1,
+                    "name": "流行音乐",
+                    "imageUrl": "1664911296929222658",
+                    "state": 1
+                }
+            ],
+            "artistList": [
+                {
+                    "createTime": "2023-06-01 23:44:59",
+                    "updateTime": "2023-06-01 23:44:59",
+                    "artistId": 1,
+                    "name": "蔡徐坤",
+                    "imageUrl": "1664296307986059265",
+                    "description": "坤坤",
+                    "state": 1
+                }
+            ],
+            "organizerList": {
+                "createTime": "2023-06-03 15:35:47",
+                "updateTime": "2023-06-03 15:35:47",
+                "organizerId": 1,
+                "phone": "111",
+                "name": "111",
+                "logo": "1664898651010383874",
+                "content": "1111",
+                "state": 1
+            }
+        },
+        {
+            "activityId": 48,
+            "address": "河北省海南藏族自治州-",
+            "regionId": 76,
+            "title": "可需值场列",
+            "startTime": "1993-03-17 15:39:25",
+            "endDate": "1978-09-02",
+            "saleEndTime": 1991,
+            "showTime": "1971-04-04 04:37:50",
+            "coverImage": "http://dummyimage.com/400x400",
+            "createTime": "2023-07-02 13:15:41",
+            "updateTime": "2023-07-02 13:15:41",
+            "state": 1,
+            "organizerId": 1,
+            "classify": 0,
+            "region": 0,
+            "introList": [
+                {
+                    "createTime": "2023-06-29 17:42:22",
+                    "updateTime": "2023-06-29 17:42:22",
+                    "introId": 1,
+                    "content": "我是介绍",
+                    "imageFullUrl": "1674352590650974209",
+                    "state": 1
+                }
+            ],
+            "tagList": [
+                {
+                    "createTime": "2023-06-03 16:26:01",
+                    "updateTime": "2023-06-03 16:26:01",
+                    "tagId": 1,
+                    "name": "流行音乐",
+                    "imageUrl": "1664911296929222658",
+                    "state": 1
+                }
+            ],
+            "artistList": [
+                {
+                    "createTime": "2023-06-01 23:44:59",
+                    "updateTime": "2023-06-01 23:44:59",
+                    "artistId": 1,
+                    "name": "蔡徐坤",
+                    "imageUrl": "1664296307986059265",
+                    "description": "坤坤",
+                    "state": 1
+                }
+            ],
+            "organizerList": {
+                "createTime": "2023-06-03 15:35:47",
+                "updateTime": "2023-06-03 15:35:47",
+                "organizerId": 1,
+                "phone": "111",
+                "name": "111",
+                "logo": "1664898651010383874",
+                "content": "1111",
+                "state": 1
+            }
+        }
+    ],
+    "code": 200,
+    "msg": "查询成功"
+}
+```
+
+
+
+
+
+小程序端列表接口 见apifox
+
+
+
 
 
 

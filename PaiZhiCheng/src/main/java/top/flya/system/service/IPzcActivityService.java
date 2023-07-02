@@ -27,6 +27,13 @@ public interface IPzcActivityService {
      */
     TableDataInfo<PzcActivityVo> queryPageList(PzcActivityBo bo, PageQuery pageQuery);
 
+
+    /**
+     * 查询活动列表 微信
+     *
+     */
+  TableDataInfo<PzcActivityVo> queryPageListWx(PzcActivityBo bo, PageQuery pageQuery);
+
     /**
      * 查询活动列表
      */

@@ -71,6 +71,15 @@ public class PzcActivityController extends BaseController {
         return iPzcActivityService.queryPageList(bo, pageQuery);
     }
 
+
+    /**
+     * 查询活动列表 小程序端
+     */
+    @GetMapping("/listWx")
+    public TableDataInfo<PzcActivityVo> Wx(PzcActivityBo bo, PageQuery pageQuery) {
+        return iPzcActivityService.queryPageListWx(bo, pageQuery);
+    }
+
     /**
      * 导出活动列表
      */
