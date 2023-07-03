@@ -134,12 +134,14 @@
         ></el-date-picker>
       </el-form-item>
       <el-form-item label="状态 是否被封禁" prop="state">
-        <el-input
-          v-model="queryParams.state"
-          placeholder="请输入状态 是否被封禁"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+        <el-select v-model="queryParams.state" placeholder="请选择状态 是否被封禁" clearable>
+          <el-option
+            v-for="dict in dict.type.state"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -325,6 +327,16 @@
             </el-checkbox>
           </el-checkbox-group>
         </el-form-item>
+        <el-form-item label="状态 是否被封禁" prop="state">
+          <el-select v-model="form.state" placeholder="请选择状态 是否被封禁">
+            <el-option
+              v-for="dict in dict.type.state"
+              :key="dict.value"
+              :label="dict.label"
+              :value="parseInt(dict.value)"
+            ></el-option>
+          </el-select>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button :loading="buttonLoading" type="primary" @click="submitForm">确 定</el-button>
@@ -339,7 +351,7 @@ import { listPzc_user, getPzc_user, delPzc_user, addPzc_user, updatePzc_user } f
 
 export default {
   name: "Pzc_user",
-  dicts: ['music_style', 'mbti', 'constellation'],
+  dicts: ['music_style', 'mbti', 'state', 'constellation'],
   data() {
     return {
       // 按钮loading
@@ -362,9 +374,9 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
-      // 喜欢的音乐风格时间范围
+      // 状态 是否被封禁时间范围
       daterangeCreateTime: [],
-      // 喜欢的音乐风格时间范围
+      // 状态 是否被封禁时间范围
       daterangeUpdateTime: [],
       // 查询参数
       queryParams: {
