@@ -11,7 +11,7 @@ pipeline {
             agent none
             steps {
                 container('maven') {
-                    git(url: 'https://gitee.com/fl1906249647/paizhi-city.git', credentialsId: 'fl1906', branch: 'master', changelog: true, poll: false)
+                    git(url: 'https://gitee.com/fl1906249647/paizhi-city.git', credentialsId: 'fl1906', branch: '4.X', changelog: true, poll: false)
                     sh 'echo my-tag-name:  latest '
                     sh 'ls -al'
                 }
