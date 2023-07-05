@@ -5,7 +5,7 @@ FROM node:14.15.1-alpine as build-stage
 WORKDIR /app
 
 # 拷贝 package.json 和 package-lock.json 到工作目录
-COPY package*.json ./
+COPY ./ruoyi-ui/package*.json ./
 
 
 # 设置npm的镜像源为淘宝镜像
@@ -16,7 +16,7 @@ RUN npm config set registry https://registry.npm.taobao.org/
 RUN npm install
 
 # 拷贝所有文件到工作目录
-COPY . .
+COPY ./ruoyi-ui .
 
 # 构建生产环境的代码
 RUN npm run build
