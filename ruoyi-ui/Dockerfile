@@ -28,7 +28,7 @@ FROM nginx:1.19.6-alpine
 COPY --from=build-stage /app/dist /usr/share/nginx/html
 
 # 复制自定义 Nginx 配置文件到容器中
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY ./ruoyi-ui/nginx.conf /etc/nginx/conf.d/default.conf
 
 # 暴露80端口
 EXPOSE 80
