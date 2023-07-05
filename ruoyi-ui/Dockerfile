@@ -19,7 +19,7 @@ RUN npm install
 COPY ./ruoyi-ui .
 
 # 构建生产环境的代码
-RUN npm build:prod
+RUN npm run build:prod
 
 # 生产环境镜像
 FROM nginx:1.19.6-alpine
