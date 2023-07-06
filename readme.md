@@ -298,6 +298,20 @@ https://developers.weixin.qq.com/miniprogram/dev/api/open-api/user-info/wx.getUs
 
 
 
+https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/userProfile.html
+
+获取用户手机号
+
+https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/getPhoneNumber.html
+
+https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/user-info/phone-number/getPhoneNumber.html
+
+
+
+然后调用登录接口 未注册用户会自动生成用户信息
+
+![image-20230706134652282](https://img.flya.top/img/image-20230706134652282.png)
+
 
 
 ### 用户信息CRUD

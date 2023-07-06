@@ -3,6 +3,7 @@ package top.flya.system.controller;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
@@ -27,8 +28,11 @@ import top.flya.common.utils.spring.SpringUtils;
 import top.flya.system.domain.PzcUser;
 import top.flya.system.domain.bo.PzcUserBo;
 import top.flya.system.mapper.PzcUserMapper;
+import top.flya.system.utils.WxUtils;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 
 @Validated
@@ -46,6 +50,8 @@ public class WxController extends BaseController {
 
     private final PzcUserMapper userMapper;
 
+    private final WxUtils wxUtils;
+
     @PostMapping("/login") // 登录
     public R login(@RequestBody @Validated PzcUserBo loginUser) {
         String tokenValue = userLogin(loginUser);
@@ -54,7 +60,7 @@ public class WxController extends BaseController {
 
     public String userLogin(PzcUserBo pzcUserBo) {
         String url = "https://api.weixin.qq.com/sns/jscode2session?appid=" + appId +
-            "&secret=" + secret + "&js_code=" + pzcUserBo.getCode() + "&grant_type=authorization_code";
+            "&secret=" + secret + "&js_code=" + pzcUserBo.getLoginCode() + "&grant_type=authorization_code";
 
         String response = HttpUtil.get(url);
         log.info("微信小程序登录 url : {}，response is {}", url, response);
@@ -71,18 +77,32 @@ public class WxController extends BaseController {
             newUser.setNickname(pzcUserBo.getNickname());
             newUser.setOpenid(openId);
             newUser.setAvatar(pzcUserBo.getAvatar());
-            if (StringUtils.checkValNotNull(pzcUserBo.getPhone())) {
-                newUser.setPhone(pzcUserBo.getPhone());
-            }else {
-                log.info("注册时 手机号为空");
-                throw new RuntimeException("注册时 手机号为空");
+
+            //新注册时 根据 POST https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=ACCESS_TOKEN 获取手机号
+            String getPhoneUrl = "https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=" + wxUtils.getAccessToken();
+            Map<String,String> codeMap =new HashMap<>();
+            codeMap.put("code",pzcUserBo.getPhoneCode());
+            String phoneResponse = HttpUtil.post(getPhoneUrl, JSONUtil.toJsonStr(codeMap));
+            log.info("微信小程序获取用户手机号信息 url : {}，response is {}", getPhoneUrl, phoneResponse);
+            cn.hutool.json.JSONObject phoneJson = JSONUtil.parseObj(phoneResponse);
+            if(phoneJson.getInt("errcode") != 0){
+                log.info("微信小程序获取用户手机号信息失败");
+                throw new RuntimeException("微信小程序获取用户手机号信息失败");
             }
+            newUser.setPhone(phoneJson.getJSONObject("phone_info").getStr("purePhoneNumber"));
+            newUser.setSex(pzcUserBo.getSex());
             newUser.setMoney(new BigDecimal(0));
 
             int insert = userMapper.insert(newUser);
             log.info("insertUser: " + insert);
             user = userMapper.selectOne(new QueryWrapper<PzcUser>().eq("openid", openId));
         }
+
+        if(user.getState()==0)
+        {
+            throw new RuntimeException("用户已被禁用");
+        }
+
 
         // 此处可根据登录用户的数据不同 自行创建 loginUser
         XcxLoginUser loginUser = new XcxLoginUser();

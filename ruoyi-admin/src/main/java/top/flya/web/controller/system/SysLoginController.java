@@ -97,7 +97,7 @@ public class SysLoginController {
     public R<Map<String, Object>> xcxLogin(@RequestBody PzcUserBo pzcUserBo) {
         Map<String, Object> ajax = new HashMap<>();
         // 生成令牌
-        String token = loginService.xcxLogin(pzcUserBo.getCode());
+        String token = loginService.xcxLogin(pzcUserBo.getLoginCode());
         ajax.put(Constants.TOKEN, token);
         return R.ok(ajax);
     }

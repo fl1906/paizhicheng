@@ -33,7 +33,15 @@ public class PzcUserBo extends BaseEntity {
     private String openid;
 
 
-    private String code;
+    /**
+     * 换取openid的code
+     */
+    private String loginCode;
+
+    /**
+     * 换取手机号的code
+     */
+    private String phoneCode;
 
     /**
      * 派币余额
