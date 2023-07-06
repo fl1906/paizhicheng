@@ -23,7 +23,7 @@ public class PzcUser extends BaseEntity {
     /**
      * 用户主键
      */
-    @TableId(value = "user_id")
+    @TableId(value = "user_id",type = IdType.AUTO)
     private Integer userId;
     /**
      * OpenId

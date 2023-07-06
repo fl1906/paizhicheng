@@ -11,14 +11,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import top.flya.common.constant.Constants;
 import top.flya.common.core.controller.BaseController;
 import top.flya.common.core.domain.R;
 import top.flya.common.core.domain.event.LogininforEvent;
+import top.flya.common.core.domain.model.LoginUser;
 import top.flya.common.core.domain.model.XcxLoginUser;
 import top.flya.common.enums.DeviceType;
 import top.flya.common.helper.LoginHelper;
@@ -48,6 +46,9 @@ public class WxController extends BaseController {
     @Value("${wx.appSecret}")
     private String secret;
 
+    @Value("${sa-token.token-prefix}")
+    private String tokenPrefix;
+
     private final PzcUserMapper userMapper;
 
     private final WxUtils wxUtils;
@@ -55,7 +56,19 @@ public class WxController extends BaseController {
     @PostMapping("/login") // 登录
     public R login(@RequestBody @Validated PzcUserBo loginUser) {
         String tokenValue = userLogin(loginUser);
-        return (tokenValue != null) ? R.ok(tokenValue) : R.fail("登录失败");
+        return (tokenValue != null) ? R.ok(tokenPrefix+" "+tokenValue) : R.fail("登录失败");
+    }
+
+    @GetMapping("/userInfo") // 获取用户信息
+    public R userInfo() {
+        LoginUser loginUser = LoginHelper.getLoginUser();
+        Long userId = loginUser.getUserId();
+        PzcUser user = userMapper.selectById(userId);
+        if (user == null || StringUtils.isEmpty(user.getOpenid())|| user.getState() == 0) {
+            return R.fail("用户不存在 或者已被禁用");
+        }
+        return R.ok(user);
+
     }
 
     public String userLogin(PzcUserBo pzcUserBo) {
