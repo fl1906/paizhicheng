@@ -11,7 +11,7 @@ import java.math.BigDecimal;
  * 用户对象 pzc_user
  *
  * @author ruoyi
- * @date 2023-07-04
+ * @date 2023-07-06
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -23,20 +23,28 @@ public class PzcUser extends BaseEntity {
     /**
      * 用户主键
      */
-    @TableId(value = "user_id",type = IdType.AUTO)
+    @TableId(value = "user_id")
     private Integer userId;
+    /**
+     * OpenId
+     */
+    private String openid;
     /**
      * 派币余额
      */
     private BigDecimal money;
     /**
+     * 真实姓名
+     */
+    private String realname;
+    /**
      * 昵称
      */
     private String nickname;
     /**
-     * 真实姓名
+     * 性别
      */
-    private String realname;
+    private Integer sex;
     /**
      * 手机号
      */
@@ -50,7 +58,7 @@ public class PzcUser extends BaseEntity {
      */
     private String address;
     /**
-     * 个人介绍
+     * 介绍
      */
     private String intro;
     /**
@@ -78,12 +86,12 @@ public class PzcUser extends BaseEntity {
      */
     private String occupation;
     /**
-     * 喜欢的音乐风格
+     * 音乐风格
      */
     private String musicStyle;
     /**
-     * 状态 是否被封禁
+     * 封禁状态
      */
-    private Long state;
+    private Integer state;
 
 }

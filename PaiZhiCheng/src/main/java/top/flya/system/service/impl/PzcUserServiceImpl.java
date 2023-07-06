@@ -23,7 +23,7 @@ import java.util.Collection;
  * 用户Service业务层处理
  *
  * @author ruoyi
- * @date 2023-07-04
+ * @date 2023-07-06
  */
 @RequiredArgsConstructor
 @Service
@@ -61,10 +61,11 @@ public class PzcUserServiceImpl implements IPzcUserService {
     private LambdaQueryWrapper<PzcUser> buildQueryWrapper(PzcUserBo bo) {
         Map<String, Object> params = bo.getParams();
         LambdaQueryWrapper<PzcUser> lqw = Wrappers.lambdaQuery();
-        lqw.eq(bo.getUserId() != null, PzcUser::getUserId, bo.getUserId());
+        lqw.eq(StringUtils.isNotBlank(bo.getOpenid()), PzcUser::getOpenid, bo.getOpenid());
         lqw.eq(bo.getMoney() != null, PzcUser::getMoney, bo.getMoney());
-        lqw.like(StringUtils.isNotBlank(bo.getNickname()), PzcUser::getNickname, bo.getNickname());
         lqw.like(StringUtils.isNotBlank(bo.getRealname()), PzcUser::getRealname, bo.getRealname());
+        lqw.like(StringUtils.isNotBlank(bo.getNickname()), PzcUser::getNickname, bo.getNickname());
+        lqw.eq(bo.getSex() != null, PzcUser::getSex, bo.getSex());
         lqw.eq(StringUtils.isNotBlank(bo.getPhone()), PzcUser::getPhone, bo.getPhone());
         lqw.eq(StringUtils.isNotBlank(bo.getAvatar()), PzcUser::getAvatar, bo.getAvatar());
         lqw.eq(StringUtils.isNotBlank(bo.getAddress()), PzcUser::getAddress, bo.getAddress());
@@ -76,10 +77,6 @@ public class PzcUserServiceImpl implements IPzcUserService {
         lqw.eq(StringUtils.isNotBlank(bo.getSchool()), PzcUser::getSchool, bo.getSchool());
         lqw.eq(StringUtils.isNotBlank(bo.getOccupation()), PzcUser::getOccupation, bo.getOccupation());
         lqw.eq(StringUtils.isNotBlank(bo.getMusicStyle()), PzcUser::getMusicStyle, bo.getMusicStyle());
-        lqw.between(params.get("beginCreateTime") != null && params.get("endCreateTime") != null,
-            PzcUser::getCreateTime ,params.get("beginCreateTime"), params.get("endCreateTime"));
-        lqw.between(params.get("beginUpdateTime") != null && params.get("endUpdateTime") != null,
-            PzcUser::getUpdateTime ,params.get("beginUpdateTime"), params.get("endUpdateTime"));
         lqw.eq(bo.getState() != null, PzcUser::getState, bo.getState());
         return lqw;
     }

@@ -1,10 +1,10 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="用户主键" prop="userId">
+      <el-form-item label="OpenId" prop="openid">
         <el-input
-          v-model="queryParams.userId"
-          placeholder="请输入用户主键"
+          v-model="queryParams.openid"
+          placeholder="请输入OpenId"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -17,6 +17,14 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
+      <el-form-item label="真实姓名" prop="realname">
+        <el-input
+          v-model="queryParams.realname"
+          placeholder="请输入真实姓名"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
       <el-form-item label="昵称" prop="nickname">
         <el-input
           v-model="queryParams.nickname"
@@ -25,13 +33,15 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="真实姓名" prop="realname">
-        <el-input
-          v-model="queryParams.realname"
-          placeholder="请输入真实姓名"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+      <el-form-item label="性别" prop="sex">
+        <el-select v-model="queryParams.sex" placeholder="请选择性别" clearable>
+          <el-option
+            v-for="dict in dict.type.sys_user_sex"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="手机号" prop="phone">
         <el-input
@@ -49,10 +59,10 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="个人介绍" prop="intro">
+      <el-form-item label="介绍" prop="intro">
         <el-input
           v-model="queryParams.intro"
-          placeholder="请输入个人介绍"
+          placeholder="请输入介绍"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -109,32 +119,8 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="创建时间">
-        <el-date-picker
-          v-model="daterangeCreateTime"
-          style="width: 240px"
-          value-format="yyyy-MM-dd HH:mm:ss"
-          type="daterange"
-          range-separator="-"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          :default-time="['00:00:00', '23:59:59']"
-        ></el-date-picker>
-      </el-form-item>
-      <el-form-item label="更新时间">
-        <el-date-picker
-          v-model="daterangeUpdateTime"
-          style="width: 240px"
-          value-format="yyyy-MM-dd HH:mm:ss"
-          type="daterange"
-          range-separator="-"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          :default-time="['00:00:00', '23:59:59']"
-        ></el-date-picker>
-      </el-form-item>
-      <el-form-item label="状态 是否被封禁" prop="state">
-        <el-select v-model="queryParams.state" placeholder="请选择状态 是否被封禁" clearable>
+      <el-form-item label="封禁状态" prop="state">
+        <el-select v-model="queryParams.state" placeholder="请选择封禁状态" clearable>
           <el-option
             v-for="dict in dict.type.state"
             :key="dict.value"
@@ -198,9 +184,15 @@
     <el-table v-loading="loading" :data="pzc_userList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="用户主键" align="center" prop="userId" v-if="true"/>
+      <el-table-column label="OpenId" align="center" prop="openid" />
       <el-table-column label="派币余额" align="center" prop="money" />
-      <el-table-column label="昵称" align="center" prop="nickname" />
       <el-table-column label="真实姓名" align="center" prop="realname" />
+      <el-table-column label="昵称" align="center" prop="nickname" />
+      <el-table-column label="性别" align="center" prop="sex">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.sys_user_sex" :value="scope.row.sex"/>
+        </template>
+      </el-table-column>
       <el-table-column label="手机号" align="center" prop="phone" />
       <el-table-column label="头像" align="center" prop="avatar" width="100">
         <template slot-scope="scope">
@@ -208,7 +200,7 @@
         </template>
       </el-table-column>
       <el-table-column label="地址" align="center" prop="address" />
-      <el-table-column label="个人介绍" align="center" prop="intro" />
+      <el-table-column label="介绍" align="center" prop="intro" />
       <el-table-column label="年龄" align="center" prop="age" />
       <el-table-column label="星座" align="center" prop="constellation">
         <template slot-scope="scope">
@@ -223,12 +215,12 @@
       <el-table-column label="兴趣爱好" align="center" prop="hobby" />
       <el-table-column label="学校" align="center" prop="school" />
       <el-table-column label="职业" align="center" prop="occupation" />
-      <el-table-column label="喜欢的音乐风格" align="center" prop="musicStyle">
+      <el-table-column label="音乐风格" align="center" prop="musicStyle">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.music_style" :value="scope.row.musicStyle ? scope.row.musicStyle.split(',') : []"/>
         </template>
       </el-table-column>
-      <el-table-column label="状态 是否被封禁" align="center" prop="state">
+      <el-table-column label="封禁状态" align="center" prop="state">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.state" :value="scope.row.state"/>
         </template>
@@ -264,14 +256,26 @@
     <!-- 添加或修改用户对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="OpenId" prop="openid">
+          <el-input v-model="form.openid" placeholder="请输入OpenId" />
+        </el-form-item>
         <el-form-item label="派币余额" prop="money">
           <el-input v-model="form.money" placeholder="请输入派币余额" />
+        </el-form-item>
+        <el-form-item label="真实姓名" prop="realname">
+          <el-input v-model="form.realname" placeholder="请输入真实姓名" />
         </el-form-item>
         <el-form-item label="昵称" prop="nickname">
           <el-input v-model="form.nickname" placeholder="请输入昵称" />
         </el-form-item>
-        <el-form-item label="真实姓名" prop="realname">
-          <el-input v-model="form.realname" placeholder="请输入真实姓名" />
+        <el-form-item label="性别" prop="sex">
+          <el-radio-group v-model="form.sex">
+            <el-radio
+              v-for="dict in dict.type.sys_user_sex"
+              :key="dict.value"
+              :label="parseInt(dict.value)"
+            >{{dict.label}}</el-radio>
+          </el-radio-group>
         </el-form-item>
         <el-form-item label="手机号" prop="phone">
           <el-input v-model="form.phone" placeholder="请输入手机号" />
@@ -282,8 +286,8 @@
         <el-form-item label="地址" prop="address">
           <el-input v-model="form.address" placeholder="请输入地址" />
         </el-form-item>
-        <el-form-item label="个人介绍" prop="intro">
-          <el-input v-model="form.intro" placeholder="请输入个人介绍" />
+        <el-form-item label="介绍" prop="intro">
+          <el-input v-model="form.intro" placeholder="请输入介绍" />
         </el-form-item>
         <el-form-item label="年龄" prop="age">
           <el-input v-model="form.age" placeholder="请输入年龄" />
@@ -317,7 +321,7 @@
         <el-form-item label="职业" prop="occupation">
           <el-input v-model="form.occupation" placeholder="请输入职业" />
         </el-form-item>
-        <el-form-item label="喜欢的音乐风格" prop="musicStyle">
+        <el-form-item label="音乐风格" prop="musicStyle">
           <el-checkbox-group v-model="form.musicStyle">
             <el-checkbox
               v-for="dict in dict.type.music_style"
@@ -327,8 +331,8 @@
             </el-checkbox>
           </el-checkbox-group>
         </el-form-item>
-        <el-form-item label="状态 是否被封禁" prop="state">
-          <el-select v-model="form.state" placeholder="请选择状态 是否被封禁">
+        <el-form-item label="封禁状态" prop="state">
+          <el-select v-model="form.state" placeholder="请选择封禁状态">
             <el-option
               v-for="dict in dict.type.state"
               :key="dict.value"
@@ -351,7 +355,7 @@ import { listPzc_user, getPzc_user, delPzc_user, addPzc_user, updatePzc_user } f
 
 export default {
   name: "Pzc_user",
-  dicts: ['music_style', 'mbti', 'state', 'constellation'],
+  dicts: ['sys_user_sex', 'music_style', 'mbti', 'state', 'constellation'],
   data() {
     return {
       // 按钮loading
@@ -374,18 +378,15 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
-      // 状态 是否被封禁时间范围
-      daterangeCreateTime: [],
-      // 状态 是否被封禁时间范围
-      daterangeUpdateTime: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        userId: undefined,
+        openid: undefined,
         money: undefined,
-        nickname: undefined,
         realname: undefined,
+        nickname: undefined,
+        sex: undefined,
         phone: undefined,
         avatar: undefined,
         address: undefined,
@@ -397,19 +398,32 @@ export default {
         school: undefined,
         occupation: undefined,
         musicStyle: undefined,
-        createTime: undefined,
-        updateTime: undefined,
         state: undefined
       },
       // 表单参数
       form: {},
       // 表单校验
       rules: {
-        nickname: [
-          { required: true, message: "昵称不能为空", trigger: "blur" }
+        userId: [
+          { required: true, message: "用户主键不能为空", trigger: "blur" }
+        ],
+        openid: [
+          { required: true, message: "OpenId不能为空", trigger: "blur" }
         ],
         realname: [
           { required: true, message: "真实姓名不能为空", trigger: "blur" }
+        ],
+        nickname: [
+          { required: true, message: "昵称不能为空", trigger: "blur" }
+        ],
+        sex: [
+          { required: true, message: "性别不能为空", trigger: "change" }
+        ],
+        createTime: [
+          { required: true, message: "创建时间不能为空", trigger: "blur" }
+        ],
+        updateTime: [
+          { required: true, message: "更新时间不能为空", trigger: "blur" }
         ],
       }
     };
@@ -421,15 +435,6 @@ export default {
     /** 查询用户列表 */
     getList() {
       this.loading = true;
-      this.queryParams.params = {};
-      if (null != this.daterangeCreateTime && '' != this.daterangeCreateTime) {
-        this.queryParams.params["beginCreateTime"] = this.daterangeCreateTime[0];
-        this.queryParams.params["endCreateTime"] = this.daterangeCreateTime[1];
-      }
-      if (null != this.daterangeUpdateTime && '' != this.daterangeUpdateTime) {
-        this.queryParams.params["beginUpdateTime"] = this.daterangeUpdateTime[0];
-        this.queryParams.params["endUpdateTime"] = this.daterangeUpdateTime[1];
-      }
       listPzc_user(this.queryParams).then(response => {
         this.pzc_userList = response.rows;
         this.total = response.total;
@@ -445,9 +450,11 @@ export default {
     reset() {
       this.form = {
         userId: undefined,
+        openid: undefined,
         money: undefined,
-        nickname: undefined,
         realname: undefined,
+        nickname: undefined,
+        sex: undefined,
         phone: undefined,
         avatar: undefined,
         address: undefined,
@@ -472,8 +479,6 @@ export default {
     },
     /** 重置按钮操作 */
     resetQuery() {
-      this.daterangeCreateTime = [];
-      this.daterangeUpdateTime = [];
       this.resetForm("queryForm");
       this.handleQuery();
     },

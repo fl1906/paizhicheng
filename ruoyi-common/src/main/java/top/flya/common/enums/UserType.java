@@ -22,7 +22,9 @@ public enum UserType {
     /**
      * app端
      */
-    APP_USER("app_user");
+    APP_USER("app_user"),
+
+    WX_USER("微信小程序用户");
 
     private final String userType;
 

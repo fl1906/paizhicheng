@@ -35,7 +35,7 @@ module.exports = {
     proxy: {
       // detail: https://cli.vuejs.org/config/#devserver-proxy
       [process.env.VUE_APP_BASE_API]: {
-        target:  `https://flya.mynatapp.cc`,  //`http://localhost:8080`,
+        target:   `http://localhost:8080`, //`https://flya.mynatapp.cc`,
         changeOrigin: true,
         pathRewrite: {
           ['^' + process.env.VUE_APP_BASE_API]: ''

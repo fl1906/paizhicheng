@@ -286,7 +286,15 @@
 
 
 
-### 用户登录
+### 用户登录(未完成)
+
+首先获取Code 
+
+https://developers.weixin.qq.com/miniprogram/dev/api/open-api/login/wx.login.html
+
+用户基本信息
+
+https://developers.weixin.qq.com/miniprogram/dev/api/open-api/user-info/wx.getUserInfo.html
 
 
 

@@ -14,7 +14,7 @@ import java.math.BigDecimal;
  * 用户业务对象 pzc_user
  *
  * @author ruoyi
- * @date 2023-07-04
+ * @date 2023-07-06
  */
 
 @Data
@@ -24,12 +24,27 @@ public class PzcUserBo extends BaseEntity {
     /**
      * 用户主键
      */
+    @NotNull(message = "用户主键不能为空", groups = { EditGroup.class })
     private Integer userId;
+
+    /**
+     * OpenId
+     */
+    private String openid;
+
+
+    private String code;
 
     /**
      * 派币余额
      */
     private BigDecimal money;
+
+    /**
+     * 真实姓名
+     */
+    @NotBlank(message = "真实姓名不能为空", groups = { AddGroup.class, EditGroup.class })
+    private String realname;
 
     /**
      * 昵称
@@ -38,10 +53,10 @@ public class PzcUserBo extends BaseEntity {
     private String nickname;
 
     /**
-     * 真实姓名
+     * 性别
      */
-    @NotBlank(message = "真实姓名不能为空", groups = { AddGroup.class, EditGroup.class })
-    private String realname;
+    @NotNull(message = "性别不能为空", groups = { AddGroup.class, EditGroup.class })
+    private Integer sex;
 
     /**
      * 手机号
@@ -59,7 +74,7 @@ public class PzcUserBo extends BaseEntity {
     private String address;
 
     /**
-     * 个人介绍
+     * 介绍
      */
     private String intro;
 
@@ -94,14 +109,14 @@ public class PzcUserBo extends BaseEntity {
     private String occupation;
 
     /**
-     * 喜欢的音乐风格
+     * 音乐风格
      */
     private String musicStyle;
 
     /**
-     * 状态 是否被封禁
+     * 封禁状态
      */
-    private Long state;
+    private Integer state;
 
 
 }

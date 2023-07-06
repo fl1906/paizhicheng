@@ -6,9 +6,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <resultMap type="top.flya.system.domain.PzcUser" id="PzcUserResult">
         <result property="userId" column="user_id"/>
+        <result property="openid" column="openid"/>
         <result property="money" column="money"/>
-        <result property="nickname" column="nickname"/>
         <result property="realname" column="realname"/>
+        <result property="nickname" column="nickname"/>
+        <result property="sex" column="sex"/>
         <result property="phone" column="phone"/>
         <result property="avatar" column="avatar"/>
         <result property="address" column="address"/>

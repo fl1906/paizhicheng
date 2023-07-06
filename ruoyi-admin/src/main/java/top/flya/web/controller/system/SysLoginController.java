@@ -10,6 +10,7 @@ import top.flya.common.core.domain.model.LoginBody;
 import top.flya.common.core.domain.model.LoginUser;
 import top.flya.common.core.domain.model.SmsLoginBody;
 import top.flya.common.helper.LoginHelper;
+import top.flya.system.domain.bo.PzcUserBo;
 import top.flya.system.domain.vo.RouterVo;
 import top.flya.system.service.ISysMenuService;
 import top.flya.system.service.ISysUserService;
@@ -89,17 +90,14 @@ public class SysLoginController {
     }
 
     /**
-     * 小程序登录(示例)
-     *
-     * @param xcxCode 小程序code
      * @return 结果
      */
     @SaIgnore
     @PostMapping("/xcxLogin")
-    public R<Map<String, Object>> xcxLogin(@NotBlank(message = "{xcx.code.not.blank}") String xcxCode) {
+    public R<Map<String, Object>> xcxLogin(@RequestBody PzcUserBo pzcUserBo) {
         Map<String, Object> ajax = new HashMap<>();
         // 生成令牌
-        String token = loginService.xcxLogin(xcxCode);
+        String token = loginService.xcxLogin(pzcUserBo.getCode());
         ajax.put(Constants.TOKEN, token);
         return R.ok(ajax);
     }

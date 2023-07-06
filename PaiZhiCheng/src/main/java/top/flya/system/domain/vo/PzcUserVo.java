@@ -12,7 +12,7 @@ import lombok.Data;
  * 用户视图对象 pzc_user
  *
  * @author ruoyi
- * @date 2023-07-04
+ * @date 2023-07-06
  */
 @Data
 @ExcelIgnoreUnannotated
@@ -27,10 +27,22 @@ public class PzcUserVo {
     private Integer userId;
 
     /**
+     * OpenId
+     */
+    @ExcelProperty(value = "OpenId")
+    private String openid;
+
+    /**
      * 派币余额
      */
     @ExcelProperty(value = "派币余额")
     private BigDecimal money;
+
+    /**
+     * 真实姓名
+     */
+    @ExcelProperty(value = "真实姓名")
+    private String realname;
 
     /**
      * 昵称
@@ -39,10 +51,11 @@ public class PzcUserVo {
     private String nickname;
 
     /**
-     * 真实姓名
+     * 性别
      */
-    @ExcelProperty(value = "真实姓名")
-    private String realname;
+    @ExcelProperty(value = "性别", converter = ExcelDictConvert.class)
+    @ExcelDictFormat(dictType = "sys_user_sex")
+    private Integer sex;
 
     /**
      * 手机号
@@ -63,9 +76,9 @@ public class PzcUserVo {
     private String address;
 
     /**
-     * 个人介绍
+     * 介绍
      */
-    @ExcelProperty(value = "个人介绍")
+    @ExcelProperty(value = "介绍")
     private String intro;
 
     /**
@@ -107,18 +120,18 @@ public class PzcUserVo {
     private String occupation;
 
     /**
-     * 喜欢的音乐风格
+     * 音乐风格
      */
-    @ExcelProperty(value = "喜欢的音乐风格", converter = ExcelDictConvert.class)
+    @ExcelProperty(value = "音乐风格", converter = ExcelDictConvert.class)
     @ExcelDictFormat(dictType = "music_style")
     private String musicStyle;
 
     /**
-     * 状态 是否被封禁
+     * 封禁状态
      */
-    @ExcelProperty(value = "状态 是否被封禁", converter = ExcelDictConvert.class)
+    @ExcelProperty(value = "封禁状态", converter = ExcelDictConvert.class)
     @ExcelDictFormat(dictType = "state")
-    private Long state;
+    private Integer state;
 
 
 }

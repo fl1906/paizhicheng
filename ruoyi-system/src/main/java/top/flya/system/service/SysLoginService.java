@@ -5,9 +5,12 @@ import cn.dev33.satoken.secure.BCrypt;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.http.HttpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import top.flya.common.constant.CacheConstants;
 import top.flya.common.constant.Constants;
+import top.flya.common.core.domain.R;
 import top.flya.common.core.domain.event.LogininforEvent;
 import top.flya.common.core.domain.dto.RoleDTO;
 import top.flya.common.core.domain.entity.SysUser;
@@ -114,24 +117,33 @@ public class SysLoginService {
     }
 
     public String xcxLogin(String xcxCode) {
-        // xcxCode 为 小程序调用 wx.login 授权后获取
-        // todo 以下自行实现
-        // 校验 appid + appsrcret + xcxCode 调用登录凭证校验接口 获取 session_key 与 openid
-        String openid = "";
-        SysUser user = loadUserByOpenid(openid);
-
-        // 此处可根据登录用户的数据不同 自行创建 loginUser
-        XcxLoginUser loginUser = new XcxLoginUser();
-        loginUser.setUserId(user.getUserId());
-        loginUser.setUsername(user.getUserName());
-        loginUser.setUserType(user.getUserType());
-        loginUser.setOpenid(openid);
-        // 生成token
-        LoginHelper.loginByDevice(loginUser, DeviceType.XCX);
-
-        recordLogininfor(user.getUserName(), Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success"));
-        recordLoginInfo(user.getUserId(), user.getUserName());
-        return StpUtil.getTokenValue();
+//        String url = "https://api.weixin.qq.com/sns/jscode2session?appid=" + appId +
+//            "&secret=" + secret + "&js_code=" + xcxCode + "&grant_type=authorization_code";
+//        log.info("微信小程序登录 url : {}", url);
+//        String response = HttpUtil.get(url);
+//
+//        JSONObject wxUser = JSONObject.parseObject(response);
+//        if (com.baomidou.mybatisplus.core.toolkit.StringUtils.checkValNull(wxUser) || wxUser.get("errcode") != null) {
+//            return null;
+//        }
+//        String openId = wxUser.get("openid").toString();
+//        //如果存在 就直接返回 不存在就新建用户
+//        PzcUser user = userMapper.selectOne(new QueryWrapper<PzcUser>().eq("openid", openId));
+//        SysUser user = loadUserByOpenid(openid);
+//
+//        // 此处可根据登录用户的数据不同 自行创建 loginUser
+//        XcxLoginUser loginUser = new XcxLoginUser();
+//        loginUser.setUserId(user.getUserId());
+//        loginUser.setUsername(user.getUserName());
+//        loginUser.setUserType(user.getUserType());
+//        loginUser.setOpenid(openId);
+//        // 生成token
+//        LoginHelper.loginByDevice(loginUser, DeviceType.XCX);
+//
+//        recordLogininfor(user.getUserName(), Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success"));
+//        recordLoginInfo(user.getUserId(), user.getUserName());
+//        return StpUtil.getTokenValue();
+        return null;
     }
 
     /**
