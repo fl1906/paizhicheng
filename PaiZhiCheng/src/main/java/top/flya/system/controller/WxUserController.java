@@ -2,6 +2,8 @@ package top.flya.system.controller;
 
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.excel.util.DateUtils;
@@ -21,6 +23,7 @@ import top.flya.common.core.domain.model.LoginUser;
 import top.flya.common.core.domain.model.XcxLoginUser;
 import top.flya.common.enums.DeviceType;
 import top.flya.common.helper.LoginHelper;
+import top.flya.common.utils.JsonUtils;
 import top.flya.common.utils.MessageUtils;
 import top.flya.common.utils.ServletUtils;
 import top.flya.common.utils.spring.SpringUtils;
@@ -32,6 +35,7 @@ import top.flya.system.mapper.PzcUserHistoryMapper;
 import top.flya.system.mapper.PzcUserMapper;
 import top.flya.system.utils.WxUtils;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -85,7 +89,7 @@ public class WxUserController extends BaseController {
         String lastYearNow = LocalDateTime.of(LocalDate.now().minusYears(1), LocalDateTime.now().toLocalTime()).toString();
         log.info("nowTime is {} , lastYearNow is {}",nowTime,lastYearNow);
 
-        if(!user.getNickname().equals(pzcUserBo.getNickname()))
+        if(pzcUserBo.getNickname()!=null&&!user.getNickname().equals(pzcUserBo.getNickname()))
         {
             //判断用户是否之前一年内是否更新过昵称
             List<PzcUserHistoryVo> pzcUserHistoryVos = userHistoryMapper.
@@ -112,9 +116,9 @@ public class WxUserController extends BaseController {
             pzcUserBo.setUserId(user.getUserId());//用户id不允许修改
             pzcUserBo.setRealname(user.getRealname());//真实姓名不允许修改
             pzcUserBo.setPhone(user.getPhone());//手机号不允许修改
-            pzcUserBo.setCreateTime(user.getCreateTime());//创建时间不允许修改
-            pzcUserBo.setUpdateTime(user.getUpdateTime());//更新时间不允许修改
             pzcUserBo.setOpenid(user.getOpenid());//openid不允许修改
+
+            Map<String, Object> map = BeanUtil.beanToMap(pzcUserBo);
 
             //存入用户历史记录
             PzcUserHistory pzcUserHistory = new PzcUserHistory();
@@ -122,9 +126,42 @@ public class WxUserController extends BaseController {
             pzcUserHistory.setType(Long.valueOf(0));
             pzcUserHistory.setMessage("更新用户其他信息");
             userHistoryMapper.insert(pzcUserHistory);
-           return pzcUserController.edit(pzcUserBo);
+           return R.ok(updateUser(map, user));
         }
 
+    }
+
+    // 假设接收到的请求参数为Map<String, Object> userInfo
+    public PzcUser updateUser(Map<String, Object> userInfo,   PzcUser user) {
+
+        // 反射动态更新用户信息
+        try {
+            Class<?> clazz = user.getClass();
+            for (Map.Entry<String, Object> entry : userInfo.entrySet()) {
+                String fieldName = entry.getKey();
+                Object fieldValue = entry.getValue();
+                log.info("fieldName is {} , fieldValue is {}",fieldName,fieldValue);
+
+                if(fieldValue instanceof Map) //跳过map类型
+                {
+                    continue;
+                }
+
+                if(fieldValue!=null)
+                {
+                    Field field = clazz.getDeclaredField(fieldName);
+                    field.setAccessible(true);
+                    field.set(user, fieldValue);
+                }
+
+            }
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException("更新用户信息失败 反射异常");
+        }
+
+        // 保存更新后的用户信息
+        userMapper.updateById(user);
+        return userMapper.selectById(user.getUserId());
     }
 
     public String userLogin(PzcUserBo pzcUserBo) {

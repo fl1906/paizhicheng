@@ -142,7 +142,7 @@ security:
     - /actuator/**
     # actuator 监控配置
     -  /system/activity/listWx  # 小程序端 活动列表
-    -  /wx/login  # 小程序端 登录
+    -  /wx/user/login  # 小程序端 登录
 # MyBatisPlus配置
 # https://baomidou.com/config/
 mybatis-plus:
