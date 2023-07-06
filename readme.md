@@ -314,13 +314,25 @@ https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/user-info/phone-numb
 
 
 
-### 用户信息CRUD
+### 用户信息CRUD （未完成）
+
+获取用户信息
+
+携带上一步登录获取到的Token  调用用户信息接口
 
 
 
 
 
-### 用户充值
+修改用户信息
+
+
+
+
+
+
+
+### 用户充值 （未完成）
 
 
 
