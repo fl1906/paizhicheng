@@ -320,11 +320,11 @@ https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/user-info/phone-numb
 
 携带上一步登录获取到的Token  调用用户信息接口
 
+![image-20230706141709459](https://img.flya.top/img/image-20230706141709459.png)
 
 
 
-
-修改用户信息
+修改用户信息（用户昵称只能每一年只能修改一次 其他无限制）
 
 
 
@@ -345,6 +345,24 @@ https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/user-info/phone-numb
 
 
 
+
+# 问题记录
+
+## 自增系数过大
+
+### 修改初始自增系数
+
+`ALTER TABLE your_table AUTO_INCREMENT = 1;` 是一条SQL语句，用于修改表中自增主键的起始值。
+
+当您向表中插入新记录时，如果该表具有自增主键，MySQL将自动为每个插入的行分配一个唯一的自增值。自增值的起始点可以通过修改自增计数器的值进行调整。
+
+在上述代码中，`your_table`是要进行更改的表的名称。`AUTO_INCREMENT`是自增列的属性，`1`是将自增列的起始值设置为1。这意味着下一次插入记录时，自增列将从1开始递增。
+
+
+
+### 设置为自增主键
+
+### ![image-20230706141523916](https://img.flya.top/img/image-20230706141523916.png)
 
 
 

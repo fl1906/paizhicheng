@@ -3,6 +3,8 @@ package top.flya.system.domain.vo;
 import java.math.BigDecimal;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import top.flya.common.annotation.ExcelDictFormat;
 import top.flya.common.convert.ExcelDictConvert;
 import lombok.Data;
@@ -16,6 +18,8 @@ import lombok.Data;
  */
 @Data
 @ExcelIgnoreUnannotated
+@AllArgsConstructor
+@NoArgsConstructor
 public class PzcUserVo {
 
     private static final long serialVersionUID = 1L;

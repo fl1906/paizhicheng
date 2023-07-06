@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import top.flya.system.common.BatchUtils;
 import top.flya.system.domain.bo.PzcUserBo;
 import top.flya.system.domain.vo.PzcUserVo;
 import top.flya.system.domain.PzcUser;
@@ -31,6 +32,7 @@ public class PzcUserServiceImpl implements IPzcUserService {
 
     private final PzcUserMapper baseMapper;
 
+    private final BatchUtils batchUtils;
     /**
      * 查询用户
      */
@@ -46,6 +48,8 @@ public class PzcUserServiceImpl implements IPzcUserService {
     public TableDataInfo<PzcUserVo> queryPageList(PzcUserBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<PzcUser> lqw = buildQueryWrapper(bo);
         Page<PzcUserVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        result.setRecords(batchUtils.transformToPzcUserVo(result.getRecords()));
+
         return TableDataInfo.build(result);
     }
 

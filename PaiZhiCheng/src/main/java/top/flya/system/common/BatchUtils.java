@@ -140,7 +140,52 @@ public class BatchUtils {
             .collect(Collectors.toList());
 
     }
+    public List<PzcUserVo> transformToPzcUserVo(List<PzcUserVo> userList){
+        log.info("transform userList start: {}", JSONUtil.toJsonPrettyStr(userList));
+        // 获取所有旧的 imageUrl
+        List<String> oldImageUrls = userList.stream()
+            .filter(user -> user.getAvatar() != null&&!user.getAvatar().contains("http"))
+            .map(PzcUserVo::getAvatar)
+            .collect(Collectors.toList());
+        // 批量查询新的 imageUrl
+        Map<Long, String> newImageUrls = getNewImageUrls(oldImageUrls);
+        // 使用 Stream API 进行处理
+        return userList.stream()
+            // 对列表中的每个元素进行处理
+            .map(user -> {
+                // 从 Map 中获取新的 imageUrl
+                if(user.getAvatar()!=null&&!user.getAvatar().contains("http")) //如果是http开头的就不用转换了
+                {
+                    String newImageUrl = newImageUrls.get(Long.parseLong(user.getAvatar()));
+                    // 创建一个新的 PzcArtistVo 对象，使用查询到的新 imageUrl
+                    return new PzcUserVo(
+                        user.getUserId(),
+                        user.getOpenid(),
+                        user.getMoney(),
+                        user.getRealname(),
+                        user.getNickname(),
+                        user.getSex(),
+                        user.getPhone(),
+                        newImageUrl,
+                        user.getAddress(),
+                        user.getIntro(),
+                        user.getAge(),
+                        user.getConstellation(),
+                        user.getMbti(),
+                        user.getHobby(),
+                        user.getSchool(),
+                        user.getOccupation(),
+                        user.getMusicStyle(),
+                        user.getState()
+                    );
+                }
+                return user;
 
+            })
+            // 将处理后的元素收集到一个新的 List 中
+            .collect(Collectors.toList());
+
+    }
 
 
 
