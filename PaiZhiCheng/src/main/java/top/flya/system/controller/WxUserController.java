@@ -4,6 +4,7 @@ package top.flya.system.controller;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
+import com.alibaba.excel.util.DateUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
@@ -24,21 +25,28 @@ import top.flya.common.utils.MessageUtils;
 import top.flya.common.utils.ServletUtils;
 import top.flya.common.utils.spring.SpringUtils;
 import top.flya.system.domain.PzcUser;
+import top.flya.system.domain.PzcUserHistory;
 import top.flya.system.domain.bo.PzcUserBo;
+import top.flya.system.domain.vo.PzcUserHistoryVo;
+import top.flya.system.mapper.PzcUserHistoryMapper;
 import top.flya.system.mapper.PzcUserMapper;
 import top.flya.system.utils.WxUtils;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/wx")
+@RequestMapping("/wx/user")
 @Slf4j
-public class WxController extends BaseController {
+public class WxUserController extends BaseController {
 
     @Value("${wx.appId}")
     private String appId;
@@ -53,6 +61,10 @@ public class WxController extends BaseController {
 
     private final WxUtils wxUtils;
 
+    private final PzcUserHistoryMapper userHistoryMapper;
+
+    private final PzcUserController pzcUserController;
+
     @PostMapping("/login") // 登录
     public R login(@RequestBody @Validated PzcUserBo loginUser) {
         String tokenValue = userLogin(loginUser);
@@ -61,13 +73,57 @@ public class WxController extends BaseController {
 
     @GetMapping("/userInfo") // 获取用户信息
     public R userInfo() {
-        LoginUser loginUser = LoginHelper.getLoginUser();
-        Long userId = loginUser.getUserId();
-        PzcUser user = userMapper.selectById(userId);
-        if (user == null || StringUtils.isEmpty(user.getOpenid())|| user.getState() == 0) {
-            return R.fail("用户不存在 或者已被禁用");
+        return R.ok(wxUtils.checkUser());
+    }
+
+    @PostMapping("/updateUserInfo") // 更新用户信息
+    public R updateUserInfo(@RequestBody PzcUserBo pzcUserBo)
+    {
+        PzcUser user = wxUtils.checkUser();
+        //获取现在时间和一年前的时间 并格式化
+        String nowTime = DateUtils.format(new Date());
+        String lastYearNow = LocalDateTime.of(LocalDate.now().minusYears(1), LocalDateTime.now().toLocalTime()).toString();
+        log.info("nowTime is {} , lastYearNow is {}",nowTime,lastYearNow);
+
+        if(!user.getNickname().equals(pzcUserBo.getNickname()))
+        {
+            //判断用户是否之前一年内是否更新过昵称
+            List<PzcUserHistoryVo> pzcUserHistoryVos = userHistoryMapper.
+                selectVoList(new QueryWrapper<PzcUserHistory>().eq("user_id", user.getUserId()).eq("type", 0).like("message", "%昵称%")
+                    .between("create_time", lastYearNow, nowTime));
+            if(pzcUserHistoryVos.size()>0)
+            {
+                return R.fail("一年内只能修改一次昵称");
+            }else {
+                //更新用户信息
+                user.setNickname(pzcUserBo.getNickname());
+                userMapper.updateById(user);
+                //存入用户历史记录
+                PzcUserHistory pzcUserHistory = new PzcUserHistory();
+                pzcUserHistory.setUserId(Long.valueOf(user.getUserId()));
+                pzcUserHistory.setType(Long.valueOf(0));
+                pzcUserHistory.setMessage("昵称修改为"+pzcUserBo.getNickname());
+                userHistoryMapper.insert(pzcUserHistory);
+                return R.ok(userMapper.selectById(user.getUserId()));
+            }
         }
-        return R.ok(user);
+        else {
+            pzcUserBo.setMoney(user.getMoney());//余额不允许修改
+            pzcUserBo.setUserId(user.getUserId());//用户id不允许修改
+            pzcUserBo.setRealname(user.getRealname());//真实姓名不允许修改
+            pzcUserBo.setPhone(user.getPhone());//手机号不允许修改
+            pzcUserBo.setCreateTime(user.getCreateTime());//创建时间不允许修改
+            pzcUserBo.setUpdateTime(user.getUpdateTime());//更新时间不允许修改
+            pzcUserBo.setOpenid(user.getOpenid());//openid不允许修改
+
+            //存入用户历史记录
+            PzcUserHistory pzcUserHistory = new PzcUserHistory();
+            pzcUserHistory.setUserId(Long.valueOf(user.getUserId()));
+            pzcUserHistory.setType(Long.valueOf(0));
+            pzcUserHistory.setMessage("更新用户其他信息");
+            userHistoryMapper.insert(pzcUserHistory);
+           return pzcUserController.edit(pzcUserBo);
+        }
 
     }
 
