@@ -324,9 +324,13 @@ https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/user-info/phone-numb
 
 
 
-修改用户信息（用户昵称只能每一年只能修改一次 其他无限制）
+修改用户信息（用户昵称只能每一年只能修改一次 其他无限制） 
 
+**注意修改用户星座 MBTI这些信息时先调用字典接口 获取到需要检索选择的列表 然后让用户做选择   ，音乐风格这类数据量比较大的 有搜索选项 见下面的 dictLabel字段 **
 
+![image-20230708104520207](https://img.flya.top/img/image-20230708104520207.png)
+
+![image-20230708104417879](https://img.flya.top/img/image-20230708104417879.png)
 
 
 
