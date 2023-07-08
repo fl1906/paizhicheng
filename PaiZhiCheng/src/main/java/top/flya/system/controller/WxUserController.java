@@ -3,36 +3,43 @@ package top.flya.system.controller;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.IdUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.excel.util.DateUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import top.flya.common.constant.Constants;
 import top.flya.common.core.controller.BaseController;
 import top.flya.common.core.domain.R;
 import top.flya.common.core.domain.event.LogininforEvent;
-import top.flya.common.core.domain.model.LoginUser;
 import top.flya.common.core.domain.model.XcxLoginUser;
 import top.flya.common.enums.DeviceType;
 import top.flya.common.helper.LoginHelper;
-import top.flya.common.utils.JsonUtils;
 import top.flya.common.utils.MessageUtils;
 import top.flya.common.utils.ServletUtils;
 import top.flya.common.utils.spring.SpringUtils;
 import top.flya.system.domain.PzcUser;
 import top.flya.system.domain.PzcUserHistory;
+import top.flya.system.domain.bo.PayOrderBo;
 import top.flya.system.domain.bo.PzcUserBo;
 import top.flya.system.domain.vo.PzcUserHistoryVo;
+import top.flya.system.handel.WxPayInitHandel;
 import top.flya.system.mapper.PzcUserHistoryMapper;
 import top.flya.system.mapper.PzcUserMapper;
+import top.flya.system.utils.CreateSign;
 import top.flya.system.utils.WxUtils;
 
 import java.lang.reflect.Field;
@@ -67,7 +74,11 @@ public class WxUserController extends BaseController {
 
     private final PzcUserHistoryMapper userHistoryMapper;
 
-    private final PzcUserController pzcUserController;
+    @Autowired
+    private WxPayInitHandel wxPayInitHandel;
+
+    @Autowired
+    private CreateSign createSign;
 
     @PostMapping("/login") // 登录
     public R login(@RequestBody @Validated PzcUserBo loginUser) {
@@ -129,6 +140,91 @@ public class WxUserController extends BaseController {
            return R.ok(updateUser(map, user));
         }
 
+    }
+
+
+    @PostMapping("/recharge ") // 充值
+    @Transactional
+    public R createOrder(@RequestBody @Validated PayOrderBo payOrder) throws Exception {
+        PzcUser user = wxUtils.checkUser();
+
+        String openId = user.getOpenid();
+
+        CloseableHttpClient httpClient = wxPayInitHandel.setup();
+
+        //请求URL
+        HttpPost httpPost = new HttpPost("https://api.mch.weixin.qq.com/v3/pay/transactions/jsapi");
+
+        HashMap<String, Object> amount = new HashMap<>();
+        amount.put("total", payOrder.getCount());
+        amount.put("currency", "CNY");
+
+        HashMap<String, Object> payer = new HashMap<>();
+        payer.put("openid", openId);
+
+        String orderNum = IdUtil.getSnowflakeNextIdStr();
+
+        HashMap<String, Object> toData = new HashMap<>();
+        toData.put("amount", amount);
+        toData.put("mchid", "merchantId");
+        toData.put("description", "派币充值订单");
+        toData.put("notify_url", "url");
+        toData.put("payer", payer);
+        toData.put("attach", orderNum);
+
+        toData.put("out_trade_no", orderNum);
+        toData.put("goods_tag", "WXG");
+        toData.put("appid", appId);
+
+        String s = JSONObject.toJSONString(toData);
+
+        log.info("订单： " + s);
+
+
+        StringEntity entity = new StringEntity(s, "utf-8");
+        entity.setContentType("application/json");
+        httpPost.setEntity(entity);
+        httpPost.setHeader("Accept", "application/json");
+        //完成签名并执行请求
+        CloseableHttpResponse response = httpClient.execute(httpPost);
+
+        int statusCode = response.getStatusLine().getStatusCode();
+        if (statusCode == 200) {
+
+            String result = "prepay_id=" + JSONObject.parseObject(EntityUtils.toString(response.getEntity())).get("prepay_id").toString();
+            response.close();
+            //关闭连接
+            wxPayInitHandel.after(httpClient);
+            String nonceStr = "5K8264ILTKCH16CQ2502SI8ZNMTM67VS";
+            long timestamp = System.currentTimeMillis() / 1000;
+
+            String paySign = createSign.getSign(appId, timestamp, nonceStr, result);
+
+            HashMap<String, Object> map = new HashMap<>();
+
+            map.put("timestamp", String.valueOf(timestamp));
+            map.put("nonceStr", nonceStr);
+            map.put("package", result);
+            map.put("signType", "RSA");
+            map.put("paySign", paySign);
+            map.put("orderNum", orderNum);
+
+            return R.ok(map);
+
+        } else if (statusCode == 204) {
+            log.info("success");
+            response.close();
+            //关闭连接
+            wxPayInitHandel.after(httpClient);
+            return R.ok("成功但未返回预支付订单号");
+        } else {
+            log.info("failed,resp code = " + statusCode + ",return body = " + EntityUtils.toString(response.getEntity()));
+            String result = EntityUtils.toString(response.getEntity());
+            response.close();
+            //关闭连接
+            wxPayInitHandel.after(httpClient);
+            return R.fail("创建预支付订单失败: " + result);
+        }
     }
 
     // 假设接收到的请求参数为Map<String, Object> userInfo
