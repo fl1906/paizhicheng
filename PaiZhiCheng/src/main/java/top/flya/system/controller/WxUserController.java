@@ -79,6 +79,9 @@ public class WxUserController extends BaseController {
     @Value("${wx.api3}")
     private String api3;
 
+    @Value("${wx.notifyUrl}")
+    private String notifyUrl;
+
     private final PzcUserMapper userMapper;
 
     private final WxUtils wxUtils;
@@ -179,7 +182,7 @@ public class WxUserController extends BaseController {
         toData.put("amount", amount);
         toData.put("mchid", mchId);
         toData.put("description", "派币充值订单");
-        toData.put("notify_url", "url");
+        toData.put("notify_url", notifyUrl);
         toData.put("payer", payer);
         toData.put("attach", orderNum);
 

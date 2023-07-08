@@ -150,6 +150,7 @@ security:
     -  /system/activity/listWx  # 小程序端 活动列表
     -  /wx/user/login  # 小程序端 登录
     -  /system/dict/data/list # 字典数据列表
+    -  /wx/user/callback # 小程序端 回调
 # MyBatisPlus配置
 # https://baomidou.com/config/
 mybatis-plus:
