@@ -346,11 +346,27 @@ https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/user-info/phone-numb
 
 ### 用户收藏的活动列表CRUD （未完成）
 
+#### 查询用户收藏活动的状态
 
 
 
 
 
+#### 用户收藏/取消收藏活动
+
+
+
+
+
+#### 用户收藏活动列表
+
+
+
+
+
+### 用户等级 （未完成）
+
+在用户的info信息里 有
 
 # 问题记录
 
