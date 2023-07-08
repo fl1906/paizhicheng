@@ -348,19 +348,11 @@ https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/user-info/phone-numb
 
 #### 查询用户收藏活动的状态
 
-
-
-
-
 #### 用户收藏/取消收藏活动
-
-
-
-
 
 #### 用户收藏活动列表
 
-
+![image-20230709005821435](https://img.flya.top/img/image-20230709005821435.png)
 
 
 

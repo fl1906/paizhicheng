@@ -29,7 +29,7 @@ public class PzcUserCollectBo extends BaseEntity {
     /**
      * 用户Id
      */
-    @NotNull(message = "用户Id不能为空", groups = { AddGroup.class, EditGroup.class })
+    @NotNull(message = "用户Id不能为空", groups = { EditGroup.class })
     private Long userId;
 
     /**

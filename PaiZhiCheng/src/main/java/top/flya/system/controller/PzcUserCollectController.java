@@ -50,6 +50,9 @@ public class PzcUserCollectController extends BaseController {
      */
     @GetMapping("/list")
     public TableDataInfo<PzcUserCollectVo> list(PzcUserCollectBo bo, PageQuery pageQuery) {
+        if(bo.getUserId() == null){
+            bo.setUserId(getLoginUser().getUserId());
+        }
         return iPzcUserCollectService.queryPageList(bo, pageQuery);
     }
 
@@ -97,9 +100,11 @@ public class PzcUserCollectController extends BaseController {
         List<PzcUserCollectVo> pzcUserCollectVos = iPzcUserCollectService.queryList(bo);
         if(pzcUserCollectVos.size()>0)
         {
+            log.info("用户取消收藏活动 ");
             return toAjax(iPzcUserCollectService.deleteWithValidByIds(Collections.singletonList(pzcUserCollectVos.get(0).getCollectId()), true));
         }
 
+        log.info("用户收藏活动 ");
         return toAjax(iPzcUserCollectService.insertByBo(bo));
     }
 
