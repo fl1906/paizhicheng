@@ -1,10 +1,10 @@
 wx:
   appId: wx154b16ff73dd046c
   appSecret: 60fd29555b883283b5b7a58425623dec
-  notifyUrl: xxx
-  merchantId: xxx
-  merchantSerialNumber: xxx
-  api3: xxx
+  notifyUrl: https://flya.mynatapp.cc/wx/user/callback/
+  merchantId: 1648409673
+  merchantSerialNumber: 5635276B66F0715D53B17D803FBCD1D7966575A0
+  api3: pLd9hnp4p4nM2AnjonDwNlPvRmHIYO4x
 
 
 # 项目相关配置

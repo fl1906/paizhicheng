@@ -9,6 +9,7 @@ import cn.hutool.json.JSONUtil;
 import com.alibaba.excel.util.DateUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.wechat.pay.contrib.apache.httpclient.util.AesUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -35,6 +36,7 @@ import top.flya.system.domain.PzcUser;
 import top.flya.system.domain.PzcUserHistory;
 import top.flya.system.domain.bo.PayOrderBo;
 import top.flya.system.domain.bo.PzcUserBo;
+import top.flya.system.domain.bo.SuccessCallBackObjBo;
 import top.flya.system.domain.vo.PzcUserHistoryVo;
 import top.flya.system.handel.WxPayInitHandel;
 import top.flya.system.mapper.PzcUserHistoryMapper;
@@ -42,8 +44,11 @@ import top.flya.system.mapper.PzcUserMapper;
 import top.flya.system.utils.CreateSign;
 import top.flya.system.utils.WxUtils;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.security.GeneralSecurityException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -67,6 +72,12 @@ public class WxUserController extends BaseController {
 
     @Value("${sa-token.token-prefix}")
     private String tokenPrefix;
+
+    @Value("${wx.merchantId}")
+    private String mchId;
+
+    @Value("${wx.api3}")
+    private String api3;
 
     private final PzcUserMapper userMapper;
 
@@ -143,7 +154,7 @@ public class WxUserController extends BaseController {
     }
 
 
-    @PostMapping("/recharge ") // 充值
+    @PostMapping("/recharge") // 充值
     @Transactional
     public R createOrder(@RequestBody @Validated PayOrderBo payOrder) throws Exception {
         PzcUser user = wxUtils.checkUser();
@@ -166,7 +177,7 @@ public class WxUserController extends BaseController {
 
         HashMap<String, Object> toData = new HashMap<>();
         toData.put("amount", amount);
-        toData.put("mchid", "merchantId");
+        toData.put("mchid", mchId);
         toData.put("description", "派币充值订单");
         toData.put("notify_url", "url");
         toData.put("payer", payer);
@@ -225,6 +236,31 @@ public class WxUserController extends BaseController {
             wxPayInitHandel.after(httpClient);
             return R.fail("创建预支付订单失败: " + result);
         }
+    }
+
+
+    @RequestMapping("/callback")
+    @Transactional
+    public R callback(HttpServletRequest request, @RequestBody SuccessCallBackObjBo obj) {
+        log.info("进入支付回调啦~");
+        String associated_data = obj.getResource().getAssociated_data();
+        String nonce = obj.getResource().getNonce();
+        String ciphertext = obj.getResource().getCiphertext();
+        AesUtil aesUtil = new AesUtil(api3.getBytes());
+        try {
+            String s = aesUtil.decryptToString(associated_data.getBytes(), nonce.getBytes(), ciphertext);
+
+            JSONObject jsonObject = JSONObject.parseObject(s);
+            jsonObject.forEach((k, v) -> log.info("k:" + k + "  v:" + v + "\n"));
+            String orderNum = jsonObject.getString("out_trade_no");
+            //更新用户余额
+
+
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
+        }
+
+        return R.ok();
     }
 
     // 假设接收到的请求参数为Map<String, Object> userInfo

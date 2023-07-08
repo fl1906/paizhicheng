@@ -34,33 +34,33 @@ public class WxPayInitHandel {
 
 
     private String privateKey = "-----BEGIN PRIVATE KEY-----\n" +
-            "MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDJKRICZHhIi47i\n" +
-            "QWwEsWjtVA2TBgtXIhrprdKn64MYZGHHAoISi3vPnUwd9RDdjRaxHr0yf13qO4zx\n" +
-            "MRiky3GWYEiic769MQKmJZubk72hrB3u4/CRhaSxj5XTJfUy8v95/ILB3yravamA\n" +
-            "tfan95xNyplBhq1eF4JHIJfBKHCrZ6jN1P7/ERzsR97bVZ0vS1uPQQYWZ+Hy9nC6\n" +
-            "vsCe4c0EEldKDX5uNZ48KkIJnMVhXinf7Jv/NzIEZiPU+Cd6rSF/7kn33E1CkFah\n" +
-            "KYAX6KutOFIJcuquyvHsDgEWbYqMhoEXm6QpE+g1yh1xEs+KPhBkbMFxHyEkSFsM\n" +
-            "QiPJkYyHAgMBAAECggEANmfKPCVqNsyv91eUXGyTIWUTSsletdE+kCb4C3xx913m\n" +
-            "6Akwns1kzhEP7iZCynkHQx46M3cpMlmq0+zgammvrekam/1MACVKPx96x4gcyKYh\n" +
-            "bmPtw53unitkbTgd6gq4uAhoYQD3uTOErZAJRwJ8HroF2ygOqZ0YGh6hjJdgaarj\n" +
-            "HG9vnRD7Q2CSOnxNXKqExbGW8Qjwj+MT2x/ecu7cCXqhvV7SSyRwGPA8HJ9WfjP1\n" +
-            "+SOs502hrdZUPpyGVPUZdl5Pv/zsl+dCipqgAqyuJX6Y3rzoVH1XGANLhXDikQdQ\n" +
-            "gQpFg0rCigf7HmVdNk1xbb5kn6CuNYt0Lpd2zGAcEQKBgQD73bILtaMntUZ2FCmS\n" +
-            "7ZNrv/0LANQupmECoLjdelHkSPVFROzv1MAw+9rD7Gzcmk3qcUrIGGlbAzD9phDc\n" +
-            "lW2Co0mnzUlVjhSOE4h1o96bEhlk0DTsNkG+mP418IpMaC6wzjVpVIOK+sNybE78\n" +
-            "oC4Kd5DldMFbNdcNPIeMIhbRXwKBgQDMdlFA5UYmBs/gO/bDMr4y2bPYnVPIM1QN\n" +
-            "BzU5BeU88UPCe6qMk/W4KTYoutMctNR7CVW6RAof64dbWSqrXfEAfS3PaVj4lqk+\n" +
-            "QA3Q0mYrcDNFeqvupnCuuCRLcqj+mDSbz4TmA3wh1H0Rjr7GSBc4Nm70aI2ybibA\n" +
-            "9r6D5g/N2QKBgQDi+l67CLz5Svct8Guq+qlxYDq1kNCnHc+tI5SWG+bzGQDYpQ31\n" +
-            "8MAnJMF48XcFs5VmIyUmgEFqAM1EuUTW1V80bN0y+OEO1hUWGOpQQhaZn0z9OlmH\n" +
-            "SjojfxMRHy4zP2xcb+lYfA5z0BsU4iCor93uFuSgtICQJ0wfpJ3vHsV7dwKBgB0G\n" +
-            "Apy6rw2A1AtZl7q3vkYLnzr1gkod9yVuS4DPtG3FNcAqu9f+vNeqifSYKJWfmbXp\n" +
-            "alDpjaJgVbOC4cq3qBlQq6sQoj+Pa3DZuNxWsYgjAjQvqK5U1BQJMaXAHfsd8gHY\n" +
-            "IF5iSkGnHyXZ5HzTCPDC0VdCbDLS7g9gN0UT6FRpAoGAC8GKrdjDwMvkUtbA3aGy\n" +
-            "99FnuD9oqaTLdcFo0O5xVNdqNK+yRf4yY99ky8RqfxJ/I1vPyU1hoviB2qYKphp1\n" +
-            "HDtbu6gz4/kuosiRh8vWi2/kHREAyw20iRbRncBEmxLJuKKxNlbz5vF76RzlSTTg\n" +
-            "A5zHu1EygULI4ytgxx5lTEQ=\n" +
-            "-----END PRIVATE KEY-----\n";
+        "MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQCpUtNYFC/SVijj\n" +
+        "mOsW2vVIewgnOfB2YuUW8Q0LUbLtN8jfPJrv2BziCWxVciqNtMKO2ONerRtedzar\n" +
+        "D4poTVgDzICefGL8Mxj0PUIGH9dslc9GSsPjc3iynrW0IMFmrx1ItI//7wbWJTCf\n" +
+        "eNWkQa9WmywFUcMQy/oVsWITq7RaoCdYLVQ6w7CrusQ1DOOJ1OoCVA8HB+zqJGKW\n" +
+        "X6dLTTKF14kYNABPHf7lPd8Zv2VIvxLMxqZuSDKZouQjaciXLI4LGdQje9N9j1JE\n" +
+        "cInKIzQnI3AfKTd0TdWR1F+j8QAQCBrHuOLO6WQEQ+N82BZX7KFn+0SVzzH0QjpL\n" +
+        "K+vjHSBZAgMBAAECggEBAKA6qZZC3BIdyGm/7k9dehlRm6CLGnrdEM7J4r8gW8JR\n" +
+        "NLvTPQbUKljX8/VTqOMZ97Z3lYmlJC4bf9cWSLJ05mIJ5niTWpQvwmB1i4ICJbgy\n" +
+        "d8ebvo0BW2kj+OxwxrNl6L9BZrcZOQ3yeXWfQgRCyCqbgmeyPHYroAdhKV9V78CF\n" +
+        "HSHwZOMVPUo/y44w6ig5Fw6pKdGXSzZwjGUyZNpaj4IY3LYWWffuigHJduMzBut2\n" +
+        "v4JJC2TPC9hB6MiR/sVqpKxtnM466BB8pv7hlZ9TJFzdfD5k1UZuheUgUiunajiC\n" +
+        "FeHOEjtSsTWKsAmTg26+Bw5r1apdL3QsLwqH58IVPaUCgYEA1k//XKqWIWG73OKc\n" +
+        "mOH5gjzb3Aq4c6yw5TGPhEkPn7D+7auKuwzuoUrzASeopzp0te7Ow299fNToFWIs\n" +
+        "wEXi4g0gezO7UwpJ6wWNr0iL/wPgYx3jglrPQ+Pvmfoaj4N0mK/pfmXHF8RdIs/M\n" +
+        "p2kn2oQLrJgdeGb4FZM0byX7UcsCgYEAykKJotProJqDogbqsNEIJpBfFlBvxFgb\n" +
+        "IPAp33tBqBh9DiKIOOtISTjPZQIAkzkC8SMRK+HZbF1p2/20bjvTOsi8PKxm/sqS\n" +
+        "v/oPLDfni8pkmhfNU6rr0iNMagpoT9kks4qk9h2dRij1fKJ6pa4TBahJx5wQ3Yu0\n" +
+        "vMEmy8JdwesCgYEAoSGAg7GWMv8Cei6/QosUR4FuZGCDEiWS0p+Sogk0gAJZiWRi\n" +
+        "aARvHkH1traUrTbcLTWhq3sVxFdnLzyjHOTukrr/4uGgQ+0GanfAcTuAVnoZqSv9\n" +
+        "tDKGhyrHKOPMOH7DmVEZovju2cW/qL7Hxk7fsgF5rYipD6+Lct08nRzXekUCgYEA\n" +
+        "s2muWYeOnhox5coo6MujZUHvdwXG/u4AsokXO6xEI24FkEJFf+gFaR5BqiHKjM2n\n" +
+        "tGsc0kY27Y83VfOI17etuZlSkKeFfUIIRs70Io88j53q+11dv3gAU5kIMZAl056U\n" +
+        "lcbIaaD/X7r5d6NRFCKDsSMEv1HLDBrfKghT967kKB0CgYBnynlp2NRtBgtLNURS\n" +
+        "c2xQ7NrlhSiWyLKii/h55PRfxps07w/eqsNALgAqBVDvZt8TcD1IW8/FYv+ZcvMm\n" +
+        "GUA4MNQonauQbLDbkwEHc8MWIpPMJnQYf9YAFlf73qknlikepc+s0mkNkYaZYQYZ\n" +
+        "Q3uWw4iuk4iyxAzWDWrIRPoiRA==\n" +
+        "-----END PRIVATE KEY-----\n";
 
 
 
