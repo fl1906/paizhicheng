@@ -8,6 +8,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="userId" column="user_id"/>
         <result property="openid" column="openid"/>
         <result property="money" column="money"/>
+        <result property="userLevel" column="user_level"/>
+        <result property="integration" column="integration"/>
+        <result property="integrationNow" column="integration_now"/>
         <result property="realname" column="realname"/>
         <result property="nickname" column="nickname"/>
         <result property="sex" column="sex"/>
@@ -21,8 +24,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="hobby" column="hobby"/>
         <result property="school" column="school"/>
         <result property="occupation" column="occupation"/>
-        <result property="musicStyle" column="music_style"/>
         <result property="createTime" column="create_time"/>
+        <result property="musicStyle" column="music_style"/>
         <result property="updateTime" column="update_time"/>
         <result property="state" column="state"/>
     </resultMap>

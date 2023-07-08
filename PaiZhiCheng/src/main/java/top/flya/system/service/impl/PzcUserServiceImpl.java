@@ -9,7 +9,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import top.flya.system.common.BatchUtils;
 import top.flya.system.domain.bo.PzcUserBo;
 import top.flya.system.domain.vo.PzcUserVo;
 import top.flya.system.domain.PzcUser;
@@ -24,7 +23,7 @@ import java.util.Collection;
  * 用户Service业务层处理
  *
  * @author ruoyi
- * @date 2023-07-06
+ * @date 2023-07-09
  */
 @RequiredArgsConstructor
 @Service
@@ -32,12 +31,11 @@ public class PzcUserServiceImpl implements IPzcUserService {
 
     private final PzcUserMapper baseMapper;
 
-    private final BatchUtils batchUtils;
     /**
      * 查询用户
      */
     @Override
-    public PzcUserVo queryById(Integer userId){
+    public PzcUserVo queryById(Long userId){
         return baseMapper.selectVoById(userId);
     }
 
@@ -48,8 +46,6 @@ public class PzcUserServiceImpl implements IPzcUserService {
     public TableDataInfo<PzcUserVo> queryPageList(PzcUserBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<PzcUser> lqw = buildQueryWrapper(bo);
         Page<PzcUserVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
-        result.setRecords(batchUtils.transformToPzcUserVo(result.getRecords()));
-
         return TableDataInfo.build(result);
     }
 
@@ -67,6 +63,9 @@ public class PzcUserServiceImpl implements IPzcUserService {
         LambdaQueryWrapper<PzcUser> lqw = Wrappers.lambdaQuery();
         lqw.eq(StringUtils.isNotBlank(bo.getOpenid()), PzcUser::getOpenid, bo.getOpenid());
         lqw.eq(bo.getMoney() != null, PzcUser::getMoney, bo.getMoney());
+        lqw.eq(bo.getUserLevel() != null, PzcUser::getUserLevel, bo.getUserLevel());
+        lqw.eq(bo.getIntegration() != null, PzcUser::getIntegration, bo.getIntegration());
+        lqw.eq(bo.getIntegrationNow() != null, PzcUser::getIntegrationNow, bo.getIntegrationNow());
         lqw.like(StringUtils.isNotBlank(bo.getRealname()), PzcUser::getRealname, bo.getRealname());
         lqw.like(StringUtils.isNotBlank(bo.getNickname()), PzcUser::getNickname, bo.getNickname());
         lqw.eq(bo.getSex() != null, PzcUser::getSex, bo.getSex());
@@ -120,7 +119,7 @@ public class PzcUserServiceImpl implements IPzcUserService {
      * 批量删除用户
      */
     @Override
-    public Boolean deleteWithValidByIds(Collection<Integer> ids, Boolean isValid) {
+    public Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid) {
         if(isValid){
             //TODO 做一些业务上的校验,判断是否需要校验
         }

@@ -25,7 +25,7 @@ public class PzcUserBo extends BaseEntity {
      * 用户主键
      */
     @NotNull(message = "用户主键不能为空", groups = { EditGroup.class })
-    private Integer userId;
+    private Long userId;
 
     /**
      * OpenId
@@ -65,6 +65,21 @@ public class PzcUserBo extends BaseEntity {
      */
     @NotNull(message = "性别不能为空", groups = { AddGroup.class, EditGroup.class })
     private Integer sex;
+
+
+    /**
+     * 用户等级
+     */
+    private Long userLevel;
+    /**
+     * 用户累计积分
+     */
+    private Long integration;
+    /**
+     * 用户现有积分
+     */
+    private Long integrationNow;
+
 
     /**
      * 手机号

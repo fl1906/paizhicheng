@@ -13,14 +13,14 @@ import java.util.List;
  * 用户Service接口
  *
  * @author ruoyi
- * @date 2023-07-06
+ * @date 2023-07-09
  */
 public interface IPzcUserService {
 
     /**
      * 查询用户
      */
-    PzcUserVo queryById(Integer userId);
+    PzcUserVo queryById(Long userId);
 
     /**
      * 查询用户列表
@@ -45,5 +45,5 @@ public interface IPzcUserService {
     /**
      * 校验并批量删除用户信息
      */
-    Boolean deleteWithValidByIds(Collection<Integer> ids, Boolean isValid);
+    Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
 }

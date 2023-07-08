@@ -162,6 +162,9 @@ public class BatchUtils {
                         user.getUserId(),
                         user.getOpenid(),
                         user.getMoney(),
+                        user.getUserLevel(),
+                        user.getIntegration(),
+                        user.getIntegrationNow(),
                         user.getRealname(),
                         user.getNickname(),
                         user.getSex(),
@@ -175,6 +178,7 @@ public class BatchUtils {
                         user.getHobby(),
                         user.getSchool(),
                         user.getOccupation(),
+                        user.getCreateTime(),
                         user.getMusicStyle(),
                         user.getState()
                     );

@@ -27,7 +27,7 @@ import top.flya.common.core.page.TableDataInfo;
  * 用户
  *
  * @author ruoyi
- * @date 2023-07-06
+ * @date 2023-07-09
  */
 @Validated
 @RequiredArgsConstructor
@@ -65,7 +65,7 @@ public class PzcUserController extends BaseController {
     @SaCheckPermission("system:pzc_user:query")
     @GetMapping("/{userId}")
     public R<PzcUserVo> getInfo(@NotNull(message = "主键不能为空")
-                                     @PathVariable Integer userId) {
+                                     @PathVariable Long userId) {
         return R.ok(iPzcUserService.queryById(userId));
     }
 
@@ -100,7 +100,7 @@ public class PzcUserController extends BaseController {
     @Log(title = "用户", businessType = BusinessType.DELETE)
     @DeleteMapping("/{userIds}")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
-                          @PathVariable Integer[] userIds) {
+                          @PathVariable Long[] userIds) {
         return toAjax(iPzcUserService.deleteWithValidByIds(Arrays.asList(userIds), true));
     }
 }

@@ -1,10 +1,10 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="OpenId" prop="openid">
+      <el-form-item label="用户在小程序端的 openId 唯一" prop="openid">
         <el-input
           v-model="queryParams.openid"
-          placeholder="请输入OpenId"
+          placeholder="请输入用户在小程序端的 openId 唯一"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -13,6 +13,30 @@
         <el-input
           v-model="queryParams.money"
           placeholder="请输入派币余额"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="用户等级" prop="userLevel">
+        <el-input
+          v-model="queryParams.userLevel"
+          placeholder="请输入用户等级"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="用户累计积分" prop="integration">
+        <el-input
+          v-model="queryParams.integration"
+          placeholder="请输入用户累计积分"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="用户现有积分" prop="integrationNow">
+        <el-input
+          v-model="queryParams.integrationNow"
+          placeholder="请输入用户现有积分"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -33,8 +57,8 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="性别" prop="sex">
-        <el-select v-model="queryParams.sex" placeholder="请选择性别" clearable>
+      <el-form-item label="用户性别 0 男  1 女  2 未知" prop="sex">
+        <el-select v-model="queryParams.sex" placeholder="请选择用户性别 0 男  1 女  2 未知" clearable>
           <el-option
             v-for="dict in dict.type.sys_user_sex"
             :key="dict.value"
@@ -59,10 +83,10 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="介绍" prop="intro">
+      <el-form-item label="个人介绍" prop="intro">
         <el-input
           v-model="queryParams.intro"
-          placeholder="请输入介绍"
+          placeholder="请输入个人介绍"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -119,8 +143,8 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="封禁状态" prop="state">
-        <el-select v-model="queryParams.state" placeholder="请选择封禁状态" clearable>
+      <el-form-item label="状态 是否被封禁" prop="state">
+        <el-select v-model="queryParams.state" placeholder="请选择状态 是否被封禁" clearable>
           <el-option
             v-for="dict in dict.type.state"
             :key="dict.value"
@@ -184,11 +208,18 @@
     <el-table v-loading="loading" :data="pzc_userList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="用户主键" align="center" prop="userId" v-if="true"/>
-      <el-table-column label="OpenId" align="center" prop="openid" />
+      <el-table-column label="用户在小程序端的 openId 唯一" align="center" prop="openid" />
       <el-table-column label="派币余额" align="center" prop="money" />
+      <el-table-column label="用户等级" align="center" prop="userLevel">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.user_level" :value="scope.row.userLevel"/>
+        </template>
+      </el-table-column>
+      <el-table-column label="用户累计积分" align="center" prop="integration" />
+      <el-table-column label="用户现有积分" align="center" prop="integrationNow" />
       <el-table-column label="真实姓名" align="center" prop="realname" />
       <el-table-column label="昵称" align="center" prop="nickname" />
-      <el-table-column label="性别" align="center" prop="sex">
+      <el-table-column label="用户性别 0 男  1 女  2 未知" align="center" prop="sex">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.sys_user_sex" :value="scope.row.sex"/>
         </template>
@@ -200,7 +231,7 @@
         </template>
       </el-table-column>
       <el-table-column label="地址" align="center" prop="address" />
-      <el-table-column label="介绍" align="center" prop="intro" />
+      <el-table-column label="个人介绍" align="center" prop="intro" />
       <el-table-column label="年龄" align="center" prop="age" />
       <el-table-column label="星座" align="center" prop="constellation">
         <template slot-scope="scope">
@@ -215,12 +246,17 @@
       <el-table-column label="兴趣爱好" align="center" prop="hobby" />
       <el-table-column label="学校" align="center" prop="school" />
       <el-table-column label="职业" align="center" prop="occupation" />
-      <el-table-column label="音乐风格" align="center" prop="musicStyle">
+      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="喜欢的音乐风格" align="center" prop="musicStyle">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.music_style" :value="scope.row.musicStyle ? scope.row.musicStyle.split(',') : []"/>
         </template>
       </el-table-column>
-      <el-table-column label="封禁状态" align="center" prop="state">
+      <el-table-column label="状态 是否被封禁" align="center" prop="state">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.state" :value="scope.row.state"/>
         </template>
@@ -256,11 +292,20 @@
     <!-- 添加或修改用户对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="OpenId" prop="openid">
-          <el-input v-model="form.openid" placeholder="请输入OpenId" />
+        <el-form-item label="用户在小程序端的 openId 唯一" prop="openid">
+          <el-input v-model="form.openid" placeholder="请输入用户在小程序端的 openId 唯一" />
         </el-form-item>
         <el-form-item label="派币余额" prop="money">
           <el-input v-model="form.money" placeholder="请输入派币余额" />
+        </el-form-item>
+        <el-form-item label="用户等级" prop="userLevel">
+          <el-input v-model="form.userLevel" placeholder="请输入用户等级" />
+        </el-form-item>
+        <el-form-item label="用户累计积分" prop="integration">
+          <el-input v-model="form.integration" placeholder="请输入用户累计积分" />
+        </el-form-item>
+        <el-form-item label="用户现有积分" prop="integrationNow">
+          <el-input v-model="form.integrationNow" placeholder="请输入用户现有积分" />
         </el-form-item>
         <el-form-item label="真实姓名" prop="realname">
           <el-input v-model="form.realname" placeholder="请输入真实姓名" />
@@ -268,7 +313,7 @@
         <el-form-item label="昵称" prop="nickname">
           <el-input v-model="form.nickname" placeholder="请输入昵称" />
         </el-form-item>
-        <el-form-item label="性别" prop="sex">
+        <el-form-item label="用户性别 0 男  1 女  2 未知" prop="sex">
           <el-radio-group v-model="form.sex">
             <el-radio
               v-for="dict in dict.type.sys_user_sex"
@@ -286,8 +331,8 @@
         <el-form-item label="地址" prop="address">
           <el-input v-model="form.address" placeholder="请输入地址" />
         </el-form-item>
-        <el-form-item label="介绍" prop="intro">
-          <el-input v-model="form.intro" placeholder="请输入介绍" />
+        <el-form-item label="个人介绍" prop="intro">
+          <el-input v-model="form.intro" placeholder="请输入个人介绍" />
         </el-form-item>
         <el-form-item label="年龄" prop="age">
           <el-input v-model="form.age" placeholder="请输入年龄" />
@@ -321,7 +366,7 @@
         <el-form-item label="职业" prop="occupation">
           <el-input v-model="form.occupation" placeholder="请输入职业" />
         </el-form-item>
-        <el-form-item label="音乐风格" prop="musicStyle">
+        <el-form-item label="喜欢的音乐风格" prop="musicStyle">
           <el-checkbox-group v-model="form.musicStyle">
             <el-checkbox
               v-for="dict in dict.type.music_style"
@@ -331,8 +376,8 @@
             </el-checkbox>
           </el-checkbox-group>
         </el-form-item>
-        <el-form-item label="封禁状态" prop="state">
-          <el-select v-model="form.state" placeholder="请选择封禁状态">
+        <el-form-item label="状态 是否被封禁" prop="state">
+          <el-select v-model="form.state" placeholder="请选择状态 是否被封禁">
             <el-option
               v-for="dict in dict.type.state"
               :key="dict.value"
@@ -384,6 +429,9 @@ export default {
         pageSize: 10,
         openid: undefined,
         money: undefined,
+        userLevel: undefined,
+        integration: undefined,
+        integrationNow: undefined,
         realname: undefined,
         nickname: undefined,
         sex: undefined,
@@ -408,16 +456,13 @@ export default {
           { required: true, message: "用户主键不能为空", trigger: "blur" }
         ],
         openid: [
-          { required: true, message: "OpenId不能为空", trigger: "blur" }
-        ],
-        realname: [
-          { required: true, message: "真实姓名不能为空", trigger: "blur" }
+          { required: true, message: "用户在小程序端的 openId 唯一不能为空", trigger: "blur" }
         ],
         nickname: [
           { required: true, message: "昵称不能为空", trigger: "blur" }
         ],
         sex: [
-          { required: true, message: "性别不能为空", trigger: "change" }
+          { required: true, message: "用户性别 0 男  1 女  2 未知不能为空", trigger: "change" }
         ],
         createTime: [
           { required: true, message: "创建时间不能为空", trigger: "blur" }
@@ -452,6 +497,9 @@ export default {
         userId: undefined,
         openid: undefined,
         money: undefined,
+        userLevel: undefined,
+        integration: undefined,
+        integrationNow: undefined,
         realname: undefined,
         nickname: undefined,
         sex: undefined,
@@ -465,8 +513,8 @@ export default {
         hobby: undefined,
         school: undefined,
         occupation: undefined,
-        musicStyle: [],
         createTime: undefined,
+        musicStyle: [],
         updateTime: undefined,
         state: undefined
       };

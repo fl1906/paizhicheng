@@ -1,6 +1,8 @@
 package top.flya.system.domain.vo;
 
 import java.math.BigDecimal;
+import java.util.Date;
+
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
 import lombok.AllArgsConstructor;
@@ -14,12 +16,12 @@ import lombok.Data;
  * 用户视图对象 pzc_user
  *
  * @author ruoyi
- * @date 2023-07-06
+ * @date 2023-07-09
  */
 @Data
-@ExcelIgnoreUnannotated
 @AllArgsConstructor
 @NoArgsConstructor
+@ExcelIgnoreUnannotated
 public class PzcUserVo {
 
     private static final long serialVersionUID = 1L;
@@ -28,12 +30,12 @@ public class PzcUserVo {
      * 用户主键
      */
     @ExcelProperty(value = "用户主键")
-    private Integer userId;
+    private Long userId;
 
     /**
-     * OpenId
+     * 用户在小程序端的 openId 唯一
      */
-    @ExcelProperty(value = "OpenId")
+    @ExcelProperty(value = "用户在小程序端的 openId 唯一")
     private String openid;
 
     /**
@@ -41,6 +43,25 @@ public class PzcUserVo {
      */
     @ExcelProperty(value = "派币余额")
     private BigDecimal money;
+
+    /**
+     * 用户等级
+     */
+    @ExcelProperty(value = "用户等级", converter = ExcelDictConvert.class)
+    @ExcelDictFormat(dictType = "user_level")
+    private Long userLevel;
+
+    /**
+     * 用户累计积分
+     */
+    @ExcelProperty(value = "用户累计积分")
+    private Long integration;
+
+    /**
+     * 用户现有积分
+     */
+    @ExcelProperty(value = "用户现有积分")
+    private Long integrationNow;
 
     /**
      * 真实姓名
@@ -55,9 +76,9 @@ public class PzcUserVo {
     private String nickname;
 
     /**
-     * 性别
+     * 用户性别 0 男  1 女  2 未知
      */
-    @ExcelProperty(value = "性别", converter = ExcelDictConvert.class)
+    @ExcelProperty(value = "用户性别 0 男  1 女  2 未知", converter = ExcelDictConvert.class)
     @ExcelDictFormat(dictType = "sys_user_sex")
     private Integer sex;
 
@@ -80,9 +101,9 @@ public class PzcUserVo {
     private String address;
 
     /**
-     * 介绍
+     * 个人介绍
      */
-    @ExcelProperty(value = "介绍")
+    @ExcelProperty(value = "个人介绍")
     private String intro;
 
     /**
@@ -124,18 +145,24 @@ public class PzcUserVo {
     private String occupation;
 
     /**
-     * 音乐风格
+     * 创建时间
      */
-    @ExcelProperty(value = "音乐风格", converter = ExcelDictConvert.class)
+    @ExcelProperty(value = "创建时间")
+    private Date createTime;
+
+    /**
+     * 喜欢的音乐风格
+     */
+    @ExcelProperty(value = "喜欢的音乐风格", converter = ExcelDictConvert.class)
     @ExcelDictFormat(dictType = "music_style")
     private String musicStyle;
 
     /**
-     * 封禁状态
+     * 状态 是否被封禁
      */
-    @ExcelProperty(value = "封禁状态", converter = ExcelDictConvert.class)
+    @ExcelProperty(value = "状态 是否被封禁", converter = ExcelDictConvert.class)
     @ExcelDictFormat(dictType = "state")
-    private Integer state;
+    private Long state;
 
 
 }
