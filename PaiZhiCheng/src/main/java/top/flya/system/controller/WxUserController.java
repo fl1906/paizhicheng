@@ -32,6 +32,7 @@ import top.flya.common.helper.LoginHelper;
 import top.flya.common.utils.MessageUtils;
 import top.flya.common.utils.ServletUtils;
 import top.flya.common.utils.spring.SpringUtils;
+import top.flya.system.domain.PzcOrder;
 import top.flya.system.domain.PzcUser;
 import top.flya.system.domain.PzcUserHistory;
 import top.flya.system.domain.bo.PayOrderBo;
@@ -39,6 +40,7 @@ import top.flya.system.domain.bo.PzcUserBo;
 import top.flya.system.domain.bo.SuccessCallBackObjBo;
 import top.flya.system.domain.vo.PzcUserHistoryVo;
 import top.flya.system.handel.WxPayInitHandel;
+import top.flya.system.mapper.PzcOrderMapper;
 import top.flya.system.mapper.PzcUserHistoryMapper;
 import top.flya.system.mapper.PzcUserMapper;
 import top.flya.system.utils.CreateSign;
@@ -93,6 +95,9 @@ public class WxUserController extends BaseController {
 
     @Autowired
     private CreateSign createSign;
+
+    @Autowired
+    private PzcOrderMapper orderMapper;
 
     @PostMapping("/login") // 登录
     public R login(@RequestBody @Validated PzcUserBo loginUser) {
@@ -222,6 +227,20 @@ public class WxUserController extends BaseController {
             map.put("signType", "RSA");
             map.put("paySign", paySign);
             map.put("orderNum", orderNum);
+
+            //创建未支付的充值订单
+            PzcOrder pzcRechargeOrder = new PzcOrder();
+            pzcRechargeOrder.setActivityId(null);
+            pzcRechargeOrder.setMoney(BigDecimal.valueOf(payOrder.getCount()/100));
+            pzcRechargeOrder.setOrderStatus(0L);
+            pzcRechargeOrder.setType(0L);
+            pzcRechargeOrder.setOutOrderNum(orderNum);
+            pzcRechargeOrder.setIntro("派币充值订单");
+            pzcRechargeOrder.setTitle("派币充值");
+            pzcRechargeOrder.setUserId(user.getUserId());
+
+            orderMapper.insert(pzcRechargeOrder);
+
 
             return R.ok(map);
 

@@ -231,6 +231,7 @@ import { listPzc_order, getPzc_order, delPzc_order, addPzc_order, updatePzc_orde
 
 export default {
   name: "Pzc_order",
+  dicts: ['order_type', 'order_status'],
   data() {
     return {
       // 按钮loading
