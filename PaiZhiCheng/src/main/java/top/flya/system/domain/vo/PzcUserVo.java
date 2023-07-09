@@ -129,7 +129,7 @@ public class PzcUserVo {
     /**
      * 兴趣爱好
      */
-    @ExcelProperty(value = "兴趣爱好")
+    @ExcelProperty(value = "兴趣爱好", converter = ExcelDictConvert.class)
     private Long hobby;
 
     /**
