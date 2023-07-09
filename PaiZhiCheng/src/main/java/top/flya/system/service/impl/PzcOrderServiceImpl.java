@@ -63,7 +63,8 @@ public class PzcOrderServiceImpl implements IPzcOrderService {
         LambdaQueryWrapper<PzcOrder> lqw = Wrappers.lambdaQuery();
         lqw.eq(bo.getUserId() != null, PzcOrder::getUserId, bo.getUserId());
         lqw.eq(bo.getActivityId() != null, PzcOrder::getActivityId, bo.getActivityId());
-        lqw.eq(bo.getStatus() != null, PzcOrder::getStatus, bo.getStatus());
+        lqw.eq(bo.getMoney() != null, PzcOrder::getMoney, bo.getMoney());
+        lqw.eq(bo.getOrderStatus() != null, PzcOrder::getOrderStatus, bo.getOrderStatus());
         lqw.eq(bo.getType() != null, PzcOrder::getType, bo.getType());
         lqw.eq(StringUtils.isNotBlank(bo.getOutOrderNum()), PzcOrder::getOutOrderNum, bo.getOutOrderNum());
         lqw.eq(StringUtils.isNotBlank(bo.getIntro()), PzcOrder::getIntro, bo.getIntro());

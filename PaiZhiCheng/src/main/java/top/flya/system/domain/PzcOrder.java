@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import top.flya.common.core.domain.BaseEntity;
 
+import java.math.BigDecimal;
 
 /**
  * 订单对象 pzc_order
@@ -20,7 +21,7 @@ public class PzcOrder extends BaseEntity {
     private static final long serialVersionUID=1L;
 
     /**
-     *
+     * 订单ID
      */
     @TableId(value = "order_id",type = IdType.AUTO)
     private Long orderId;
@@ -33,9 +34,13 @@ public class PzcOrder extends BaseEntity {
      */
     private Long activityId;
     /**
+     * 订单金额
+     */
+    private BigDecimal money;
+    /**
      * 订单状态
      */
-    private Long status;
+    private Long orderStatus;
     /**
      * 订单类型
      */

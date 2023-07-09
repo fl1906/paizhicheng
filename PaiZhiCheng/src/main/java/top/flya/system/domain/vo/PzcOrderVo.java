@@ -1,12 +1,13 @@
 package top.flya.system.domain.vo;
 
+import java.math.BigDecimal;
+import java.util.Date;
+
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
 import top.flya.common.annotation.ExcelDictFormat;
 import top.flya.common.convert.ExcelDictConvert;
 import lombok.Data;
-
-import java.util.Date;
 
 
 /**
@@ -22,9 +23,9 @@ public class PzcOrderVo {
     private static final long serialVersionUID = 1L;
 
     /**
-     *
+     * 订单ID
      */
-    @ExcelProperty(value = "ID")
+    @ExcelProperty(value = "订单ID")
     private Long orderId;
 
     /**
@@ -40,10 +41,17 @@ public class PzcOrderVo {
     private Long activityId;
 
     /**
+     * 订单金额
+     */
+    @ExcelProperty(value = "订单金额")
+    private BigDecimal money;
+
+    /**
      * 订单状态
      */
-    @ExcelProperty(value = "订单状态")
-    private Long status;
+    @ExcelProperty(value = "订单状态", converter = ExcelDictConvert.class)
+    @ExcelDictFormat(dictType = "order_status")
+    private Long orderStatus;
 
     /**
      * 订单类型

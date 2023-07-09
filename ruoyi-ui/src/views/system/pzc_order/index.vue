@@ -17,6 +17,22 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
+      <el-form-item label="订单金额" prop="money">
+        <el-input
+          v-model="queryParams.money"
+          placeholder="请输入订单金额"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="订单状态" prop="orderStatus">
+        <el-input
+          v-model="queryParams.orderStatus"
+          placeholder="请输入订单状态"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
       <el-form-item label="订单类型" prop="type">
         <el-input
           v-model="queryParams.type"
@@ -122,7 +138,12 @@
       <el-table-column label="订单ID" align="center" prop="orderId" v-if="true"/>
       <el-table-column label="用户ID" align="center" prop="userId" />
       <el-table-column label="活动ID" align="center" prop="activityId" />
-      <el-table-column label="订单状态" align="center" prop="status" />
+      <el-table-column label="订单金额" align="center" prop="money" />
+      <el-table-column label="订单状态" align="center" prop="orderStatus">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.order_status" :value="scope.row.orderStatus"/>
+        </template>
+      </el-table-column>
       <el-table-column label="订单类型" align="center" prop="type">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.order_type" :value="scope.row.type"/>
@@ -178,6 +199,12 @@
         <el-form-item label="活动ID" prop="activityId">
           <el-input v-model="form.activityId" placeholder="请输入活动ID" />
         </el-form-item>
+        <el-form-item label="订单金额" prop="money">
+          <el-input v-model="form.money" placeholder="请输入订单金额" />
+        </el-form-item>
+        <el-form-item label="订单状态" prop="orderStatus">
+          <el-input v-model="form.orderStatus" placeholder="请输入订单状态" />
+        </el-form-item>
         <el-form-item label="订单类型" prop="type">
           <el-input v-model="form.type" placeholder="请输入订单类型" />
         </el-form-item>
@@ -232,7 +259,8 @@ export default {
         pageSize: 10,
         userId: undefined,
         activityId: undefined,
-        status: undefined,
+        money: undefined,
+        orderStatus: undefined,
         type: undefined,
         outOrderNum: undefined,
         intro: undefined,
@@ -245,7 +273,7 @@ export default {
       // 表单校验
       rules: {
         orderId: [
-          { required: true, message: "不能为空", trigger: "blur" }
+          { required: true, message: "订单ID不能为空", trigger: "blur" }
         ],
         userId: [
           { required: true, message: "用户ID不能为空", trigger: "blur" }
@@ -253,8 +281,11 @@ export default {
         activityId: [
           { required: true, message: "活动ID不能为空", trigger: "blur" }
         ],
-        status: [
-          { required: true, message: "订单状态不能为空", trigger: "change" }
+        money: [
+          { required: true, message: "订单金额不能为空", trigger: "blur" }
+        ],
+        orderStatus: [
+          { required: true, message: "订单状态不能为空", trigger: "blur" }
         ],
         type: [
           { required: true, message: "订单类型不能为空", trigger: "blur" }
@@ -298,7 +329,8 @@ export default {
         orderId: undefined,
         userId: undefined,
         activityId: undefined,
-        status: undefined,
+        money: undefined,
+        orderStatus: undefined,
         type: undefined,
         outOrderNum: undefined,
         intro: undefined,

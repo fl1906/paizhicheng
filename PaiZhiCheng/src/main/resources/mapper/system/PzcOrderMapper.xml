@@ -8,7 +8,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="orderId" column="order_id"/>
         <result property="userId" column="user_id"/>
         <result property="activityId" column="activity_id"/>
-        <result property="status" column="status"/>
+        <result property="money" column="money"/>
+        <result property="orderStatus" column="order_status"/>
         <result property="type" column="type"/>
         <result property="outOrderNum" column="out_order_num"/>
         <result property="intro" column="intro"/>

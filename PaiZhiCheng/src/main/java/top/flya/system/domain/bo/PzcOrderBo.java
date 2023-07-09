@@ -8,6 +8,7 @@ import top.flya.common.core.validate.EditGroup;
 
 import javax.validation.constraints.*;
 
+import java.math.BigDecimal;
 
 /**
  * 订单业务对象 pzc_order
@@ -21,9 +22,9 @@ import javax.validation.constraints.*;
 public class PzcOrderBo extends BaseEntity {
 
     /**
-     *
+     * 订单ID
      */
-    @NotNull(message = "不能为空", groups = { EditGroup.class })
+    @NotNull(message = "订单ID不能为空", groups = { EditGroup.class })
     private Long orderId;
 
     /**
@@ -39,10 +40,16 @@ public class PzcOrderBo extends BaseEntity {
     private Long activityId;
 
     /**
+     * 订单金额
+     */
+    @NotNull(message = "订单金额不能为空", groups = { AddGroup.class, EditGroup.class })
+    private BigDecimal money;
+
+    /**
      * 订单状态
      */
     @NotNull(message = "订单状态不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Long status;
+    private Long orderStatus;
 
     /**
      * 订单类型
