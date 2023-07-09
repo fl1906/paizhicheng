@@ -7,6 +7,10 @@ wx:
   api3: pLd9hnp4p4nM2AnjonDwNlPvRmHIYO4x
 
 
+api:
+  school: https://hn216.api.yesapi.cn/?s=App.Common_University.Search&return_data=0&school_name=
+  apiKey: top_num=10&app_key=D5B0BA3EDE51C76C1EEC4D581589F3A9&sign=99E25CA458C5389EEA9E2E6530CB825B
+
 # 项目相关配置
 ruoyi:
   # 名称
@@ -112,7 +116,7 @@ sa-token:
   # token名称 (同时也是cookie名称)
   token-name: Authorization
   # token有效期 设为一天 (必定过期) 单位: 秒   一个月过期（2592000 ） 需要重新登录  -1 为永不过期
-  timeout: -1
+  timeout: 2592000
   # token临时有效期 (指定时间无操作就过期) 单位: 秒
   activity-timeout: 1800
   # 是否允许同一账号并发登录 (为true时允许一起登录, 为false时新登录挤掉旧登录)

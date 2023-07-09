@@ -29,6 +29,7 @@ import top.flya.common.core.domain.event.LogininforEvent;
 import top.flya.common.core.domain.model.XcxLoginUser;
 import top.flya.common.enums.DeviceType;
 import top.flya.common.helper.LoginHelper;
+import top.flya.common.utils.JsonUtils;
 import top.flya.common.utils.MessageUtils;
 import top.flya.common.utils.ServletUtils;
 import top.flya.common.utils.spring.SpringUtils;
@@ -47,7 +48,6 @@ import top.flya.system.utils.CreateSign;
 import top.flya.system.utils.WxUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.security.GeneralSecurityException;
@@ -84,6 +84,12 @@ public class WxUserController extends BaseController {
     @Value("${wx.notifyUrl}")
     private String notifyUrl;
 
+    @Value("${api.school}")
+    private String schoolUrl;
+
+    @Value("${api.apiKey}")
+    private String apiKey;
+
     private final PzcUserMapper userMapper;
 
     private final WxUtils wxUtils;
@@ -99,10 +105,22 @@ public class WxUserController extends BaseController {
     @Autowired
     private PzcOrderMapper orderMapper;
 
+
+
     @PostMapping("/login") // 登录
     public R login(@RequestBody @Validated PzcUserBo loginUser) {
         String tokenValue = userLogin(loginUser);
         return (tokenValue != null) ? R.ok(tokenPrefix+" "+tokenValue) : R.fail("登录失败");
+    }
+
+
+    @GetMapping("/getSchoolList")
+    public R getSchoolList(@RequestParam("schoolName")String schoolName)
+    {
+        String baseUrl  = schoolUrl +schoolName+"&"+apiKey;
+        log.info("baseUrl is {}",baseUrl);
+        String result = HttpUtil.get(baseUrl);
+        return R.ok(JSONObject.parseObject(result).get("data"));
     }
 
     @GetMapping("/userInfo") // 获取用户信息
