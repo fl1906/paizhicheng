@@ -231,7 +231,7 @@ public class WxUserController extends BaseController {
             //创建未支付的充值订单
             PzcOrder pzcRechargeOrder = new PzcOrder();
             pzcRechargeOrder.setActivityId(null);
-            pzcRechargeOrder.setMoney(BigDecimal.valueOf(payOrder.getCount()/100));
+            pzcRechargeOrder.setMoney(BigDecimal.valueOf(payOrder.getCount()).divide(BigDecimal.valueOf(100)));
             pzcRechargeOrder.setOrderStatus(0L);
             pzcRechargeOrder.setType(0L);
             pzcRechargeOrder.setOutOrderNum(orderNum);
@@ -276,6 +276,18 @@ public class WxUserController extends BaseController {
             jsonObject.forEach((k, v) -> log.info("k:" + k + "  v:" + v + "\n"));
             String orderNum = jsonObject.getString("out_trade_no");
             //更新用户余额
+            PzcOrder pzcOrder = orderMapper.selectOne(new QueryWrapper<PzcOrder>().eq("out_order_num", orderNum));
+            if(pzcOrder==null)
+            {
+                return R.fail("订单不存在");
+            }
+            if(pzcOrder.getOrderStatus()==1)
+            {
+                return R.fail("订单已支付");
+            }
+            pzcOrder.setOrderStatus(1L);
+            orderMapper.updateById(pzcOrder);
+
 
 
         } catch (GeneralSecurityException e) {
