@@ -3,6 +3,7 @@ package top.flya.system.domain;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import top.flya.common.core.domain.BaseEntity;
 
 
 /**
@@ -21,7 +22,7 @@ public class PzcUserPhoto extends BaseEntity {
     /**
      * 照片ID
      */
-    @TableId(value = "photo_id")
+    @TableId(value = "photo_id", type = IdType.AUTO)
     private Long photoId;
     /**
      * 用户ID

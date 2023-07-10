@@ -2,6 +2,10 @@ package top.flya.system.domain.bo;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import top.flya.common.core.domain.BaseEntity;
+import top.flya.common.core.validate.AddGroup;
+import top.flya.common.core.validate.EditGroup;
+
 import javax.validation.constraints.*;
 
 
@@ -25,7 +29,6 @@ public class PzcUserPhotoBo extends BaseEntity {
     /**
      * 用户ID
      */
-    @NotNull(message = "用户ID不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long userId;
 
     /**
