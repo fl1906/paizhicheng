@@ -18,4 +18,6 @@ import top.flya.common.core.mapper.BaseMapperPlus;
 public interface PzcActivityGroupMapper extends BaseMapperPlus<PzcActivityGroupMapper, PzcActivityGroup, PzcActivityGroupVo> {
 
     Page<PzcActivityGroupVo> selectDetailsList(Page<Object> build,@Param("bo") PzcActivityGroupBo bo);
+
+    PzcActivityGroupVo selectVoByIdDIY(@Param("groupId") Long groupId);
 }

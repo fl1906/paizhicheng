@@ -179,6 +179,7 @@ public class BatchUtils {
                         user.getSchool(),
                         user.getOccupation(),
                         user.getCreateTime(),
+                        user.getUpdateTime(),
                         user.getMusicStyle(),
                         user.getState()
                     );

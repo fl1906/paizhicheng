@@ -374,6 +374,14 @@ auth 0 所有人可见  1 仅可见一张照片 2 全不可见
 
 ![image-20230710230120833](https://img.flya.top/img/image-20230710230120833.png)
 
+ 组队列表（如果没有user 这个对象则为匿名用户  ）
+
+![image-20230711010229947](https://img.flya.top/img/image-20230711010229947.png)
+
+组队详情 同上   地址栏入参 groupId 例如 1 2 3...
+
+![image-20230711010309139](https://img.flya.top/img/image-20230711010309139.png)
+
 # 问题记录
 
 ## 自增系数过大

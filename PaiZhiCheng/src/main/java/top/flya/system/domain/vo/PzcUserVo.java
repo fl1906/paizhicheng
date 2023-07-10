@@ -150,6 +150,12 @@ public class PzcUserVo {
     @ExcelProperty(value = "创建时间")
     private Date createTime;
 
+
+    /**
+     * 更新时间
+     */
+    private Date updateTime;
+
     /**
      * 喜欢的音乐风格
      */

@@ -2,6 +2,7 @@ package top.flya.system.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 import top.flya.common.core.page.TableDataInfo;
 import top.flya.common.core.domain.PageQuery;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -28,6 +29,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class PzcActivityGroupServiceImpl implements IPzcActivityGroupService {
 
     private final PzcActivityGroupMapper baseMapper;
@@ -39,7 +41,13 @@ public class PzcActivityGroupServiceImpl implements IPzcActivityGroupService {
      */
     @Override
     public PzcActivityGroupVo queryById(Long groupId){
-        return baseMapper.selectVoById(groupId);
+        PzcActivityGroupVo pzcActivityGroupVo = baseMapper.selectVoByIdDIY(groupId);
+        if(pzcActivityGroupVo.getAuth()==2)
+        {
+            log.info("私密组队，不返回用户信息");
+            pzcActivityGroupVo.setUser(null);
+        }//如果是私密组队，不返回用户信息
+        return pzcActivityGroupVo;
     }
 
     /**
@@ -47,8 +55,16 @@ public class PzcActivityGroupServiceImpl implements IPzcActivityGroupService {
      */
     @Override
     public TableDataInfo<PzcActivityGroupVo> queryPageList(PzcActivityGroupBo bo, PageQuery pageQuery) {
-//        LambdaQueryWrapper<PzcActivityGroup> lqw = buildQueryWrapper(bo);
-        Page<PzcActivityGroupVo> result = baseMapper.selectDetailsList(pageQuery.build(), bo);// TODO 还有用户照片List 未查询
+        Page<PzcActivityGroupVo> result = baseMapper.selectDetailsList(pageQuery.build(), bo);
+        result.getRecords().forEach(
+                pzcActivityGroupVo -> {
+                    if (pzcActivityGroupVo.getAuth() == 2) {
+                        log.info("私密组队，不返回用户信息");
+                        pzcActivityGroupVo.setUser(null);
+                    }//如果是私密组队，不返回用户信息
+                }
+        );
+
         return TableDataInfo.build(result);
     }
 
