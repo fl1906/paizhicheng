@@ -293,7 +293,7 @@ public class WxUserController extends BaseController {
             JSONObject jsonObject = JSONObject.parseObject(s);
             jsonObject.forEach((k, v) -> log.info("k:" + k + "  v:" + v + "\n"));
             String orderNum = jsonObject.getString("out_trade_no");
-            //更新用户余额
+            //更新订单状态和用户余额
             PzcOrder pzcOrder = orderMapper.selectOne(new QueryWrapper<PzcOrder>().eq("out_order_num", orderNum));
             if(pzcOrder==null)
             {
@@ -305,7 +305,10 @@ public class WxUserController extends BaseController {
             }
             pzcOrder.setOrderStatus(1L);
             orderMapper.updateById(pzcOrder);
-
+            Long userId = pzcOrder.getUserId();
+            PzcUser user = userMapper.selectById(userId);
+            user.setMoney(user.getMoney().add(pzcOrder.getMoney()));
+            userMapper.updateById(user);
 
 
         } catch (GeneralSecurityException e) {
