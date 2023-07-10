@@ -16,7 +16,54 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="auth" column="auth"/>
         <result property="createTime" column="create_time"/>
         <result property="updateTime" column="update_time"/>
+        <association property="user">
+            <result column="user_id" property="userId"/>
+            <result property="openid" column="openid"/>
+            <result property="money" column="u_money"/>
+            <result property="userLevel" column="user_level"/>
+            <result property="integration" column="integration"/>
+            <result property="integrationNow" column="integration_now"/>
+            <result property="realname" column="realname"/>
+            <result property="nickname" column="nickname"/>
+            <result property="sex" column="sex"/>
+            <result property="phone" column="phone"/>
+            <result property="avatar" column="avatar"/>
+            <result property="address" column="u_address"/>
+            <result property="intro" column="intro"/>
+            <result property="age" column="age"/>
+            <result property="constellation" column="constellation"/>
+            <result property="mbti" column="mbti"/>
+            <result property="hobby" column="hobby"/>
+            <result property="school" column="school"/>
+            <result property="occupation" column="occupation"/>
+            <result property="createTime" column="create_time"/>
+            <result property="musicStyle" column="music_style"/>
+            <result property="updateTime" column="update_time"/>
+            <result property="state" column="state"/>
+
+        </association>
     </resultMap>
 
+
+    <select id="selectDetailsList" resultMap="PzcActivityGroupResult">
+        select group_id,activity_id,g.user_id as user_id,title,g.money as money,u.money as u_money,group_type,g.address as address,activity_time,auth,g.create_time as create_time,g.update_time as update_time,
+               openid,user_level,nickname,sex,avatar,u.address as u_address,intro,age,constellation,mbti,hobby,school,occupation,music_style
+
+        from pzc_activity_group as g inner join pzc_user as u
+
+        where 1=1
+
+        <if test="bo.userSex != null">
+            and (g.user_id = u.user_id and u.sex = #{bo.userSex})
+        </if>
+
+        <if test="bo.userLevelMin != null">
+            and u.user_level &gt;= #{bo.userLevelMin}
+        </if>
+
+        <if test="bo.userLevelMax != null">
+            and u.user_level &lt;= #{bo.userLevelMax}
+        </if>
+    </select>
 
 </mapper>

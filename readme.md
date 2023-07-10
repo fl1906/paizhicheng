@@ -360,6 +360,20 @@ https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/user-info/phone-numb
 
 在用户的info信息里 有
 
+
+
+
+
+## 任务3 组队管理
+
+创建组队
+
+groupType 买单方式  0 AA 制 1 我买单
+
+auth 0 所有人可见  1 仅可见一张照片 2 全不可见 
+
+![image-20230710230120833](https://img.flya.top/img/image-20230710230120833.png)
+
 # 问题记录
 
 ## 自增系数过大

@@ -13,6 +13,7 @@ import top.flya.system.domain.bo.PzcActivityGroupBo;
 import top.flya.system.domain.vo.PzcActivityGroupVo;
 import top.flya.system.domain.PzcActivityGroup;
 import top.flya.system.mapper.PzcActivityGroupMapper;
+import top.flya.system.mapper.PzcActivityMapper;
 import top.flya.system.service.IPzcActivityGroupService;
 
 import java.util.List;
@@ -31,6 +32,8 @@ public class PzcActivityGroupServiceImpl implements IPzcActivityGroupService {
 
     private final PzcActivityGroupMapper baseMapper;
 
+    private final PzcActivityMapper  pzcActivityMapper;
+
     /**
      * 查询活动组队
      */
@@ -44,8 +47,8 @@ public class PzcActivityGroupServiceImpl implements IPzcActivityGroupService {
      */
     @Override
     public TableDataInfo<PzcActivityGroupVo> queryPageList(PzcActivityGroupBo bo, PageQuery pageQuery) {
-        LambdaQueryWrapper<PzcActivityGroup> lqw = buildQueryWrapper(bo);
-        Page<PzcActivityGroupVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+//        LambdaQueryWrapper<PzcActivityGroup> lqw = buildQueryWrapper(bo);
+        Page<PzcActivityGroupVo> result = baseMapper.selectDetailsList(pageQuery.build(), bo);// TODO 还有用户照片List 未查询
         return TableDataInfo.build(result);
     }
 
@@ -114,5 +117,10 @@ public class PzcActivityGroupServiceImpl implements IPzcActivityGroupService {
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return baseMapper.deleteBatchIds(ids) > 0;
+    }
+
+    @Override
+    public boolean checkActivity(Long activityId) {
+        return pzcActivityMapper.selectVoById(activityId) != null;
     }
 }

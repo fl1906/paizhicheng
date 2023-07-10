@@ -38,7 +38,6 @@ public class PzcActivityGroupBo extends BaseEntity {
     /**
      * 活动组队发起人ID
      */
-    @NotNull(message = "活动组队发起人ID不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long userId;
 
     /**
@@ -76,6 +75,12 @@ public class PzcActivityGroupBo extends BaseEntity {
      */
     @NotNull(message = "权限不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long auth;
+
+    private Integer userLevelMin;
+
+    private Integer userLevelMax;
+
+    private Integer userSex;
 
 
 }

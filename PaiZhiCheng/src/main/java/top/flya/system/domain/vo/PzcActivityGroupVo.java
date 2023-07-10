@@ -8,6 +8,7 @@ import com.alibaba.excel.annotation.ExcelProperty;
 import top.flya.common.annotation.ExcelDictFormat;
 import top.flya.common.convert.ExcelDictConvert;
 import lombok.Data;
+import top.flya.system.domain.PzcUser;
 
 
 /**
@@ -40,6 +41,11 @@ public class PzcActivityGroupVo {
      */
     @ExcelProperty(value = "活动组队发起人ID")
     private Long userId;
+
+    /**
+     * 活动组队发起人
+     */
+    private PzcUserVo user;
 
     /**
      * 活动主题

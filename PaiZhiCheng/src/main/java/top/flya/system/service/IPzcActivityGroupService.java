@@ -46,4 +46,6 @@ public interface IPzcActivityGroupService {
      * 校验并批量删除活动组队信息
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+    boolean checkActivity(Long activityId);
 }

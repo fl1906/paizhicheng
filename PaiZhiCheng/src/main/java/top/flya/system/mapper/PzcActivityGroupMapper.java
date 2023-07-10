@@ -1,6 +1,11 @@
 package top.flya.system.mapper;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.web.bind.annotation.PathVariable;
 import top.flya.system.domain.PzcActivityGroup;
+import top.flya.system.domain.bo.PzcActivityGroupBo;
 import top.flya.system.domain.vo.PzcActivityGroupVo;
 import top.flya.common.core.mapper.BaseMapperPlus;
 
@@ -12,4 +17,5 @@ import top.flya.common.core.mapper.BaseMapperPlus;
  */
 public interface PzcActivityGroupMapper extends BaseMapperPlus<PzcActivityGroupMapper, PzcActivityGroup, PzcActivityGroupVo> {
 
+    Page<PzcActivityGroupVo> selectDetailsList(Page<Object> build,@Param("bo") PzcActivityGroupBo bo);
 }

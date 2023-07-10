@@ -4,8 +4,10 @@ import java.util.List;
 import java.util.Arrays;
 
 import lombok.RequiredArgsConstructor;
+
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.*;
+
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
@@ -17,6 +19,7 @@ import top.flya.common.core.domain.R;
 import top.flya.common.core.validate.AddGroup;
 import top.flya.common.core.validate.EditGroup;
 import top.flya.common.enums.BusinessType;
+import top.flya.common.helper.LoginHelper;
 import top.flya.common.utils.poi.ExcelUtil;
 import top.flya.system.domain.vo.PzcActivityGroupVo;
 import top.flya.system.domain.bo.PzcActivityGroupBo;
@@ -40,7 +43,6 @@ public class PzcActivityGroupController extends BaseController {
     /**
      * 查询活动组队列表
      */
-    @SaCheckPermission("system:activityGroup:list")
     @GetMapping("/list")
     public TableDataInfo<PzcActivityGroupVo> list(PzcActivityGroupBo bo, PageQuery pageQuery) {
         return iPzcActivityGroupService.queryPageList(bo, pageQuery);
@@ -62,21 +64,26 @@ public class PzcActivityGroupController extends BaseController {
      *
      * @param groupId 主键
      */
-    @SaCheckPermission("system:activityGroup:query")
     @GetMapping("/{groupId}")
     public R<PzcActivityGroupVo> getInfo(@NotNull(message = "主键不能为空")
-                                     @PathVariable Long groupId) {
+                                         @PathVariable Long groupId) {
         return R.ok(iPzcActivityGroupService.queryById(groupId));
     }
 
     /**
      * 新增活动组队
      */
-    @SaCheckPermission("system:activityGroup:add")
     @Log(title = "活动组队", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
     public R<Void> add(@Validated(AddGroup.class) @RequestBody PzcActivityGroupBo bo) {
+        Long userId = LoginHelper.getUserId();
+        bo.setUserId(userId);
+        //校验活动是否存在
+        if (!iPzcActivityGroupService.checkActivity(bo.getActivityId())) {
+            return R.fail("活动不存在");
+        }
+
         return toAjax(iPzcActivityGroupService.insertByBo(bo));
     }
 

@@ -61,4 +61,7 @@ public class PzcActivityGroup extends BaseEntity {
      */
     private Long auth;
 
+    @TableField(exist = false)
+    private PzcUser user;
+
 }
