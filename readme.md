@@ -332,6 +332,14 @@ https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/user-info/phone-numb
 
 ![image-20230708104417879](https://img.flya.top/img/image-20230708104417879.png)
 
+#### 用户相册图片上传接口
+
+![image-20230711164327077](https://img.flya.top/img/image-20230711164327077.png)
+
+然后调用上传接口
+
+![image-20230711165020050](https://img.flya.top/img/image-20230711165020050.png)
+
 
 
 

@@ -40,7 +40,6 @@ public class PzcUserPhotoBo extends BaseEntity {
     /**
      * 照片说明
      */
-    @NotBlank(message = "照片说明不能为空", groups = { AddGroup.class, EditGroup.class })
     private String message;
 
 

@@ -17,6 +17,7 @@ import top.flya.common.core.domain.R;
 import top.flya.common.core.validate.AddGroup;
 import top.flya.common.core.validate.EditGroup;
 import top.flya.common.enums.BusinessType;
+import top.flya.common.helper.LoginHelper;
 import top.flya.common.utils.poi.ExcelUtil;
 import top.flya.system.domain.vo.PzcUserPhotoVo;
 import top.flya.system.domain.bo.PzcUserPhotoBo;
@@ -40,16 +41,18 @@ public class PzcUserPhotoController extends BaseController {
     /**
      * 查询用户资料相册列表
      */
-    @SaCheckPermission("system:userPhoto:list")
     @GetMapping("/list")
     public TableDataInfo<PzcUserPhotoVo> list(PzcUserPhotoBo bo, PageQuery pageQuery) {
+        if(bo.getUserId()==null)
+        {
+            bo.setUserId(LoginHelper.getUserId());
+        }
         return iPzcUserPhotoService.queryPageList(bo, pageQuery);
     }
 
     /**
      * 导出用户资料相册列表
      */
-    @SaCheckPermission("system:userPhoto:export")
     @Log(title = "用户资料相册", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(PzcUserPhotoBo bo, HttpServletResponse response) {
@@ -62,7 +65,6 @@ public class PzcUserPhotoController extends BaseController {
      *
      * @param photoId 主键
      */
-    @SaCheckPermission("system:userPhoto:query")
     @GetMapping("/{photoId}")
     public R<PzcUserPhotoVo> getInfo(@NotNull(message = "主键不能为空")
                                      @PathVariable Long photoId) {
@@ -72,18 +74,17 @@ public class PzcUserPhotoController extends BaseController {
     /**
      * 新增用户资料相册
      */
-    @SaCheckPermission("system:userPhoto:add")
     @Log(title = "用户资料相册", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
     public R<Void> add(@Validated(AddGroup.class) @RequestBody PzcUserPhotoBo bo) {
+        bo.setUserId(LoginHelper.getUserId());
         return toAjax(iPzcUserPhotoService.insertByBo(bo));
     }
 
     /**
      * 修改用户资料相册
      */
-    @SaCheckPermission("system:userPhoto:edit")
     @Log(title = "用户资料相册", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
@@ -96,7 +97,6 @@ public class PzcUserPhotoController extends BaseController {
      *
      * @param photoIds 主键串
      */
-    @SaCheckPermission("system:userPhoto:remove")
     @Log(title = "用户资料相册", businessType = BusinessType.DELETE)
     @DeleteMapping("/{photoIds}")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")

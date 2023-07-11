@@ -1,6 +1,7 @@
 package top.flya.system.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import top.flya.common.core.page.TableDataInfo;
@@ -10,13 +11,16 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import top.flya.system.domain.PzcUserPhoto;
 import top.flya.system.domain.bo.PzcActivityGroupBo;
 import top.flya.system.domain.vo.PzcActivityGroupVo;
 import top.flya.system.domain.PzcActivityGroup;
 import top.flya.system.mapper.PzcActivityGroupMapper;
 import top.flya.system.mapper.PzcActivityMapper;
+import top.flya.system.mapper.PzcUserPhotoMapper;
 import top.flya.system.service.IPzcActivityGroupService;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Collection;
@@ -36,17 +40,29 @@ public class PzcActivityGroupServiceImpl implements IPzcActivityGroupService {
 
     private final PzcActivityMapper  pzcActivityMapper;
 
+    private final PzcUserPhotoMapper pzcUserPhotoMapper;
+
     /**
      * 查询活动组队
      */
     @Override
     public PzcActivityGroupVo queryById(Long groupId){
         PzcActivityGroupVo pzcActivityGroupVo = baseMapper.selectVoByIdDIY(groupId);
+
         if(pzcActivityGroupVo.getAuth()==2)
         {
             log.info("私密组队，不返回用户信息");
             pzcActivityGroupVo.setUser(null);
-        }//如果是私密组队，不返回用户信息
+            pzcActivityGroupVo.setPhoto(null);
+        }else {
+            List<PzcUserPhoto> userPhotos = pzcUserPhotoMapper.selectList(new QueryWrapper<PzcUserPhoto>().eq("user_id", pzcActivityGroupVo.getUserId()));
+            pzcActivityGroupVo.setPhoto(userPhotos);
+            if(pzcActivityGroupVo.getAuth()==1) //权限 1只返回一张图片
+            {
+                pzcActivityGroupVo.setPhoto(userPhotos.size()>=1? Collections.singletonList(userPhotos.get(0)):null);
+            }
+        }
+
         return pzcActivityGroupVo;
     }
 

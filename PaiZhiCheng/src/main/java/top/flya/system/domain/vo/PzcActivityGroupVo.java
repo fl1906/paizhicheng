@@ -2,6 +2,8 @@ package top.flya.system.domain.vo;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
@@ -9,6 +11,7 @@ import top.flya.common.annotation.ExcelDictFormat;
 import top.flya.common.convert.ExcelDictConvert;
 import lombok.Data;
 import top.flya.system.domain.PzcUser;
+import top.flya.system.domain.PzcUserPhoto;
 
 
 /**
@@ -97,4 +100,6 @@ public class PzcActivityGroupVo {
     @ExcelProperty(value = "更新时间")
     private Date updateTime;
 
+
+    private List<PzcUserPhoto> photo;
 }
