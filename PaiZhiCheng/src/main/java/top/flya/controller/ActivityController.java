@@ -15,9 +15,5 @@ public class ActivityController {
     @PostMapping("/createActivity")
     public void createActivity(@RequestBody Activity activity){
         log.info("createActivity init");
-
-
-
-
     }
 }
