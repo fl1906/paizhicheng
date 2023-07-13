@@ -40,7 +40,6 @@ public class PzcActivityGroupApplyController extends BaseController {
     /**
      * 查询活动组队申请列列表
      */
-    @SaCheckPermission("system:activityGroupApply:list")
     @GetMapping("/list")
     public TableDataInfo<PzcActivityGroupApplyVo> list(PzcActivityGroupApplyBo bo, PageQuery pageQuery) {
         return iPzcActivityGroupApplyService.queryPageList(bo, pageQuery);
@@ -49,7 +48,6 @@ public class PzcActivityGroupApplyController extends BaseController {
     /**
      * 导出活动组队申请列列表
      */
-    @SaCheckPermission("system:activityGroupApply:export")
     @Log(title = "活动组队申请列", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(PzcActivityGroupApplyBo bo, HttpServletResponse response) {
@@ -62,7 +60,6 @@ public class PzcActivityGroupApplyController extends BaseController {
      *
      * @param applyId 主键
      */
-    @SaCheckPermission("system:activityGroupApply:query")
     @GetMapping("/{applyId}")
     public R<PzcActivityGroupApplyVo> getInfo(@NotNull(message = "主键不能为空")
                                      @PathVariable Long applyId) {
@@ -72,7 +69,6 @@ public class PzcActivityGroupApplyController extends BaseController {
     /**
      * 新增活动组队申请列
      */
-    @SaCheckPermission("system:activityGroupApply:add")
     @Log(title = "活动组队申请列", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
@@ -83,7 +79,6 @@ public class PzcActivityGroupApplyController extends BaseController {
     /**
      * 修改活动组队申请列
      */
-    @SaCheckPermission("system:activityGroupApply:edit")
     @Log(title = "活动组队申请列", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
@@ -96,7 +91,6 @@ public class PzcActivityGroupApplyController extends BaseController {
      *
      * @param applyIds 主键串
      */
-    @SaCheckPermission("system:activityGroupApply:remove")
     @Log(title = "活动组队申请列", businessType = BusinessType.DELETE)
     @DeleteMapping("/{applyIds}")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
