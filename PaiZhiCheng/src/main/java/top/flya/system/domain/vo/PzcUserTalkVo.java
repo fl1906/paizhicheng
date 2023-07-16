@@ -13,7 +13,7 @@ import java.util.Date;
  * 用户聊天视图对象 pzc_user_talk
  *
  * @author ruoyi
- * @date 2023-07-14
+ * @date 2023-07-16
  */
 @Data
 @ExcelIgnoreUnannotated
@@ -25,7 +25,7 @@ public class PzcUserTalkVo {
      * 聊天ID
      */
     @ExcelProperty(value = "聊天ID")
-    private Integer talkId;
+    private Long talkId;
 
     /**
      * 发起方
@@ -40,28 +40,35 @@ public class PzcUserTalkVo {
     private Long toUserId;
 
     /**
-     * 聊天内容
+     * 消息
      */
-    @ExcelProperty(value = "聊天内容", converter = ExcelDictConvert.class)
+    @ExcelProperty(value = "消息", converter = ExcelDictConvert.class)
     @ExcelDictFormat(dictType = "user_talk_msg_type")
     private String message;
 
     /**
-     * 内容类型
+     * 消息状态
      */
-    @ExcelProperty(value = "内容类型")
+    @ExcelProperty(value = "消息状态", converter = ExcelDictConvert.class)
+    @ExcelDictFormat(dictType = "user_talk_msg_status")
+    private Long messageStatus;
+
+    /**
+     * 消息类型
+     */
+    @ExcelProperty(value = "消息类型")
     private Long messageType;
 
     /**
-     * 创建时间
+     *
      */
-    @ExcelProperty(value = "创建时间")
+    @ExcelProperty(value = "")
     private Date createTime;
 
     /**
-     * 更新时间
+     *
      */
-    @ExcelProperty(value = "更新时间")
+    @ExcelProperty(value = "")
     private Date updateTime;
 
 

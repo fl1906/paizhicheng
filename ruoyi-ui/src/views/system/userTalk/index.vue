@@ -17,28 +17,38 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="聊天内容" prop="message">
+      <el-form-item label="消息" prop="message">
         <el-input
           v-model="queryParams.message"
-          placeholder="请输入聊天内容"
+          placeholder="请输入消息"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="创建时间" prop="createTime">
+      <el-form-item label="消息状态" prop="messageStatus">
+        <el-select v-model="queryParams.messageStatus" placeholder="请选择消息状态" clearable>
+          <el-option
+            v-for="dict in dict.type.user_talk_msg_status"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="" prop="createTime">
         <el-date-picker clearable
           v-model="queryParams.createTime"
           type="date"
           value-format="yyyy-MM-dd"
-          placeholder="请选择创建时间">
+          placeholder="请选择">
         </el-date-picker>
       </el-form-item>
-      <el-form-item label="更新时间" prop="updateTime">
+      <el-form-item label="" prop="updateTime">
         <el-date-picker clearable
           v-model="queryParams.updateTime"
           type="date"
           value-format="yyyy-MM-dd"
-          placeholder="请选择更新时间">
+          placeholder="请选择">
         </el-date-picker>
       </el-form-item>
       <el-form-item>
@@ -98,18 +108,23 @@
       <el-table-column label="聊天ID" align="center" prop="talkId" v-if="true"/>
       <el-table-column label="发起方" align="center" prop="fromUserId" />
       <el-table-column label="接受方" align="center" prop="toUserId" />
-      <el-table-column label="聊天内容" align="center" prop="message">
+      <el-table-column label="消息" align="center" prop="message">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.user_talk_msg_type" :value="scope.row.message"/>
         </template>
       </el-table-column>
-      <el-table-column label="内容类型" align="center" prop="messageType" />
-      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
+      <el-table-column label="消息状态" align="center" prop="messageStatus">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.user_talk_msg_status" :value="scope.row.messageStatus"/>
+        </template>
+      </el-table-column>
+      <el-table-column label="消息类型" align="center" prop="messageType" />
+      <el-table-column label="" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="更新时间" align="center" prop="updateTime" width="180">
+      <el-table-column label="" align="center" prop="updateTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d}') }}</span>
         </template>
@@ -151,8 +166,17 @@
         <el-form-item label="接受方" prop="toUserId">
           <el-input v-model="form.toUserId" placeholder="请输入接受方" />
         </el-form-item>
-        <el-form-item label="聊天内容" prop="message">
-          <el-input v-model="form.message" placeholder="请输入聊天内容" />
+        <el-form-item label="消息" prop="message">
+          <el-input v-model="form.message" type="textarea" placeholder="请输入内容" />
+        </el-form-item>
+        <el-form-item label="消息状态" prop="messageStatus">
+          <el-radio-group v-model="form.messageStatus">
+            <el-radio
+              v-for="dict in dict.type.user_talk_msg_status"
+              :key="dict.value"
+              :label="parseInt(dict.value)"
+            >{{dict.label}}</el-radio>
+          </el-radio-group>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -168,6 +192,7 @@ import { listUserTalk, getUserTalk, delUserTalk, addUserTalk, updateUserTalk } f
 
 export default {
   name: "UserTalk",
+  dicts: ['user_talk_msg_status'],
   data() {
     return {
       // 按钮loading
@@ -197,6 +222,7 @@ export default {
         fromUserId: undefined,
         toUserId: undefined,
         message: undefined,
+        messageStatus: undefined,
         messageType: undefined,
         createTime: undefined,
         updateTime: undefined
@@ -215,13 +241,13 @@ export default {
           { required: true, message: "接受方不能为空", trigger: "blur" }
         ],
         message: [
-          { required: true, message: "聊天内容不能为空", trigger: "blur" }
+          { required: true, message: "消息不能为空", trigger: "blur" }
+        ],
+        messageStatus: [
+          { required: true, message: "消息状态不能为空", trigger: "change" }
         ],
         messageType: [
-          { required: true, message: "内容类型不能为空", trigger: "change" }
-        ],
-        createTime: [
-          { required: true, message: "创建时间不能为空", trigger: "blur" }
+          { required: true, message: "消息类型不能为空", trigger: "change" }
         ],
       }
     };
@@ -251,6 +277,7 @@ export default {
         fromUserId: undefined,
         toUserId: undefined,
         message: undefined,
+        messageStatus: undefined,
         messageType: undefined,
         createTime: undefined,
         updateTime: undefined

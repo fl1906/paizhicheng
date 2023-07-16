@@ -23,7 +23,7 @@ import java.util.Collection;
  * 用户聊天Service业务层处理
  *
  * @author ruoyi
- * @date 2023-07-14
+ * @date 2023-07-16
  */
 @RequiredArgsConstructor
 @Service
@@ -35,7 +35,7 @@ public class PzcUserTalkServiceImpl implements IPzcUserTalkService {
      * 查询用户聊天
      */
     @Override
-    public PzcUserTalkVo queryById(Integer talkId){
+    public PzcUserTalkVo queryById(Long talkId){
         return baseMapper.selectVoById(talkId);
     }
 
@@ -64,6 +64,7 @@ public class PzcUserTalkServiceImpl implements IPzcUserTalkService {
         lqw.eq(bo.getFromUserId() != null, PzcUserTalk::getFromUserId, bo.getFromUserId());
         lqw.eq(bo.getToUserId() != null, PzcUserTalk::getToUserId, bo.getToUserId());
         lqw.eq(StringUtils.isNotBlank(bo.getMessage()), PzcUserTalk::getMessage, bo.getMessage());
+        lqw.eq(bo.getMessageStatus() != null, PzcUserTalk::getMessageStatus, bo.getMessageStatus());
         lqw.eq(bo.getMessageType() != null, PzcUserTalk::getMessageType, bo.getMessageType());
         lqw.eq(bo.getCreateTime() != null, PzcUserTalk::getCreateTime, bo.getCreateTime());
         lqw.eq(bo.getUpdateTime() != null, PzcUserTalk::getUpdateTime, bo.getUpdateTime());
@@ -105,7 +106,7 @@ public class PzcUserTalkServiceImpl implements IPzcUserTalkService {
      * 批量删除用户聊天
      */
     @Override
-    public Boolean deleteWithValidByIds(Collection<Integer> ids, Boolean isValid) {
+    public Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid) {
         if(isValid){
             //TODO 做一些业务上的校验,判断是否需要校验
         }

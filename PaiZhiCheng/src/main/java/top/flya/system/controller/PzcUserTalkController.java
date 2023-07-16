@@ -99,7 +99,7 @@ public class PzcUserTalkController extends BaseController {
      */
     @GetMapping("/{talkId}")
     public R<PzcUserTalkVo> getInfo(@NotNull(message = "主键不能为空")
-                                     @PathVariable Integer talkId) {
+                                     @PathVariable Long talkId) {
         return R.ok(iPzcUserTalkService.queryById(talkId));
     }
 

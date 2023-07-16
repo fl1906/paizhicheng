@@ -10,7 +10,7 @@ import top.flya.common.core.domain.BaseEntity;
  * 用户聊天对象 pzc_user_talk
  *
  * @author ruoyi
- * @date 2023-07-14
+ * @date 2023-07-16
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -23,7 +23,7 @@ public class PzcUserTalk extends BaseEntity {
      * 聊天ID
      */
     @TableId(value = "talk_id",type = IdType.AUTO)
-    private Integer talkId;
+    private Long talkId;
     /**
      * 发起方
      */
@@ -33,11 +33,15 @@ public class PzcUserTalk extends BaseEntity {
      */
     private Long toUserId;
     /**
-     * 聊天内容
+     * 消息
      */
     private String message;
     /**
-     * 内容类型
+     * 消息状态
+     */
+    private Long messageStatus;
+    /**
+     * 消息类型
      */
     private Long messageType;
 

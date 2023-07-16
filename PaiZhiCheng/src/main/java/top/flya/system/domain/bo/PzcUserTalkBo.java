@@ -7,25 +7,24 @@ import top.flya.common.core.validate.AddGroup;
 import top.flya.common.core.validate.EditGroup;
 
 import javax.validation.constraints.*;
-import java.io.Serializable;
 
 
 /**
  * 用户聊天业务对象 pzc_user_talk
  *
  * @author ruoyi
- * @date 2023-07-14
+ * @date 2023-07-16
  */
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class PzcUserTalkBo extends BaseEntity implements Serializable {
+public class PzcUserTalkBo extends BaseEntity {
 
     /**
      * 聊天ID
      */
     @NotNull(message = "聊天ID不能为空", groups = { EditGroup.class })
-    private Integer talkId;
+    private Long talkId;
 
     /**
      * 发起方
@@ -40,15 +39,21 @@ public class PzcUserTalkBo extends BaseEntity implements Serializable {
     private Long toUserId;
 
     /**
-     * 聊天内容
+     * 消息
      */
-    @NotBlank(message = "聊天内容不能为空", groups = { AddGroup.class, EditGroup.class })
+    @NotBlank(message = "消息不能为空", groups = { AddGroup.class, EditGroup.class })
     private String message;
 
     /**
-     * 内容类型
+     * 消息状态
      */
-    @NotNull(message = "内容类型不能为空", groups = { AddGroup.class, EditGroup.class })
+    @NotNull(message = "消息状态不能为空", groups = { AddGroup.class, EditGroup.class })
+    private Long messageStatus;
+
+    /**
+     * 消息类型
+     */
+    @NotNull(message = "消息类型不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long messageType;
 
 

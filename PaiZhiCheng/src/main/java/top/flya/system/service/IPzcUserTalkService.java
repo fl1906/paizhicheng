@@ -13,14 +13,14 @@ import java.util.List;
  * 用户聊天Service接口
  *
  * @author ruoyi
- * @date 2023-07-14
+ * @date 2023-07-16
  */
 public interface IPzcUserTalkService {
 
     /**
      * 查询用户聊天
      */
-    PzcUserTalkVo queryById(Integer talkId);
+    PzcUserTalkVo queryById(Long talkId);
 
     /**
      * 查询用户聊天列表
@@ -45,5 +45,5 @@ public interface IPzcUserTalkService {
     /**
      * 校验并批量删除用户聊天信息
      */
-    Boolean deleteWithValidByIds(Collection<Integer> ids, Boolean isValid);
+    Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
 }
