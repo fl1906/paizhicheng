@@ -2,6 +2,13 @@ package top.flya.framework.config;
 
 import cn.hutool.core.util.ObjectUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.data.redis.connection.MessageListener;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.PatternTopic;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import top.flya.framework.config.properties.RedissonProperties;
 import top.flya.framework.handler.KeyPrefixHandler;
 import top.flya.framework.manager.PlusSpringCacheManager;

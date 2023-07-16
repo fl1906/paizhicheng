@@ -10,7 +10,7 @@
 
     <name>RuoYi-Vue-Plus</name>
     <url>https://gitee.com/dromara/RuoYi-Vue-Plus</url>
-    <description>派之城后台管理系统</description>
+    <description>派之城后台管理系统 </description>
 
     <properties>
         <ruoyi-vue-plus.version>4.7.0</ruoyi-vue-plus.version>

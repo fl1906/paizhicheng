@@ -390,6 +390,50 @@ auth 0 所有人可见  1 仅可见一张照片 2 全不可见
 
 ![image-20230711010309139](https://img.flya.top/img/image-20230711010309139.png)
 
+
+
+## 任务4 私聊功能
+
+
+
+### 思路整理
+
+```java
+
+    @OnEvent(value = Event.CHAT)
+    public void onChatEvent(SocketIOClient client, AckRequest request, PzcUserTalkBo data) {
+        log.info("用户 {} 刚刚私信了用户 {}：{}", data.getFromUserId(), data.getToUserId(), data.getMessage());
+        sendToSingle(String.valueOf(data.getToUserId()), data);
+//            request.sendAckData(Dict.create().set("flag", true).set("message", "发送成功"));
+    }
+
+这个由前端来触发调用
+    
+    
+```
+
+![image-20230716190203607](C:\Users\1\AppData\Roaming\Typora\typora-user-images\image-20230716190203607.png)
+
+
+
+用户加载进入小程序时：
+
+调用连接： 当前用户在线
+
+调用断开连接： 当前用户不在线
+
+
+
+
+
+我加入聊天时： 如果对方不在线 （能发送成功 保持在历史记录里 但是实际上没有“发送成功” 因为对方当前不在线 待用户上线之后可见（这里其实可以做用户在线状态的实时显示））
+
+我加入聊天时：如果对方在线 对方就能接收到我发送的信息 
+
+
+
+
+
 # 问题记录
 
 ## 自增系数过大

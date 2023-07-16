@@ -5,7 +5,9 @@ wx:
   merchantId: 1648409673
   merchantSerialNumber: 5635276B66F0715D53B17D803FBCD1D7966575A0
   api3: pLd9hnp4p4nM2AnjonDwNlPvRmHIYO4x
-
+  server:
+    port: 9394
+    host: localhost
 
 api:
   school: https://hn216.api.yesapi.cn/?s=App.Common_University.Search&return_data=0&school_name=
@@ -40,7 +42,7 @@ captcha:
 # 开发环境配置
 server:
   # 服务器的HTTP端口，默认为8080
-  port: 8080
+  port: 9393
   servlet:
     # 应用的访问路径
     context-path: /
