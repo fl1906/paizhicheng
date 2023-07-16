@@ -97,6 +97,9 @@ public class PzcUserTalkController extends BaseController {
      */
     @GetMapping("/list")
     public TableDataInfo<PzcUserTalkVo> list(PzcUserTalkBo bo, PageQuery pageQuery) {
+        bo.setFromUserId(LoginHelper.getUserId());
+        pageQuery.setIsAsc("desc");
+        pageQuery.setOrderByColumn("create_time");
         return iPzcUserTalkService.queryPageList(bo, pageQuery);
     }
 
@@ -114,16 +117,16 @@ public class PzcUserTalkController extends BaseController {
 //        ExcelUtil.exportExcel(list, "用户聊天", PzcUserTalkVo.class, response);
 //    }
 
-    /**
-     * 获取用户聊天详细信息
-     *
-     * @param talkId 主键
-     */
-    @GetMapping("/{talkId}")
-    public R<PzcUserTalkVo> getInfo(@NotNull(message = "主键不能为空")
-                                     @PathVariable Long talkId) {
-        return R.ok(iPzcUserTalkService.queryById(talkId));
-    }
+//    /**
+//     * 获取用户聊天详细信息
+//     *
+//     * @param talkId 主键
+//     */
+//    @GetMapping("/{talkId}")
+//    public R<PzcUserTalkVo> getInfo(@NotNull(message = "主键不能为空")
+//                                     @PathVariable Long talkId) {
+//        return R.ok(iPzcUserTalkService.queryById(talkId));
+//    }
 
 //    /**
 //     * 新增用户聊天
