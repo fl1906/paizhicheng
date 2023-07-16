@@ -430,6 +430,34 @@ auth 0 所有人可见  1 仅可见一张照片 2 全不可见
 
 我加入聊天时：如果对方在线 对方就能接收到我发送的信息 
 
+用户已读未读条数（用户每次点开，返回上一层（退出） 对话框清除一次未读消息 即全部变成已读）
+
+![image-20230716204757109](C:\Users\1\AppData\Roaming\Typora\typora-user-images\image-20230716204757109.png)
+
+
+
+### 用户已读接口
+
+![image-20230717005609205](C:\Users\1\AppData\Roaming\Typora\typora-user-images\image-20230717005609205.png)
+
+### 用户聊天记录列表
+
+![image-20230717023854415](C:\Users\1\AppData\Roaming\Typora\typora-user-images\image-20230717023854415.png)
+
+### 好友列表
+
+![image-20230717021609387](C:\Users\1\AppData\Roaming\Typora\typora-user-images\image-20230717021609387.png)
+
+### 用户发送消息
+
+参照示例
+
+![image-20230717024003716](C:\Users\1\AppData\Roaming\Typora\typora-user-images\image-20230717024003716.png)
+
+### 连接/断开连接
+
+![image-20230717024034512](C:\Users\1\AppData\Roaming\Typora\typora-user-images\image-20230717024034512.png)
+
 
 
 
