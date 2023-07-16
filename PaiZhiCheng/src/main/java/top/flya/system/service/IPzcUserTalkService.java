@@ -46,4 +46,7 @@ public interface IPzcUserTalkService {
      * 校验并批量删除用户聊天信息
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+
+    TableDataInfo<PzcUserTalkVo> queryMyPageList(PzcUserTalkBo bo, PageQuery pageQuery);
 }

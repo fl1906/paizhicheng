@@ -2,6 +2,7 @@ package top.flya.system.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 import top.flya.common.core.page.TableDataInfo;
 import top.flya.common.core.domain.PageQuery;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -9,10 +10,12 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import top.flya.common.helper.LoginHelper;
+import top.flya.system.domain.PzcUser;
 import top.flya.system.domain.bo.PzcUserTalkBo;
 import top.flya.system.domain.vo.PzcUserTalkVo;
 import top.flya.system.domain.PzcUserTalk;
-import top.flya.system.mapper.PzcUserTalkMapper;
+import top.flya.system.mapper.*;
 import top.flya.system.service.IPzcUserTalkService;
 
 import java.util.List;
@@ -27,10 +30,12 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class PzcUserTalkServiceImpl implements IPzcUserTalkService {
 
     private final PzcUserTalkMapper baseMapper;
 
+    private final PzcUserMapper pzcUserMapper;
     /**
      * 查询用户聊天
      */
@@ -48,6 +53,28 @@ public class PzcUserTalkServiceImpl implements IPzcUserTalkService {
         Page<PzcUserTalkVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
         return TableDataInfo.build(result);
     }
+
+    /**
+     * 查询我 与朋友的聊天列表
+     * @param bo
+     * @param pageQuery
+     * @return
+     */
+    @Override
+    public TableDataInfo<PzcUserTalkVo> queryMyPageList(PzcUserTalkBo bo, PageQuery pageQuery) {
+        Page<PzcUserTalkVo> result = baseMapper.selectVoPageV1(pageQuery.build(), LoginHelper.getUserId());
+        log.info("result is :{}",result.getRecords());
+        List<PzcUserTalkVo> newL = result.getRecords();
+        newL.forEach(item->{
+           item.setNotReadCount(baseMapper.selectNotReadCount(item.getFromUserId(),item.getToUserId())); //
+            PzcUser pzcUser = pzcUserMapper.selectById(item.getToUserId());
+            item.setUsername(pzcUser.getNickname());
+            item.setAvatar(pzcUser.getAvatar());
+        });
+        result.setRecords(newL);
+        return TableDataInfo.build(result);
+    }
+
 
     /**
      * 查询用户聊天列表

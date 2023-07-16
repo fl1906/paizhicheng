@@ -72,4 +72,11 @@ public class PzcUserTalkVo {
     private Date updateTime;
 
 
+    private Integer notReadCount; //未读消息数量
+
+    private String username;
+
+    private String avatar;
+
+
 }

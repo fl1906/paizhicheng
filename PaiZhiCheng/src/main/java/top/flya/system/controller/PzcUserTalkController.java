@@ -1,16 +1,16 @@
 package top.flya.system.controller;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
-import com.alibaba.fastjson.JSON;
-import com.corundumstudio.socketio.SocketIOClient;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+
 import lombok.RequiredArgsConstructor;
-import javax.servlet.http.HttpServletResponse;
+
 import javax.validation.constraints.*;
-import cn.dev33.satoken.annotation.SaCheckPermission;
+
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
+
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
 import top.flya.common.annotation.RepeatSubmit;
@@ -18,15 +18,13 @@ import top.flya.common.annotation.Log;
 import top.flya.common.core.controller.BaseController;
 import top.flya.common.core.domain.PageQuery;
 import top.flya.common.core.domain.R;
-import top.flya.common.core.validate.AddGroup;
-import top.flya.common.core.validate.EditGroup;
-import top.flya.common.enums.BusinessType;
+
 import top.flya.common.helper.LoginHelper;
-import top.flya.common.utils.poi.ExcelUtil;
-import top.flya.system.config.ClientCache;
+
+import top.flya.system.domain.PzcUserTalk;
 import top.flya.system.domain.vo.PzcUserTalkVo;
 import top.flya.system.domain.bo.PzcUserTalkBo;
-import top.flya.system.handel.MessageEventHandler;
+import top.flya.system.mapper.PzcUserTalkMapper;
 import top.flya.system.service.IPzcUserTalkService;
 import top.flya.common.core.page.TableDataInfo;
 
@@ -47,6 +45,8 @@ public class PzcUserTalkController extends BaseController {
 
     private final IPzcUserTalkService iPzcUserTalkService;
 
+    private final PzcUserTalkMapper pzcUserTalkMapper;
+
 
     /**
      * 用户在线状态
@@ -63,6 +63,34 @@ public class PzcUserTalkController extends BaseController {
         return R.ok("当前用户在线");
     }
 
+    /**
+     * 一键已读
+     * @param userId
+     * @return
+     */
+    @PostMapping("/read")
+    public R<Boolean> read(@RequestParam("userId")String userId)
+    {
+        List<PzcUserTalk> pzcUserTalks = pzcUserTalkMapper.selectList(new QueryWrapper<PzcUserTalk>().eq("from_user_id", userId).eq("to_user_id", LoginHelper.getUserId())).stream()
+            .filter(pzcUserTalk -> pzcUserTalk.getMessageStatus() == 0)
+            .peek(pzcUserTalk -> pzcUserTalk.setMessageStatus(1L))
+            .collect(Collectors.toList());
+        boolean b = pzcUserTalkMapper.updateBatchById(pzcUserTalks);
+        return R.ok(b);
+    }
+
+
+    /**
+     * 我的聊天列表
+     *
+     * 1. 按照 最后聊天的时间倒序排列
+     * 2. 展示 最新一条聊天记录 以及未读消息条数
+     */
+    @GetMapping("/myList")
+    public TableDataInfo<PzcUserTalkVo> myList(PzcUserTalkBo bo, PageQuery pageQuery) {
+        return iPzcUserTalkService.queryMyPageList(bo, pageQuery);
+    }
+
 
     /**
      * 查询用户聊天列表
@@ -73,12 +101,6 @@ public class PzcUserTalkController extends BaseController {
     }
 
 
-    /**
-     * 我的聊天列表
-     *
-     * 1. 按照 最后聊天的时间倒序排列
-     * 2. 展示 最新一条聊天记录 以及未读消息条数
-     */
 
 
 //

@@ -45,4 +45,7 @@ public class PzcUserTalk extends BaseEntity {
      */
     private Long messageType;
 
+    @TableField(exist = false)
+    private Integer notReadCount;
+
 }
