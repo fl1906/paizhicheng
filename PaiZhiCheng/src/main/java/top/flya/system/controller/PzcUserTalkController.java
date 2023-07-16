@@ -72,15 +72,25 @@ public class PzcUserTalkController extends BaseController {
         return iPzcUserTalkService.queryPageList(bo, pageQuery);
     }
 
+
     /**
-     * 导出用户聊天列表
+     * 我的聊天列表
+     *
+     * 1. 按照 最后聊天的时间倒序排列
+     * 2. 展示 最新一条聊天记录 以及未读消息条数
      */
-    @Log(title = "用户聊天", businessType = BusinessType.EXPORT)
-    @PostMapping("/export")
-    public void export(PzcUserTalkBo bo, HttpServletResponse response) {
-        List<PzcUserTalkVo> list = iPzcUserTalkService.queryList(bo);
-        ExcelUtil.exportExcel(list, "用户聊天", PzcUserTalkVo.class, response);
-    }
+
+
+//
+//    /**
+//     * 导出用户聊天列表
+//     */
+//    @Log(title = "用户聊天", businessType = BusinessType.EXPORT)
+//    @PostMapping("/export")
+//    public void export(PzcUserTalkBo bo, HttpServletResponse response) {
+//        List<PzcUserTalkVo> list = iPzcUserTalkService.queryList(bo);
+//        ExcelUtil.exportExcel(list, "用户聊天", PzcUserTalkVo.class, response);
+//    }
 
     /**
      * 获取用户聊天详细信息
@@ -93,35 +103,35 @@ public class PzcUserTalkController extends BaseController {
         return R.ok(iPzcUserTalkService.queryById(talkId));
     }
 
-    /**
-     * 新增用户聊天
-     */
-    @Log(title = "用户聊天", businessType = BusinessType.INSERT)
-    @RepeatSubmit()
-    @PostMapping()
-    public R<Void> add(@Validated(AddGroup.class) @RequestBody PzcUserTalkBo bo) {
-        return toAjax(iPzcUserTalkService.insertByBo(bo));
-    }
+//    /**
+//     * 新增用户聊天
+//     */
+//    @Log(title = "用户聊天", businessType = BusinessType.INSERT)
+//    @RepeatSubmit()
+//    @PostMapping()
+//    public R<Void> add(@Validated(AddGroup.class) @RequestBody PzcUserTalkBo bo) {
+//        return toAjax(iPzcUserTalkService.insertByBo(bo));
+//    }
 
-    /**
-     * 修改用户聊天
-     */
-    @Log(title = "用户聊天", businessType = BusinessType.UPDATE)
-    @RepeatSubmit()
-    @PutMapping()
-    public R<Void> edit(@Validated(EditGroup.class) @RequestBody PzcUserTalkBo bo) {
-        return toAjax(iPzcUserTalkService.updateByBo(bo));
-    }
+//    /**
+//     * 修改用户聊天
+//     */
+//    @Log(title = "用户聊天", businessType = BusinessType.UPDATE)
+//    @RepeatSubmit()
+//    @PutMapping()
+//    public R<Void> edit(@Validated(EditGroup.class) @RequestBody PzcUserTalkBo bo) {
+//        return toAjax(iPzcUserTalkService.updateByBo(bo));
+//    }
 
-    /**
-     * 删除用户聊天
-     *
-     * @param talkIds 主键串
-     */
-    @Log(title = "用户聊天", businessType = BusinessType.DELETE)
-    @DeleteMapping("/{talkIds}")
-    public R<Void> remove(@NotEmpty(message = "主键不能为空")
-                          @PathVariable Integer[] talkIds) {
-        return toAjax(iPzcUserTalkService.deleteWithValidByIds(Arrays.asList(talkIds), true));
-    }
+//    /**
+//     * 删除用户聊天
+//     *
+//     * @param talkIds 主键串
+//     */
+//    @Log(title = "用户聊天", businessType = BusinessType.DELETE)
+//    @DeleteMapping("/{talkIds}")
+//    public R<Void> remove(@NotEmpty(message = "主键不能为空")
+//                          @PathVariable Integer[] talkIds) {
+//        return toAjax(iPzcUserTalkService.deleteWithValidByIds(Arrays.asList(talkIds), true));
+//    }
 }
