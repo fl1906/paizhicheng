@@ -84,7 +84,7 @@ pipeline {
                                 returnStatus: true
                             )
 
-                            if (serviceExists == 1) {
+                            if (serviceExists == 0) {
                                 sh 'kubectl delete service paizhicheng-management-service -n paizhicheng --cascade'
                                 sh 'kubectl delete paizhicheng-backend-service -n paizhicheng --cascade'
                             }
