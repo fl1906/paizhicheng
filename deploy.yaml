@@ -130,7 +130,7 @@ spec:
       port: 9393
       protocol: TCP
       targetPort: 9393
-    - name: http
+    - name: http2
       port: 9394
       protocol: TCP
       targetPort: 9394
