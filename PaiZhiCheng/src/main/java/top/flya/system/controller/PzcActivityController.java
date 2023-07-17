@@ -79,7 +79,7 @@ public class PzcActivityController extends BaseController {
      */
     @GetMapping("/listWx")
     public TableDataInfo<PzcActivityVo> Wx(PzcActivityBo bo, PageQuery pageQuery) {
-        log.info("ceshi ya");
+        log.error("ceshi ya");
         return iPzcActivityService.queryPageListWx(bo, pageQuery);
     }
 
