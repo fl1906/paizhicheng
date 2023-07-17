@@ -80,12 +80,13 @@ pipeline {
                     ]) {
                         script {
                             def serviceExists = sh (
-                                script: 'kubectl get service paizhicheng -n paizhicheng',
+                                script: 'kubectl get service paizhicheng-management-service -n paizhicheng',
                                 returnStatus: true
                             )
 
-                            if (serviceExists == 0) {
-                                sh 'kubectl delete service paizhicheng -n paizhicheng --cascade'
+                            if (serviceExists == 1) {
+                                sh 'kubectl delete service paizhicheng-management-service -n paizhicheng --cascade'
+                                sh 'kubectl delete paizhicheng-backend-service -n paizhicheng --cascade'
                             }
 
 
