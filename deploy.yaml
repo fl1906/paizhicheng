@@ -77,7 +77,10 @@ spec:
           name: paizhicheng-backend  # 后端容器的名称改为"olympic-backend"
           ports:
             - name: http-admin2
-              containerPort: 8080
+              containerPort: 9393
+              protocol: TCP
+            - name: websocket
+              containerPort: 9394
               protocol: TCP
           resources:
             limits:
