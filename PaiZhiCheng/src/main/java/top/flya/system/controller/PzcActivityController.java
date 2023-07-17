@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.*;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
 import top.flya.common.annotation.RepeatSubmit;
@@ -33,6 +34,7 @@ import top.flya.common.core.page.TableDataInfo;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/system/activity")
+@Slf4j
 public class PzcActivityController extends BaseController {
 
     private final IPzcActivityService iPzcActivityService;
@@ -77,6 +79,7 @@ public class PzcActivityController extends BaseController {
      */
     @GetMapping("/listWx")
     public TableDataInfo<PzcActivityVo> Wx(PzcActivityBo bo, PageQuery pageQuery) {
+        log.info("ceshi ya");
         return iPzcActivityService.queryPageListWx(bo, pageQuery);
     }
 
