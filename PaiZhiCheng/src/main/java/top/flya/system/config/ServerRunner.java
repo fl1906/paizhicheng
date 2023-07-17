@@ -23,6 +23,6 @@ public class ServerRunner implements CommandLineRunner {
     @Override
     public void run(String... args) {
         server.start();
-        log.info("websocket 服务器启动成功。。。");
+        log.info("websocket 服务器启动成功");
     }
 }
