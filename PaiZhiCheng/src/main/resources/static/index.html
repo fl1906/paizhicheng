@@ -49,7 +49,7 @@
     <script>
         // const token = 'user' + Math.floor((Math.random() * 1000) + 1);
         const token = '252276744';
-        const url = `http://127.0.0.1:8081?userId=252276744`;
+        const url = `https://www.xiaoyuan2.cn:568?userId=252276744`; //http://81.68.131.40:9394
         const socket = io.connect(url);
         socket.on('connect', function () {
             output(`<span class="connect-msg">系统通知: ${token}成功连接至websocket服务器</span>`);
