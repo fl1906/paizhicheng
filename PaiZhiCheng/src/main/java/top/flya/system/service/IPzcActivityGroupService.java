@@ -48,4 +48,6 @@ public interface IPzcActivityGroupService {
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
 
     boolean checkActivity(Long activityId);
+
+    boolean checkGroup(Long userId, Long activityId);
 }

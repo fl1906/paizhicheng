@@ -4,6 +4,7 @@ package top.flya.system.utils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import top.flya.common.helper.LoginHelper;
 import top.flya.common.utils.DateUtils;
 import top.flya.system.domain.vo.PzcActivityGroupVo;
 import top.flya.system.domain.vo.PzcActivityVo;
@@ -37,6 +38,7 @@ public class ActivityUtils {
         log.info("checkActivity: activityId = {}", activityId);
         PzcActivityVo pzcActivityVo = iPzcActivityService.queryById(activityId);
         if (pzcActivityVo == null) {
+            log.error("活动不存在");
             return false;
         }
         String endDate = pzcActivityVo.getEndDate();
@@ -54,8 +56,16 @@ public class ActivityUtils {
         log.info("checkGroup: groupId = {}", groupId);
         PzcActivityGroupVo pzcActivityGroupVo = iPzcActivityGroupService.queryById(groupId);
         if(pzcActivityGroupVo == null) {
+            log.error("组队不存在");
             return false;
         }
+        //不可以参与自己发起的组队
+        if(pzcActivityGroupVo.getUserId().equals(LoginHelper.getUserId()))
+        {
+            log.error("不可以参与自己发起的组队");
+            return false;
+        }
+
         Long activityId1 = pzcActivityGroupVo.getActivityId();
         return activityId.equals(Math.toIntExact(activityId1));
     }

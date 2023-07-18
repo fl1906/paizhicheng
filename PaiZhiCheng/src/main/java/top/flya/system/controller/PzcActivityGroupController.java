@@ -72,7 +72,7 @@ public class PzcActivityGroupController extends BaseController {
     }
 
     /**
-     * 新增活动组队
+     * 发起活动组队
      */
     @Log(title = "活动组队", businessType = BusinessType.INSERT)
     @RepeatSubmit()
@@ -84,6 +84,10 @@ public class PzcActivityGroupController extends BaseController {
         if (!iPzcActivityGroupService.checkActivity(bo.getActivityId())) {
             return R.fail("活动不存在");
         }
+        //是否已经发起过组队
+        if (iPzcActivityGroupService.checkGroup(userId, bo.getActivityId())) {
+            return R.fail("已经发起过组队 不可重复发起");
+        }
 
         return toAjax(iPzcActivityGroupService.insertByBo(bo));
     }
@@ -91,11 +95,11 @@ public class PzcActivityGroupController extends BaseController {
     /**
      * 修改活动组队
      */
-    @SaCheckPermission("system:activityGroup:edit")
     @Log(title = "活动组队", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
     public R<Void> edit(@Validated(EditGroup.class) @RequestBody PzcActivityGroupBo bo) {
+        bo.setUserId(LoginHelper.getUserId());
         return toAjax(iPzcActivityGroupService.updateByBo(bo));
     }
 

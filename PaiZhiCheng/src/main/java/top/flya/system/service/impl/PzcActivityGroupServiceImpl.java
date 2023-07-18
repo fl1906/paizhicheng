@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import top.flya.system.domain.PzcActivityGroupApply;
 import top.flya.system.domain.PzcUserPhoto;
 import top.flya.system.domain.bo.PzcActivityGroupBo;
 import top.flya.system.domain.vo.PzcActivityGroupVo;
@@ -158,5 +159,13 @@ public class PzcActivityGroupServiceImpl implements IPzcActivityGroupService {
     @Override
     public boolean checkActivity(Long activityId) {
         return pzcActivityMapper.selectVoById(activityId) != null;
+    }
+
+    @Override
+    public boolean checkGroup(Long userId, Long activityId) {
+        LambdaQueryWrapper<PzcActivityGroup> lqw = Wrappers.lambdaQuery();
+        lqw.eq(PzcActivityGroup::getUserId, userId);
+        lqw.eq(PzcActivityGroup::getActivityId, activityId);
+        return baseMapper.selectCount(lqw) > 0;
     }
 }
