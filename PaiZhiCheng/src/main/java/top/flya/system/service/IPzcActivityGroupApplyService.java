@@ -46,4 +46,6 @@ public interface IPzcActivityGroupApplyService {
      * 校验并批量删除活动组队申请列信息
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+    boolean queryByUserIdAndActivityId(Long userId, Long activityId);
 }

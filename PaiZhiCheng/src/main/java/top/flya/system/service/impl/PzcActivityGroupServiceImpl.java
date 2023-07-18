@@ -48,6 +48,10 @@ public class PzcActivityGroupServiceImpl implements IPzcActivityGroupService {
     @Override
     public PzcActivityGroupVo queryById(Long groupId){
         PzcActivityGroupVo pzcActivityGroupVo = baseMapper.selectVoByIdDIY(groupId);
+        if(pzcActivityGroupVo==null)
+        {
+            return null;
+        }
 
         if(pzcActivityGroupVo.getAuth()==2)
         {

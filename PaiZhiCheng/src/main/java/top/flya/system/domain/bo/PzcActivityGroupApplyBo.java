@@ -30,7 +30,7 @@ public class PzcActivityGroupApplyBo extends BaseEntity {
     /**
      * 申请人ID
      */
-    @NotNull(message = "申请人ID不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotNull(message = "申请人ID不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long userId;
 
     /**

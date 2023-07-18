@@ -114,4 +114,16 @@ public class PzcActivityGroupApplyServiceImpl implements IPzcActivityGroupApplyS
         }
         return baseMapper.deleteBatchIds(ids) > 0;
     }
+
+    @Override
+    public boolean queryByUserIdAndActivityId(Long userId, Long activityId) {
+        LambdaQueryWrapper<PzcActivityGroupApply> lqw = Wrappers.lambdaQuery();
+        lqw.eq(PzcActivityGroupApply::getUserId, userId);
+        lqw.eq(PzcActivityGroupApply::getActivityId, activityId);
+        List<PzcActivityGroupApply> list = baseMapper.selectList(lqw);
+        if (list != null && list.size() > 0) {
+            return true;
+        }
+        return false;
+    }
 }

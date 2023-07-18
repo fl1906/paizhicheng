@@ -57,6 +57,7 @@ public class PageQuery implements Serializable {
     public <T> Page<T> build() {
         Integer pageNum = ObjectUtil.defaultIfNull(getPageNum(), DEFAULT_PAGE_NUM);
         Integer pageSize = ObjectUtil.defaultIfNull(getPageSize(), DEFAULT_PAGE_SIZE);
+
         if (pageNum <= 0) {
             pageNum = DEFAULT_PAGE_NUM;
         }
@@ -79,7 +80,9 @@ public class PageQuery implements Serializable {
      */
     private List<OrderItem> buildOrderItem() {
         if (StringUtils.isBlank(orderByColumn) || StringUtils.isBlank(isAsc)) {
-            return null;
+            orderByColumn="create_time";
+            isAsc="desc";
+//            return null;
         }
         String orderBy = SqlUtil.escapeOrderBySql(orderByColumn);
         orderBy = StringUtils.toUnderScoreCase(orderBy);

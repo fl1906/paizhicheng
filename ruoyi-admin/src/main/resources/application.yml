@@ -6,7 +6,7 @@ wx:
   merchantSerialNumber: 5635276B66F0715D53B17D803FBCD1D7966575A0
   api3: pLd9hnp4p4nM2AnjonDwNlPvRmHIYO4x
   server:
-    port: 9393
+    port: 9394
     host: localhost
 
 api:
@@ -120,7 +120,7 @@ sa-token:
   # token有效期 设为一天 (必定过期) 单位: 秒   一个月过期（2592000 ） 需要重新登录  -1 为永不过期
   timeout: 2592000
   # token临时有效期 (指定时间无操作就过期) 单位: 秒
-  activity-timeout: 1800
+  activity-timeout: -1 # 1800
   # 是否允许同一账号并发登录 (为true时允许一起登录, 为false时新登录挤掉旧登录)
   is-concurrent: true
   # 在多人登录同一账号时，是否共用一个token (为true时所有登录共用一个token, 为false时每次登录新建一个token)
@@ -279,13 +279,14 @@ lock4j:
   expire: 30000
 
 --- # Actuator 监控端点的配置项
-management:
-  endpoints:
-    web:
-      exposure:
-        include: '*'
-  endpoint:
-    health:
-      show-details: ALWAYS
-    logfile:
-      external-file: ./logs/sys-console.log
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: '*'
+#    enabled-by-default: off
+#  endpoint:
+#    health:
+#      show-details: ALWAYS
+#    logfile:
+#      external-file: ./logs/sys-console.log
