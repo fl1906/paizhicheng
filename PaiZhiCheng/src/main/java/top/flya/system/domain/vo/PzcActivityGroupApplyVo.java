@@ -67,6 +67,12 @@ public class PzcActivityGroupApplyVo {
     @ExcelProperty(value = "留言内容")
     private String message;
 
+
+    /**
+     * 0 位于申请列表中 1 申请通过待确认时 2 确认通过进行中 3 组队结束
+     */
+    @ExcelProperty(value = "0 位于申请列表中 1 申请通过待确认时 2 确认通过进行中 3 组队结束", converter = ExcelDictConvert.class)
+    private Integer applyStatus;
     /**
      *
      */

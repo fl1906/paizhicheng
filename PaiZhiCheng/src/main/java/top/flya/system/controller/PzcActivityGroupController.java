@@ -1,31 +1,31 @@
 package top.flya.system.controller;
 
-import java.util.List;
-import java.util.Arrays;
-
-import lombok.RequiredArgsConstructor;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.*;
-
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import org.springframework.web.bind.annotation.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import top.flya.common.annotation.RepeatSubmit;
+import org.springframework.web.bind.annotation.*;
 import top.flya.common.annotation.Log;
+import top.flya.common.annotation.RepeatSubmit;
 import top.flya.common.core.controller.BaseController;
 import top.flya.common.core.domain.PageQuery;
 import top.flya.common.core.domain.R;
+import top.flya.common.core.page.TableDataInfo;
 import top.flya.common.core.validate.AddGroup;
 import top.flya.common.core.validate.EditGroup;
 import top.flya.common.enums.BusinessType;
 import top.flya.common.helper.LoginHelper;
 import top.flya.common.utils.poi.ExcelUtil;
-import top.flya.system.domain.PzcActivityGroup;
-import top.flya.system.domain.vo.PzcActivityGroupVo;
 import top.flya.system.domain.bo.PzcActivityGroupBo;
+import top.flya.system.domain.vo.PzcActivityGroupApplyVo;
+import top.flya.system.domain.vo.PzcActivityGroupVo;
+import top.flya.system.service.IPzcActivityGroupApplyService;
 import top.flya.system.service.IPzcActivityGroupService;
-import top.flya.common.core.page.TableDataInfo;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * 活动组队
@@ -40,6 +40,63 @@ import top.flya.common.core.page.TableDataInfo;
 public class PzcActivityGroupController extends BaseController {
 
     private final IPzcActivityGroupService iPzcActivityGroupService;
+
+    private final IPzcActivityGroupApplyService iPzcActivityGroupApplyService;
+
+
+    /**
+     * 思路整理
+     *
+     * @param pageQuery
+     * @return
+     */
+    @PostMapping("/applyList")
+    public TableDataInfo<PzcActivityGroupApplyVo> applyList(PageQuery pageQuery) {
+
+
+
+        return null;
+    }
+
+
+
+
+
+    /**
+     * 同意用户申请 进入下一阶段
+     * @return
+     */
+    @PostMapping("/apply")
+    public R apply(@RequestParam("applyId")Long applyId) {
+        //首先查询这个组队是否是我发起的
+        PzcActivityGroupApplyVo pzcActivityGroupApplyVo = iPzcActivityGroupApplyService.queryById(applyId);
+        if(pzcActivityGroupApplyVo==null)
+        {
+            return R.fail("申请不存在");
+        }
+        Long userId = LoginHelper.getUserId();
+
+        Long groupId = pzcActivityGroupApplyVo.getGroupId();
+        PzcActivityGroupVo pzcActivityGroupVo = iPzcActivityGroupService.queryById(groupId);
+        if(pzcActivityGroupVo==null)
+        {
+            return R.fail("组队不存在");
+        }
+        if(!pzcActivityGroupVo.getUserId().equals(userId))
+        {
+            return R.fail("你不是组队发起人");
+        }
+        //修改状态为 已同意
+        Integer integer = iPzcActivityGroupApplyService.updateStatus(applyId, 1);
+        if(integer==null||integer!=1)
+        {
+            return R.fail("修改状态失败");
+        }
+
+        return R.ok();
+    }
+
+
 
     /**
      * 查询活动组队列表

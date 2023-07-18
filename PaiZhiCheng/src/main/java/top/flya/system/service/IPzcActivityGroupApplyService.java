@@ -1,10 +1,9 @@
 package top.flya.system.service;
 
-import top.flya.system.domain.PzcActivityGroupApply;
-import top.flya.system.domain.vo.PzcActivityGroupApplyVo;
-import top.flya.system.domain.bo.PzcActivityGroupApplyBo;
-import top.flya.common.core.page.TableDataInfo;
 import top.flya.common.core.domain.PageQuery;
+import top.flya.common.core.page.TableDataInfo;
+import top.flya.system.domain.bo.PzcActivityGroupApplyBo;
+import top.flya.system.domain.vo.PzcActivityGroupApplyVo;
 
 import java.util.Collection;
 import java.util.List;
@@ -48,4 +47,6 @@ public interface IPzcActivityGroupApplyService {
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
 
     boolean queryByUserIdAndActivityId(Long userId, Long activityId);
+
+    Integer updateStatus(Long applyId, int i);
 }

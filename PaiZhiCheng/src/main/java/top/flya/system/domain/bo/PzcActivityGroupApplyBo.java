@@ -46,6 +46,11 @@ public class PzcActivityGroupApplyBo extends BaseEntity {
     private Long groupId;
 
     /**
+     * 申请状态
+     *  0 位于申请列表中 1 申请通过待确认时 2 确认通过进行中 3 组队结束  //申请状态不应该由前端传入 由后端自动计算
+     */
+//    private Integer applyStatus;
+    /**
      * 0 AA制
 1 我买单
 2 你买单

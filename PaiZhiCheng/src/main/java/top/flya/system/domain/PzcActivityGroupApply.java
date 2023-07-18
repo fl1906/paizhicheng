@@ -52,4 +52,9 @@ public class PzcActivityGroupApply extends BaseEntity {
      */
     private String message;
 
+    /**
+     * 0 位于申请列表中 1 申请通过待确认时 2 确认通过进行中 3 组队结束
+     */
+    private Integer applyStatus;
+
 }

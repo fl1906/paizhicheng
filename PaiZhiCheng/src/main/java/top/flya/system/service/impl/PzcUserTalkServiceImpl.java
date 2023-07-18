@@ -68,6 +68,9 @@ public class PzcUserTalkServiceImpl implements IPzcUserTalkService {
         newL.forEach(item->{
            item.setNotReadCount(baseMapper.selectNotReadCount(item.getFromUserId(),item.getToUserId())); //
             PzcUser pzcUser = pzcUserMapper.selectById(item.getToUserId());
+            if(pzcUser == null){
+                return;
+            }
             item.setUsername(pzcUser.getNickname());
             item.setAvatar(pzcUser.getAvatar());
         });

@@ -67,6 +67,7 @@ public class PzcActivityGroupApplyServiceImpl implements IPzcActivityGroupApplyS
         lqw.eq(bo.getGroupId() != null, PzcActivityGroupApply::getGroupId, bo.getGroupId());
         lqw.eq(bo.getGroupType() != null, PzcActivityGroupApply::getGroupType, bo.getGroupType());
         lqw.eq(bo.getMoney() != null, PzcActivityGroupApply::getMoney, bo.getMoney());
+//        lqw.eq(bo.getApplyStatus() != null, PzcActivityGroupApply::getApplyStatus, bo.getApplyStatus());
         lqw.eq(StringUtils.isNotBlank(bo.getMessage()), PzcActivityGroupApply::getMessage, bo.getMessage());
         lqw.eq(bo.getCreateTime() != null, PzcActivityGroupApply::getCreateTime, bo.getCreateTime());
         lqw.eq(bo.getUpdateTime() != null, PzcActivityGroupApply::getUpdateTime, bo.getUpdateTime());
@@ -125,5 +126,16 @@ public class PzcActivityGroupApplyServiceImpl implements IPzcActivityGroupApplyS
             return true;
         }
         return false;
+    }
+
+
+    @Override
+    public Integer updateStatus(Long applyId, int i) {
+        PzcActivityGroupApply apply = baseMapper.selectById(applyId);
+        if (apply != null) {
+            apply.setApplyStatus(i);
+            return baseMapper.updateById(apply);
+        }
+        return null;
     }
 }
