@@ -1,23 +1,24 @@
 package top.flya.system.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import top.flya.common.core.page.TableDataInfo;
-import top.flya.common.core.domain.PageQuery;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import top.flya.common.core.domain.PageQuery;
+import top.flya.common.core.page.TableDataInfo;
+import top.flya.system.common.BatchUtils;
+import top.flya.system.domain.PzcUser;
 import top.flya.system.domain.bo.PzcUserBo;
 import top.flya.system.domain.vo.PzcUserVo;
-import top.flya.system.domain.PzcUser;
 import top.flya.system.mapper.PzcUserMapper;
 import top.flya.system.service.IPzcUserService;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Collection;
 
 /**
  * 用户Service业务层处理
@@ -30,6 +31,8 @@ import java.util.Collection;
 public class PzcUserServiceImpl implements IPzcUserService {
 
     private final PzcUserMapper baseMapper;
+
+    private final BatchUtils batchUtils;
 
     /**
      * 查询用户
@@ -46,6 +49,7 @@ public class PzcUserServiceImpl implements IPzcUserService {
     public TableDataInfo<PzcUserVo> queryPageList(PzcUserBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<PzcUser> lqw = buildQueryWrapper(bo);
         Page<PzcUserVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        result.setRecords(batchUtils.transformToPzcUserVo(result.getRecords()));
         return TableDataInfo.build(result);
     }
 

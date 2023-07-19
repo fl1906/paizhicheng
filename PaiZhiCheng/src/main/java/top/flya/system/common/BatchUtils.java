@@ -3,7 +3,6 @@ package top.flya.system.common;
 
 import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.stereotype.Component;
 import top.flya.system.domain.vo.*;
 import top.flya.system.service.ISysOssService;
@@ -140,6 +139,7 @@ public class BatchUtils {
             .collect(Collectors.toList());
 
     }
+
     public List<PzcUserVo> transformToPzcUserVo(List<PzcUserVo> userList){
         log.info("transform userList start: {}", JSONUtil.toJsonPrettyStr(userList));
         // 获取所有旧的 imageUrl
@@ -186,6 +186,36 @@ public class BatchUtils {
                 }
                 return user;
 
+            })
+            // 将处理后的元素收集到一个新的 List 中
+            .collect(Collectors.toList());
+
+    }
+
+    public List<PzcViewPagerVo> transformToPzcViewPagerVo(List<PzcViewPagerVo> viewPagerList)
+    {
+        log.info("transform viewPagerList start: {}", JSONUtil.toJsonPrettyStr(viewPagerList));
+        // 获取所有旧的 imageUrl
+        List<String> oldImageUrls = viewPagerList.stream()
+            .map(PzcViewPagerVo::getImageUrl)
+            .collect(Collectors.toList());
+        // 批量查询新的 imageUrl
+        Map<Long, String> newImageUrls = getNewImageUrls(oldImageUrls);
+        // 使用 Stream API 进行处理
+        return viewPagerList.stream()
+            // 对列表中的每个元素进行处理
+            .map(viewPager -> {
+                // 从 Map 中获取新的 imageUrl
+                String newImageUrl = newImageUrls.get(Long.parseLong(viewPager.getImageUrl()));
+                // 创建一个新的 PzcArtistVo 对象，使用查询到的新 imageUrl
+                return new PzcViewPagerVo(
+                    viewPager.getViewPagerId(),
+                    viewPager.getName(),
+                    newImageUrl,
+                    viewPager.getLinkUrl(),
+                    viewPager.getState(),
+                    viewPager.getActivityId()
+                );
             })
             // 将处理后的元素收集到一个新的 List 中
             .collect(Collectors.toList());

@@ -10,6 +10,7 @@ import top.flya.common.core.domain.PageQuery;
 import top.flya.common.core.domain.R;
 import top.flya.common.core.page.TableDataInfo;
 import top.flya.common.helper.LoginHelper;
+import top.flya.common.utils.JsonUtils;
 import top.flya.system.domain.PzcUser;
 import top.flya.system.domain.PzcUserTalk;
 import top.flya.system.domain.bo.PzcUserTalkBo;
@@ -89,6 +90,11 @@ public class PzcUserTalkController extends BaseController {
             .filter(pzcUserTalk -> pzcUserTalk.getMessageStatus() == 0)
             .peek(pzcUserTalk -> pzcUserTalk.setMessageStatus(1L))
             .collect(Collectors.toList());
+        log.info("pzcUserTalks:{}", JsonUtils.toJsonString(pzcUserTalks));
+        if(pzcUserTalks.size() == 0)
+        {
+            return R.ok(true);
+        }
         boolean b = pzcUserTalkMapper.updateBatchById(pzcUserTalks);
         return R.ok(b);
     }

@@ -1,24 +1,25 @@
 package top.flya.system.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import top.flya.common.core.page.TableDataInfo;
-import top.flya.common.core.domain.PageQuery;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import top.flya.common.core.domain.PageQuery;
+import top.flya.common.core.page.TableDataInfo;
 import top.flya.system.common.BatchUtils;
+import top.flya.system.domain.PzcIntro;
 import top.flya.system.domain.bo.PzcIntroBo;
 import top.flya.system.domain.vo.PzcIntroVo;
-import top.flya.system.domain.PzcIntro;
 import top.flya.system.mapper.PzcIntroMapper;
 import top.flya.system.service.IPzcIntroService;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Collection;
 
 /**
  * 活动介绍Service业务层处理
@@ -39,7 +40,11 @@ public class PzcIntroServiceImpl implements IPzcIntroService {
      */
     @Override
     public PzcIntroVo queryById(Long introId){
-        return baseMapper.selectVoById(introId);
+
+        PzcIntroVo pzcIntroVo = baseMapper.selectVoById(introId);
+        List<PzcIntroVo> pzcIntroVos = batchUtils.transformToPzcIntroVo(Collections.singletonList(pzcIntroVo));
+        return pzcIntroVos.get(0);
+
     }
 
     /**

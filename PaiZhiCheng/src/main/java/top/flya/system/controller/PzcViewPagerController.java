@@ -1,27 +1,28 @@
 package top.flya.system.controller;
 
-import java.util.List;
-import java.util.Arrays;
-
-import lombok.RequiredArgsConstructor;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.*;
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import org.springframework.web.bind.annotation.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import top.flya.common.annotation.RepeatSubmit;
+import org.springframework.web.bind.annotation.*;
 import top.flya.common.annotation.Log;
+import top.flya.common.annotation.RepeatSubmit;
 import top.flya.common.core.controller.BaseController;
 import top.flya.common.core.domain.PageQuery;
 import top.flya.common.core.domain.R;
+import top.flya.common.core.page.TableDataInfo;
 import top.flya.common.core.validate.AddGroup;
 import top.flya.common.core.validate.EditGroup;
 import top.flya.common.enums.BusinessType;
 import top.flya.common.utils.poi.ExcelUtil;
-import top.flya.system.domain.vo.PzcViewPagerVo;
 import top.flya.system.domain.bo.PzcViewPagerBo;
+import top.flya.system.domain.vo.PzcViewPagerVo;
 import top.flya.system.service.IPzcViewPagerService;
-import top.flya.common.core.page.TableDataInfo;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * 轮播图
@@ -40,7 +41,6 @@ public class PzcViewPagerController extends BaseController {
     /**
      * 查询轮播图列表
      */
-    @SaCheckPermission("system:viewPager:list")
     @GetMapping("/list")
     public TableDataInfo<PzcViewPagerVo> list(PzcViewPagerBo bo, PageQuery pageQuery) {
         return iPzcViewPagerService.queryPageList(bo, pageQuery);
@@ -62,7 +62,6 @@ public class PzcViewPagerController extends BaseController {
      *
      * @param viewPagerId 主键
      */
-    @SaCheckPermission("system:viewPager:query")
     @GetMapping("/{viewPagerId}")
     public R<PzcViewPagerVo> getInfo(@NotNull(message = "主键不能为空")
                                      @PathVariable Integer viewPagerId) {

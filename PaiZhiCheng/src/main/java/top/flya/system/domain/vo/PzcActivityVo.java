@@ -2,17 +2,12 @@ package top.flya.system.domain.vo;
 
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
-import top.flya.common.annotation.ExcelDictFormat;
-import top.flya.common.convert.ExcelDictConvert;
 import lombok.Data;
-import top.flya.common.core.validate.AddGroup;
-import top.flya.common.core.validate.EditGroup;
 import top.flya.system.domain.PzcArtist;
 import top.flya.system.domain.PzcIntro;
 import top.flya.system.domain.PzcOrganizer;
 import top.flya.system.domain.PzcTag;
 
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 

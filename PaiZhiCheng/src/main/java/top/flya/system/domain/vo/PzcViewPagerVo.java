@@ -2,9 +2,9 @@ package top.flya.system.domain.vo;
 
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
-import top.flya.common.annotation.ExcelDictFormat;
-import top.flya.common.convert.ExcelDictConvert;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
 /**
@@ -15,6 +15,8 @@ import lombok.Data;
  */
 @Data
 @ExcelIgnoreUnannotated
+@AllArgsConstructor
+@NoArgsConstructor
 public class PzcViewPagerVo {
 
     private static final long serialVersionUID = 1L;

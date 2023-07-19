@@ -1,26 +1,24 @@
 package top.flya.system.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.transaction.annotation.Transactional;
-import top.flya.common.core.page.TableDataInfo;
-import top.flya.common.core.domain.PageQuery;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import top.flya.common.core.domain.PageQuery;
+import top.flya.common.core.page.TableDataInfo;
+import top.flya.system.common.BatchUtils;
 import top.flya.system.domain.*;
 import top.flya.system.domain.bo.PzcActivityBo;
 import top.flya.system.domain.vo.PzcActivityVo;
 import top.flya.system.mapper.*;
 import top.flya.system.service.IPzcActivityService;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Collection;
+import java.util.*;
 
 /**
  * 活动Service业务层处理
@@ -49,12 +47,69 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
 
     private final PzcOrganizerMapper pzcOrganizerMapper;
 
+    private final BatchUtils batchUtils;
+
     /**
      * 查询活动
      */
     @Override
     public PzcActivityVo queryById(Integer activityId) {
-        return baseMapper.selectVoById(activityId);
+        PzcActivityVo pzcActivityVo = baseMapper.selectVoById(activityId);
+        List<PzcActivityVo> pzcActivityVos = new ArrayList<>();
+        pzcActivityVos.add(pzcActivityVo);
+        pzcActivityVos.forEach(r->{
+            ArrayList<PzcIntro> introList = new ArrayList<>();
+            ArrayList<PzcArtist> artistList = new ArrayList<>();
+            ArrayList<PzcTag> tagList = new ArrayList<>();
+            pzcActivityConnIntroMapper.selectList(Wrappers.<PzcActivityConnIntro>lambdaQuery().eq(PzcActivityConnIntro::getActivityId, r.getActivityId())).forEach(c->{
+                PzcIntro pzcIntro = pzcIntroMapper.selectById(c.getIntroId());
+                if(pzcIntro == null){
+                    return;
+                }
+                if(StringUtils.isEmpty(pzcIntro.getImageFullUrl()))
+                {
+                    introList.add(pzcIntro);
+                    return;
+                }
+                Map<Long, String> newImageUrls = batchUtils.getNewImageUrls(Collections.singletonList(pzcIntro.getImageFullUrl()));
+                pzcIntro.setImageFullUrl(newImageUrls.get(Long.parseLong(pzcIntro.getImageFullUrl())));
+                introList.add(pzcIntro);
+            });
+
+            r.setIntroList(introList);
+            pzcActivityConnArtistMapper.selectList(Wrappers.<PzcActivityConnArtist>lambdaQuery().eq(PzcActivityConnArtist::getActivityId, r.getActivityId())).forEach(c->{
+                PzcArtist pzcArtist = pzcArtistMapper.selectById(c.getArtistId());
+                if(pzcArtist == null){
+                    return;
+                }
+                if(StringUtils.isEmpty(pzcArtist.getImageUrl()))
+                {
+                    artistList.add(pzcArtist);
+                    return;
+                }
+                Map<Long, String> newImageUrls = batchUtils.getNewImageUrls(Collections.singletonList(pzcArtist.getImageUrl()));
+                pzcArtist.setImageUrl(newImageUrls.get(Long.parseLong(pzcArtist.getImageUrl())));
+                artistList.add(pzcArtist);
+            });
+            r.setArtistList(artistList);
+            pzcActivityConnTagMapper.selectVoList(Wrappers.<PzcActivityConnTag>lambdaQuery().eq(PzcActivityConnTag::getActivityId, r.getActivityId())).forEach(c->{
+                PzcTag pzcTag = pzcTagMapper.selectById(c.getTagId());
+                if(pzcTag == null){
+                    return;
+                }
+                if(StringUtils.isEmpty(pzcTag.getImageUrl()))
+                {
+                    tagList.add(pzcTag);
+                    return;
+                }
+                Map<Long, String> newImageUrls = batchUtils.getNewImageUrls(Collections.singletonList(pzcTag.getImageUrl()));
+                pzcTag.setImageUrl(newImageUrls.get(Long.parseLong(pzcTag.getImageUrl())));
+                tagList.add(pzcTag);
+            });
+            r.setTagList(tagList);
+            r.setOrganizerList(pzcOrganizerMapper.selectOne(Wrappers.<PzcOrganizer>lambdaQuery().eq(PzcOrganizer::getOrganizerId, r.getOrganizerId())));
+        });
+        return pzcActivityVos.get(0);
     }
 
     /**
@@ -64,24 +119,24 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
     public TableDataInfo<PzcActivityVo> queryPageList(PzcActivityBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<PzcActivity> lqw = buildQueryWrapper(bo);
         Page<PzcActivityVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
-        result.getRecords().forEach(r->{
-            ArrayList<PzcIntro> introList = new ArrayList<>();
-            ArrayList<PzcArtist> artistList = new ArrayList<>();
-            ArrayList<PzcTag> tagList = new ArrayList<>();
-            pzcActivityConnIntroMapper.selectList(Wrappers.<PzcActivityConnIntro>lambdaQuery().eq(PzcActivityConnIntro::getActivityId, r.getActivityId())).forEach(c->{
-              introList.add(pzcIntroMapper.selectById(c.getIntroId()));
-            });
-            r.setIntroList(introList);
-           pzcActivityConnArtistMapper.selectList(Wrappers.<PzcActivityConnArtist>lambdaQuery().eq(PzcActivityConnArtist::getActivityId, r.getActivityId())).forEach(c->{
-                artistList.add(pzcArtistMapper.selectById(c.getArtistId()));
-           });
-              r.setArtistList(artistList);
-           pzcActivityConnTagMapper.selectVoList(Wrappers.<PzcActivityConnTag>lambdaQuery().eq(PzcActivityConnTag::getActivityId, r.getActivityId())).forEach(c->{
-              tagList.add(pzcTagMapper.selectById(c.getTagId()));
-           });
-            r.setTagList(tagList);
-           r.setOrganizerList(pzcOrganizerMapper.selectOne(Wrappers.<PzcOrganizer>lambdaQuery().eq(PzcOrganizer::getOrganizerId, r.getOrganizerId())));
-        });
+//        result.getRecords().forEach(r->{
+//            ArrayList<PzcIntro> introList = new ArrayList<>();
+//            ArrayList<PzcArtist> artistList = new ArrayList<>();
+//            ArrayList<PzcTag> tagList = new ArrayList<>();
+//            pzcActivityConnIntroMapper.selectList(Wrappers.<PzcActivityConnIntro>lambdaQuery().eq(PzcActivityConnIntro::getActivityId, r.getActivityId())).forEach(c->{
+//              introList.add(pzcIntroMapper.selectById(c.getIntroId()));
+//            });
+//            r.setIntroList(introList);
+//           pzcActivityConnArtistMapper.selectList(Wrappers.<PzcActivityConnArtist>lambdaQuery().eq(PzcActivityConnArtist::getActivityId, r.getActivityId())).forEach(c->{
+//                artistList.add(pzcArtistMapper.selectById(c.getArtistId()));
+//           });
+//              r.setArtistList(artistList);
+//           pzcActivityConnTagMapper.selectVoList(Wrappers.<PzcActivityConnTag>lambdaQuery().eq(PzcActivityConnTag::getActivityId, r.getActivityId())).forEach(c->{
+//              tagList.add(pzcTagMapper.selectById(c.getTagId()));
+//           });
+//            r.setTagList(tagList);
+//           r.setOrganizerList(pzcOrganizerMapper.selectOne(Wrappers.<PzcOrganizer>lambdaQuery().eq(PzcOrganizer::getOrganizerId, r.getOrganizerId())));
+//        });
         return TableDataInfo.build(result);
     }
 

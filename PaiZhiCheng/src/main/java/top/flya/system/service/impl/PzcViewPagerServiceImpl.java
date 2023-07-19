@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import top.flya.system.common.BatchUtils;
 import top.flya.system.domain.bo.PzcViewPagerBo;
 import top.flya.system.domain.vo.PzcViewPagerVo;
 import top.flya.system.domain.PzcViewPager;
@@ -31,6 +32,8 @@ public class PzcViewPagerServiceImpl implements IPzcViewPagerService {
 
     private final PzcViewPagerMapper baseMapper;
 
+    private final BatchUtils batchUtils;
+
     /**
      * 查询轮播图
      */
@@ -46,6 +49,7 @@ public class PzcViewPagerServiceImpl implements IPzcViewPagerService {
     public TableDataInfo<PzcViewPagerVo> queryPageList(PzcViewPagerBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<PzcViewPager> lqw = buildQueryWrapper(bo);
         Page<PzcViewPagerVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        result.setRecords(batchUtils.transformToPzcViewPagerVo(result.getRecords()));
         return TableDataInfo.build(result);
     }
 

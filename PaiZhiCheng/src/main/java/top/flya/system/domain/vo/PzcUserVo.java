@@ -1,15 +1,15 @@
 package top.flya.system.domain.vo;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import top.flya.common.annotation.ExcelDictFormat;
 import top.flya.common.convert.ExcelDictConvert;
-import lombok.Data;
+
+import java.math.BigDecimal;
+import java.util.Date;
 
 
 /**
@@ -130,6 +130,7 @@ public class PzcUserVo {
      * 兴趣爱好
      */
     @ExcelProperty(value = "兴趣爱好", converter = ExcelDictConvert.class)
+    @ExcelDictFormat(dictType = "user_hobby")
     private Long hobby;
 
     /**

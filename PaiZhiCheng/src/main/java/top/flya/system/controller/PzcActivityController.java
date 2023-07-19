@@ -1,28 +1,29 @@
 package top.flya.system.controller;
 
-import java.util.List;
-import java.util.Arrays;
-
-import lombok.RequiredArgsConstructor;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.*;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
-import top.flya.common.annotation.RepeatSubmit;
+import org.springframework.web.bind.annotation.*;
 import top.flya.common.annotation.Log;
+import top.flya.common.annotation.RepeatSubmit;
 import top.flya.common.core.controller.BaseController;
 import top.flya.common.core.domain.PageQuery;
 import top.flya.common.core.domain.R;
+import top.flya.common.core.page.TableDataInfo;
 import top.flya.common.core.validate.AddGroup;
 import top.flya.common.core.validate.EditGroup;
 import top.flya.common.enums.BusinessType;
 import top.flya.common.utils.poi.ExcelUtil;
-import top.flya.system.domain.vo.PzcActivityVo;
 import top.flya.system.domain.bo.PzcActivityBo;
+import top.flya.system.domain.vo.PzcActivityVo;
 import top.flya.system.service.IPzcActivityService;
-import top.flya.common.core.page.TableDataInfo;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * 活动
@@ -79,7 +80,6 @@ public class PzcActivityController extends BaseController {
      */
     @GetMapping("/listWx")
     public TableDataInfo<PzcActivityVo> Wx(PzcActivityBo bo, PageQuery pageQuery) {
-        log.error("ceshi ya");
         return iPzcActivityService.queryPageListWx(bo, pageQuery);
     }
 
@@ -99,7 +99,6 @@ public class PzcActivityController extends BaseController {
      *
      * @param activityId 主键
      */
-    @SaCheckPermission("system:activity:query")
     @GetMapping("/{activityId}")
     public R<PzcActivityVo> getInfo(@NotNull(message = "主键不能为空")
                                      @PathVariable Integer activityId) {
