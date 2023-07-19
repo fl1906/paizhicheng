@@ -1,32 +1,27 @@
 package top.flya.system.controller;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-
 import lombok.RequiredArgsConstructor;
-
-import javax.validation.constraints.*;
-
 import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
-import top.flya.common.annotation.RepeatSubmit;
-import top.flya.common.annotation.Log;
+import org.springframework.web.bind.annotation.*;
 import top.flya.common.core.controller.BaseController;
 import top.flya.common.core.domain.PageQuery;
 import top.flya.common.core.domain.R;
-
+import top.flya.common.core.page.TableDataInfo;
 import top.flya.common.helper.LoginHelper;
-
+import top.flya.system.domain.PzcUser;
 import top.flya.system.domain.PzcUserTalk;
-import top.flya.system.domain.vo.PzcUserTalkVo;
 import top.flya.system.domain.bo.PzcUserTalkBo;
+import top.flya.system.domain.vo.PzcUserTalkVo;
+import top.flya.system.mapper.PzcUserMapper;
+import top.flya.system.mapper.PzcUserPhotoMapper;
 import top.flya.system.mapper.PzcUserTalkMapper;
 import top.flya.system.service.IPzcUserTalkService;
-import top.flya.common.core.page.TableDataInfo;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static top.flya.system.config.ClientCache.concurrentHashMap;
 
@@ -47,6 +42,10 @@ public class PzcUserTalkController extends BaseController {
 
     private final PzcUserTalkMapper pzcUserTalkMapper;
 
+    private final PzcUserMapper pzcUserMapper;
+
+    private final PzcUserPhotoMapper pzcUserPhotoMapper;
+
 
     /**
      * 用户在线状态
@@ -56,11 +55,23 @@ public class PzcUserTalkController extends BaseController {
     @GetMapping("/live")
     public R liveStatus(@RequestParam("userId")String userId)
     {
-        if(concurrentHashMap.get(userId)==null)
+        Boolean liveStatus = false;
+        if(concurrentHashMap.get(userId)!=null)
         {
-            return R.fail("当前用户不在线");
+            liveStatus = true;
         }
-        return R.ok("当前用户在线");
+
+        PzcUser pzcUser = pzcUserMapper.selectById(userId);
+        Map<String,Object> result = new java.util.HashMap<>();
+        result.put("liveStatus",liveStatus.toString());
+        result.put("nickName",pzcUser.getNickname());
+        result.put("address",pzcUser.getAddress());
+        result.put("sex", String.valueOf(pzcUser.getSex()));
+        result.put("info",pzcUser.getIntro());
+        result.put("avatar",pzcUser.getAvatar());
+        // 查询用户相册
+        result.put("photo",pzcUserPhotoMapper.selectList(new QueryWrapper<top.flya.system.domain.PzcUserPhoto>().eq("user_id", userId)).stream().map(top.flya.system.domain.PzcUserPhoto::getUrl).collect(Collectors.toList()));
+        return R.ok(result);
     }
 
     /**

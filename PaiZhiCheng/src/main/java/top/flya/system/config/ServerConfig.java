@@ -1,5 +1,6 @@
 package top.flya.system.config;
 
+import com.corundumstudio.socketio.SocketConfig;
 import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.Transport;
 import com.corundumstudio.socketio.annotation.SpringAnnotationScanner;
@@ -27,6 +28,9 @@ public class ServerConfig {
         config.setHostname(wsConfig.getHost());
         config.setPort(wsConfig.getPort());
         config.setTransports(Transport.WEBSOCKET,Transport.POLLING); //test
+        SocketConfig socketConfig = config.getSocketConfig();
+        socketConfig.setReuseAddress(true); //地址复用
+
 
         //这个listener可以用来进行身份验证
 //        config.setAuthorizationListener(data -> {
