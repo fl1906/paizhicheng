@@ -26,7 +26,7 @@ public class ServerConfig {
         com.corundumstudio.socketio.Configuration config = new com.corundumstudio.socketio.Configuration();
         config.setHostname(wsConfig.getHost());
         config.setPort(wsConfig.getPort());
-        config.setTransports(Transport.WEBSOCKET); //test
+        config.setTransports(Transport.WEBSOCKET,Transport.POLLING); //test
 
         //这个listener可以用来进行身份验证
 //        config.setAuthorizationListener(data -> {

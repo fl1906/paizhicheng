@@ -47,7 +47,7 @@ public class PzcUserTalkBo extends BaseEntity {
     /**
      * 消息状态
      */
-    @NotNull(message = "消息状态不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotNull(message = "消息状态不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long messageStatus;
 
     /**
