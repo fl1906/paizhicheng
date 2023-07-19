@@ -46,12 +46,15 @@ public class PzcActivityGroupController extends BaseController {
 
     /**
      * 思路整理
-     *
+     * 首先查出所有 GroupId
      * @param pageQuery
      * @return
      */
     @PostMapping("/applyList")
     public TableDataInfo<PzcActivityGroupApplyVo> applyList(PageQuery pageQuery) {
+        PzcActivityGroupBo bo = new PzcActivityGroupBo();
+        bo.setUserId(LoginHelper.getUserId());
+        List<PzcActivityGroupVo> pzcActivityGroupVos = iPzcActivityGroupService.queryList(bo);
 
 
 

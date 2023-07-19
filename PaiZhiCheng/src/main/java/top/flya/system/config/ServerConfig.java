@@ -1,10 +1,9 @@
 package top.flya.system.config;
 
-import cn.hutool.core.util.StrUtil;
 import com.corundumstudio.socketio.SocketIOServer;
+import com.corundumstudio.socketio.Transport;
 import com.corundumstudio.socketio.annotation.SpringAnnotationScanner;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import top.flya.common.utils.JsonUtils;
@@ -27,6 +26,7 @@ public class ServerConfig {
         com.corundumstudio.socketio.Configuration config = new com.corundumstudio.socketio.Configuration();
         config.setHostname(wsConfig.getHost());
         config.setPort(wsConfig.getPort());
+        config.setTransports(Transport.WEBSOCKET); //test
 
         //这个listener可以用来进行身份验证
 //        config.setAuthorizationListener(data -> {
