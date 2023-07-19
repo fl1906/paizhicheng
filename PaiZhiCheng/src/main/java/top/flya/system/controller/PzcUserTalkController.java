@@ -64,11 +64,14 @@ public class PzcUserTalkController extends BaseController {
         PzcUser pzcUser = pzcUserMapper.selectById(userId);
         Map<String,Object> result = new java.util.HashMap<>();
         result.put("liveStatus",liveStatus.toString());
+        result.put("userId",userId);
         result.put("nickName",pzcUser.getNickname());
         result.put("address",pzcUser.getAddress());
         result.put("sex", String.valueOf(pzcUser.getSex()));
         result.put("info",pzcUser.getIntro());
         result.put("avatar",pzcUser.getAvatar());
+        result.put("age",pzcUser.getAge());
+        result.put("level",pzcUser.getUserLevel());
         // 查询用户相册
         result.put("photo",pzcUserPhotoMapper.selectList(new QueryWrapper<top.flya.system.domain.PzcUserPhoto>().eq("user_id", userId)).stream().map(top.flya.system.domain.PzcUserPhoto::getUrl).collect(Collectors.toList()));
         return R.ok(result);

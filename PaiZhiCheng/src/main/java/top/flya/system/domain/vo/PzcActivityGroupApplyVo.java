@@ -1,13 +1,13 @@
 package top.flya.system.domain.vo;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
+import lombok.Data;
 import top.flya.common.annotation.ExcelDictFormat;
 import top.flya.common.convert.ExcelDictConvert;
-import lombok.Data;
+
+import java.math.BigDecimal;
+import java.util.Date;
 
 
 /**
@@ -84,6 +84,11 @@ public class PzcActivityGroupApplyVo {
      */
     @ExcelProperty(value = "")
     private Date updateTime;
+
+    //申请人的头像以及用户名
+    private String nickName;
+
+    private String avatar;
 
 
 }

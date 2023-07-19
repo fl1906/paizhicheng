@@ -15,9 +15,11 @@ import top.flya.common.core.validate.EditGroup;
 import top.flya.common.enums.BusinessType;
 import top.flya.common.helper.LoginHelper;
 import top.flya.common.utils.poi.ExcelUtil;
+import top.flya.system.domain.PzcUser;
 import top.flya.system.domain.bo.PzcActivityGroupBo;
 import top.flya.system.domain.vo.PzcActivityGroupApplyVo;
 import top.flya.system.domain.vo.PzcActivityGroupVo;
+import top.flya.system.mapper.PzcUserMapper;
 import top.flya.system.service.IPzcActivityGroupApplyService;
 import top.flya.system.service.IPzcActivityGroupService;
 
@@ -26,6 +28,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 活动组队
@@ -43,22 +46,32 @@ public class PzcActivityGroupController extends BaseController {
 
     private final IPzcActivityGroupApplyService iPzcActivityGroupApplyService;
 
+    private final PzcUserMapper pzcUserMapper;
 
-    /**
+
+    /** 我创建的活动的申请列表
      * 思路整理
      * 首先查出所有 GroupId
-     * @param pageQuery
+     * 然后查出groupId 对应的申请列表
      * @return
      */
-    @PostMapping("/applyList")
-    public TableDataInfo<PzcActivityGroupApplyVo> applyList(PageQuery pageQuery) {
+    @GetMapping("/applyList")
+    public R<List<PzcActivityGroupApplyVo>> applyList() {
         PzcActivityGroupBo bo = new PzcActivityGroupBo();
         bo.setUserId(LoginHelper.getUserId());
         List<PzcActivityGroupVo> pzcActivityGroupVos = iPzcActivityGroupService.queryList(bo);
+        List<Long> groupIds = pzcActivityGroupVos.stream().map(PzcActivityGroupVo::getGroupId).collect(Collectors.toList());
 
+        List<PzcActivityGroupApplyVo> pzcActivityGroupApplyVos = iPzcActivityGroupApplyService.queryListByGroupIds(groupIds);
+        pzcActivityGroupApplyVos.forEach(
+            s->{
+                PzcUser pzcUser = pzcUserMapper.selectById(s.getUserId());
+                s.setNickName(pzcUser.getNickname());
+                s.setAvatar(pzcUser.getAvatar());
+            }
+        );
 
-
-        return null;
+        return R.ok(pzcActivityGroupApplyVos);
     }
 
 

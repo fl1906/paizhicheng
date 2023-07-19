@@ -138,4 +138,12 @@ public class PzcActivityGroupApplyServiceImpl implements IPzcActivityGroupApplyS
         }
         return null;
     }
+
+    @Override
+    public List<PzcActivityGroupApplyVo> queryListByGroupIds(List<Long> groupIds) {
+        LambdaQueryWrapper<PzcActivityGroupApply> lqw = Wrappers.lambdaQuery();
+        lqw.in(PzcActivityGroupApply::getGroupId, groupIds);
+        lqw.orderByDesc(PzcActivityGroupApply::getCreateTime);
+        return baseMapper.selectVoList(lqw);
+    }
 }

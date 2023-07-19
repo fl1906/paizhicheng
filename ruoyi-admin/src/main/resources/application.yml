@@ -6,7 +6,7 @@ wx:
   merchantSerialNumber: 5635276B66F0715D53B17D803FBCD1D7966575A0
   api3: pLd9hnp4p4nM2AnjonDwNlPvRmHIYO4x
   server:
-    port: 9394
+    port: 9393
     host: localhost
 
 api:
@@ -42,7 +42,7 @@ captcha:
 # 开发环境配置
 server:
   # 服务器的HTTP端口，默认为8080
-  port: 9393
+  port: 9394
   servlet:
     # 应用的访问路径
     context-path: /
