@@ -131,7 +131,7 @@ public class PzcUserVo {
      */
     @ExcelProperty(value = "兴趣爱好", converter = ExcelDictConvert.class)
     @ExcelDictFormat(dictType = "user_hobby")
-    private Long hobby;
+    private String hobby;
 
     /**
      * 学校

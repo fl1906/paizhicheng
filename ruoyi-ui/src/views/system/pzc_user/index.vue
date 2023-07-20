@@ -243,7 +243,11 @@
           <dict-tag :options="dict.type.mbti" :value="scope.row.mbti"/>
         </template>
       </el-table-column>
-      <el-table-column label="兴趣爱好" align="center" prop="hobby" />
+      <el-table-column label="兴趣爱好" align="center" prop="hobby" >
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.hobby" :value="scope.row.user_hobby"/>
+        </template>
+      </el-table-column>
       <el-table-column label="学校" align="center" prop="school" />
       <el-table-column label="职业" align="center" prop="occupation" />
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
@@ -400,7 +404,7 @@ import { listPzc_user, getPzc_user, delPzc_user, addPzc_user, updatePzc_user } f
 
 export default {
   name: "Pzc_user",
-  dicts: ['sys_user_sex', 'music_style', 'mbti', 'state', 'constellation'],
+  dicts: ['sys_user_sex', 'music_style', 'mbti', 'state', 'constellation','user_hobby'],
   data() {
     return {
       // 按钮loading

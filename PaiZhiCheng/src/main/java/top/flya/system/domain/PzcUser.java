@@ -88,7 +88,7 @@ public class PzcUser extends BaseEntity {
     /**
      * 兴趣爱好
      */
-    private Long hobby;
+    private String hobby;
     /**
      * 学校
      */
