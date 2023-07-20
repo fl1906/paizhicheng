@@ -37,6 +37,11 @@ public class PzcIntro extends BaseEntity {
      * 活动介绍 可放图片
      */
     private String imageFullUrl;
+
+    /**
+     * 0 场地介绍 1 更多介绍
+     */
+    private Integer type;
     /**
      * 删除状态，默认为1表示正常状态
      */

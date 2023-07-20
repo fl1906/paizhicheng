@@ -19,6 +19,7 @@ import top.flya.system.mapper.*;
 import top.flya.system.service.IPzcActivityService;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 活动Service业务层处理
@@ -76,7 +77,9 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
                 introList.add(pzcIntro);
             });
 
-            r.setIntroList(introList);
+            //筛选introList 中元素 PzcIntro 的type==1
+            r.setIntroList(introList.stream().filter(intro -> intro.getType() == 1).collect(Collectors.toList()));
+            r.setStageList(introList.stream().filter(intro -> intro.getType() == 0).collect(Collectors.toList()));
             pzcActivityConnArtistMapper.selectList(Wrappers.<PzcActivityConnArtist>lambdaQuery().eq(PzcActivityConnArtist::getActivityId, r.getActivityId())).forEach(c->{
                 PzcArtist pzcArtist = pzcArtistMapper.selectById(c.getArtistId());
                 if(pzcArtist == null){

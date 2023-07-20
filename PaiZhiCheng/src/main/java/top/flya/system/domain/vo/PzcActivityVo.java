@@ -110,5 +110,7 @@ public class PzcActivityVo {
 
     private PzcOrganizer organizerList;  // 主办方列表
 
+    private List<PzcIntro> stageList;  // 场地列表
+
 
 }

@@ -131,8 +131,10 @@ public class BatchUtils {
                 // 创建一个新的 PzcArtistVo 对象，使用查询到的新 imageUrl
                 return new PzcIntroVo(
                     intro.getIntroId(),
+                    intro.getTitle(),
                     intro.getContent(),
-                    newImageUrl
+                    newImageUrl,
+                    intro.getType()
                 );
             })
             // 将处理后的元素收集到一个新的 List 中

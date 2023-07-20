@@ -44,5 +44,12 @@ public class PzcIntroBo extends BaseEntity {
     @NotBlank(message = "介绍的主标题不能为空", groups = { AddGroup.class, EditGroup.class })
     private String title;
 
+    /**
+     * 0 场地介绍 1 更多介绍
+     */
+    @NotNull(message = "0 场地介绍 1 更多介绍不能为空", groups = { AddGroup.class, EditGroup.class })
+    private Integer type;
+
+
 
 }

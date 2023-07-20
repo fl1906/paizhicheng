@@ -46,4 +46,10 @@ public class PzcIntroVo {
     @ExcelProperty(value = "介绍的主标题")
     private String title;
 
+    /**
+     * 0 场地介绍 1 更多介绍
+     */
+    @ExcelProperty(value = "0 场地介绍 1 更多介绍")
+    private Integer type;
+
 }
