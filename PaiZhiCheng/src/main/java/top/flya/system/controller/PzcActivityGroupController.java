@@ -19,6 +19,7 @@ import top.flya.system.domain.PzcUser;
 import top.flya.system.domain.bo.PzcActivityGroupBo;
 import top.flya.system.domain.vo.PzcActivityGroupApplyVo;
 import top.flya.system.domain.vo.PzcActivityGroupVo;
+import top.flya.system.mapper.PzcActivityMapper;
 import top.flya.system.mapper.PzcUserMapper;
 import top.flya.system.service.IPzcActivityGroupApplyService;
 import top.flya.system.service.IPzcActivityGroupService;
@@ -48,6 +49,8 @@ public class PzcActivityGroupController extends BaseController {
 
     private final PzcUserMapper pzcUserMapper;
 
+    private final PzcActivityMapper pzcActivityMapper;
+
 
     /** 我创建的活动的申请列表
      * 思路整理
@@ -61,19 +64,24 @@ public class PzcActivityGroupController extends BaseController {
         bo.setUserId(LoginHelper.getUserId());
         List<PzcActivityGroupVo> pzcActivityGroupVos = iPzcActivityGroupService.queryList(bo);
         List<Long> groupIds = pzcActivityGroupVos.stream().map(PzcActivityGroupVo::getGroupId).collect(Collectors.toList());
+        if(groupIds.size()==0)
+        {
+            return R.ok();
+        }
 
         List<PzcActivityGroupApplyVo> pzcActivityGroupApplyVos = iPzcActivityGroupApplyService.queryListByGroupIds(groupIds);
         pzcActivityGroupApplyVos.forEach(
-            s->{
+            s-> {
                 PzcUser pzcUser = pzcUserMapper.selectById(s.getUserId());
                 s.setNickName(pzcUser.getNickname());
                 s.setAvatar(pzcUser.getAvatar());
+                s.setActivityTitle(pzcActivityMapper.selectVoById(s.getActivityId()).getTitle());
+                s.setGroupTitle(pzcActivityGroupVos.stream().filter(s1 -> s1.getGroupId().equals(s.getGroupId())).findFirst().get().getTitle());
             }
         );
 
         return R.ok(pzcActivityGroupApplyVos);
     }
-
 
 
 

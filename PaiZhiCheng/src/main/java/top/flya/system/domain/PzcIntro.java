@@ -24,6 +24,11 @@ public class PzcIntro extends BaseEntity {
      */
     @TableId(value = "intro_id", type = IdType.AUTO)
     private Long introId;
+
+    /**
+     * 介绍的主标题
+     */
+    private String title;
     /**
      * 内容
      */

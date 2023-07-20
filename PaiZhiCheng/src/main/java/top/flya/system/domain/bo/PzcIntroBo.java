@@ -38,5 +38,11 @@ public class PzcIntroBo extends BaseEntity {
     @NotBlank(message = "活动介绍 可放图片不能为空", groups = { AddGroup.class, EditGroup.class })
     private String imageFullUrl;
 
+    /**
+     * 介绍的主标题
+     */
+    @NotBlank(message = "介绍的主标题不能为空", groups = { AddGroup.class, EditGroup.class })
+    private String title;
+
 
 }

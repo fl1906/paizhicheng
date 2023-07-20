@@ -63,6 +63,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <if test="bo.userLevelMax != null">
             and u.user_level &lt;= #{bo.userLevelMax}
         </if>
+        <if test="bo.userId != null">
+            and g.user_id = #{bo.userId}
+        </if>
+
     </select>
     <select id="selectVoByIdDIY" resultMap="PzcActivityGroupResult">
         <include refid="base"/>

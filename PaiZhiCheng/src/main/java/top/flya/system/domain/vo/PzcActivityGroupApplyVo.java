@@ -40,6 +40,17 @@ public class PzcActivityGroupApplyVo {
     @ExcelProperty(value = "申请的活动ID")
     private Long activityId;
 
+
+    /**
+     * 活动标题
+     */
+    private String activityTitle;
+
+    /**
+     * 组队的标题
+     */
+    private String groupTitle;
+
     /**
      * 申请加入的组ID
      */

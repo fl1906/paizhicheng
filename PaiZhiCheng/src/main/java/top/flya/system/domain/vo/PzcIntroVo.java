@@ -3,10 +3,8 @@ package top.flya.system.domain.vo;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import top.flya.common.annotation.ExcelDictFormat;
-import top.flya.common.convert.ExcelDictConvert;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
 /**
@@ -41,5 +39,11 @@ public class PzcIntroVo {
     @ExcelProperty(value = "活动介绍 可放图片")
     private String imageFullUrl;
 
+
+    /**
+     * 介绍的主标题
+     */
+    @ExcelProperty(value = "介绍的主标题")
+    private String title;
 
 }

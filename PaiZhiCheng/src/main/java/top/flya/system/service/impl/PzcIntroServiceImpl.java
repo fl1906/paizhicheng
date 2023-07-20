@@ -71,6 +71,7 @@ public class PzcIntroServiceImpl implements IPzcIntroService {
         Map<String, Object> params = bo.getParams();
         LambdaQueryWrapper<PzcIntro> lqw = Wrappers.lambdaQuery();
         lqw.eq(StringUtils.isNotBlank(bo.getContent()), PzcIntro::getContent, bo.getContent());
+        lqw.eq(StringUtils.isNotBlank(bo.getTitle()), PzcIntro::getTitle, bo.getTitle());
         lqw.eq(StringUtils.isNotBlank(bo.getImageFullUrl()), PzcIntro::getImageFullUrl, bo.getImageFullUrl());
         return lqw;
     }
