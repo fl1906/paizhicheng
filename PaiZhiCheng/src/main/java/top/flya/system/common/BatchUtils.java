@@ -10,6 +10,7 @@ import top.flya.system.service.ISysOssService;
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
@@ -22,7 +23,20 @@ public class BatchUtils {
 
     // 假设这里有一个方法可以批量查询新的 imageUrl
     public  Map<Long, String> getNewImageUrls(List<String> imageUrls) {
-        List<Long> ossIds = imageUrls.stream().map(Long::parseLong).collect(Collectors.toList());
+//        List<Long> ossIds = imageUrls.stream().map(Long::parseLong).collect(Collectors.toList());
+
+        List<Long> ossIds = imageUrls.stream()
+            .map(url -> {
+                try {
+                    return Long.parseLong(url);
+                } catch (NumberFormatException e) {
+                    // Handle the exception, e.g. logging or skipping the invalid value
+                    // You can also return a default value in case of invalid format
+                    return null;
+                }
+            })
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
         return iSysOssService.listByIds(ossIds).stream().collect(Collectors.toMap(SysOssVo::getOssId, SysOssVo::getUrl));
     }
 

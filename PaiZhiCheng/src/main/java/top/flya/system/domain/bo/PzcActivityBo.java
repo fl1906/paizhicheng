@@ -61,11 +61,6 @@ public class PzcActivityBo extends BaseEntity {
     @NotBlank(message = "结束时间不能为空", groups = { AddGroup.class, EditGroup.class })
     private String endDate;
 
-    /**
-     * 销售结束时间
-     */
-//    @NotNull(message = "销售结束时间不能为空", groups = { AddGroup.class, EditGroup.class })
-    private String saleEndTime;
 
     /**
      * 展示时间
@@ -73,11 +68,17 @@ public class PzcActivityBo extends BaseEntity {
 //    @NotBlank(message = "展示时间不能为空", groups = { AddGroup.class, EditGroup.class })
     private String showTime;
 
+
     /**
      * 封面图片
      */
     @NotBlank(message = "封面图片不能为空", groups = { AddGroup.class, EditGroup.class })
     private String coverImage;
+    /**
+     * 活动详情主图
+     */
+    @NotNull(message = "活动详情主图不能为空", groups = { AddGroup.class, EditGroup.class })
+    private String innerImage;
 
     /**
      * 删除状态，默认为1表示正常状态
@@ -88,6 +89,9 @@ public class PzcActivityBo extends BaseEntity {
     private Integer classify; //属于哪个分类
 
     private Integer region; // 0 国内 1 国外
+
+
+    private List<PzcIntro> stageList;  // 场地舞台列表
 
     private List<PzcIntro> introList;  // 简介列表
 

@@ -41,10 +41,10 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="销售结束时间" prop="saleEndTime">
+      <el-form-item label="活动详情主图" prop="innerImage">
         <el-input
-          v-model="queryParams.saleEndTime"
-          placeholder="请输入销售结束时间"
+          v-model="queryParams.innerImage"
+          placeholder="请输入活动详情主图"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -149,7 +149,7 @@
       <el-table-column label="活动标题" align="center" prop="title" />
       <el-table-column label="开始时间" align="center" prop="startTime" />
       <el-table-column label="结束时间" align="center" prop="endDate" />
-      <el-table-column label="销售结束时间" align="center" prop="saleEndTime" />
+      <el-table-column label="活动详情主图" align="center" prop="innerImage" />
       <el-table-column label="展示时间" align="center" prop="showTime" />
       <el-table-column label="封面图片" align="center" prop="coverImage" width="100">
         <template slot-scope="scope">
@@ -213,8 +213,8 @@
         <el-form-item label="结束时间" prop="endDate">
           <el-input v-model="form.endDate" placeholder="请输入结束时间" />
         </el-form-item>
-        <el-form-item label="销售结束时间" prop="saleEndTime">
-          <el-input v-model="form.saleEndTime" placeholder="请输入销售结束时间" />
+        <el-form-item label="活动详情主图" prop="innerImage">
+          <el-input v-model="form.innerImage" placeholder="请输入活动详情主图" />
         </el-form-item>
         <el-form-item label="展示时间" prop="showTime">
           <el-input v-model="form.showTime" placeholder="请输入展示时间" />
@@ -274,7 +274,7 @@ export default {
         title: undefined,
         startTime: undefined,
         endDate: undefined,
-        saleEndTime: undefined,
+        innerImage: undefined,
         showTime: undefined,
         coverImage: undefined,
         createTime: undefined,
@@ -303,8 +303,8 @@ export default {
         endDate: [
           { required: true, message: "结束时间不能为空", trigger: "blur" }
         ],
-        saleEndTime: [
-          { required: true, message: "销售结束时间不能为空", trigger: "blur" }
+        innerImage: [
+          { required: true, message: "活动详情主图不能为空", trigger: "blur" }
         ],
         showTime: [
           { required: true, message: "展示时间不能为空", trigger: "blur" }
@@ -351,7 +351,7 @@ export default {
         title: undefined,
         startTime: undefined,
         endDate: undefined,
-        saleEndTime: undefined,
+        innerImage: undefined,
         showTime: undefined,
         coverImage: undefined,
         createTime: undefined,

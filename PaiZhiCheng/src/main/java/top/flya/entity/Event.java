@@ -130,7 +130,7 @@ public class Event {
     private int cityId;  // 城市ID
 
     @JsonProperty("sale_end_time")
-    private long saleEndTime;  // 销售结束时间
+    private String innerImage;  // 活动详情主图
 
     @JsonProperty("check_code_image")
     private String checkCodeImage;  // 检查码图片

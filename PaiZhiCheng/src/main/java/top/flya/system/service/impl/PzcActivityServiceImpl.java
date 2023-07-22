@@ -50,6 +50,8 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
 
     private final BatchUtils batchUtils;
 
+    private final PzcOrganizerTicketMapper pzcOrganizerTicketMapper;
+
     /**
      * 查询活动
      */
@@ -73,7 +75,7 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
                     return;
                 }
                 Map<Long, String> newImageUrls = batchUtils.getNewImageUrls(Collections.singletonList(pzcIntro.getImageFullUrl()));
-                pzcIntro.setImageFullUrl(newImageUrls.get(Long.parseLong(pzcIntro.getImageFullUrl())));
+                pzcIntro.setImageFullUrl(pzcIntro.getImageFullUrl().contains("http")?pzcIntro.getImageFullUrl():newImageUrls.get(Long.parseLong(pzcIntro.getImageFullUrl())));
                 introList.add(pzcIntro);
             });
 
@@ -91,7 +93,7 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
                     return;
                 }
                 Map<Long, String> newImageUrls = batchUtils.getNewImageUrls(Collections.singletonList(pzcArtist.getImageUrl()));
-                pzcArtist.setImageUrl(newImageUrls.get(Long.parseLong(pzcArtist.getImageUrl())));
+                pzcArtist.setImageUrl(pzcArtist.getImageUrl().contains("http")?pzcArtist.getImageUrl():newImageUrls.get(Long.parseLong(pzcArtist.getImageUrl())));
                 artistList.add(pzcArtist);
             });
             r.setArtistList(artistList);
@@ -106,11 +108,13 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
                     return;
                 }
                 Map<Long, String> newImageUrls = batchUtils.getNewImageUrls(Collections.singletonList(pzcTag.getImageUrl()));
-                pzcTag.setImageUrl(newImageUrls.get(Long.parseLong(pzcTag.getImageUrl())));
+                pzcTag.setImageUrl(pzcTag.getImageUrl().contains("http")?pzcTag.getImageUrl():newImageUrls.get(Long.parseLong(pzcTag.getImageUrl())));
                 tagList.add(pzcTag);
             });
             r.setTagList(tagList);
-            r.setOrganizerList(pzcOrganizerMapper.selectOne(Wrappers.<PzcOrganizer>lambdaQuery().eq(PzcOrganizer::getOrganizerId, r.getOrganizerId())));
+            PzcOrganizer pzcOrganizer = pzcOrganizerMapper.selectOne(Wrappers.<PzcOrganizer>lambdaQuery().eq(PzcOrganizer::getOrganizerId, r.getOrganizerId()));
+            pzcOrganizer.setOrganizerTickets(pzcOrganizerTicketMapper.selectList(Wrappers.<PzcOrganizerTicket>lambdaQuery().eq(PzcOrganizerTicket::getOrganizerId, pzcOrganizer.getOrganizerId())));
+            r.setOrganizerList(pzcOrganizer);
         });
         return pzcActivityVos.get(0);
     }
@@ -171,7 +175,7 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
         lqw.eq(StringUtils.isNotBlank(bo.getTitle()), PzcActivity::getTitle, bo.getTitle());
         lqw.eq(StringUtils.isNotBlank(bo.getStartTime()), PzcActivity::getStartTime, bo.getStartTime());
         lqw.eq(StringUtils.isNotBlank(bo.getEndDate()), PzcActivity::getEndDate, bo.getEndDate());
-        lqw.eq(bo.getSaleEndTime() != null, PzcActivity::getSaleEndTime, bo.getSaleEndTime());
+        lqw.eq(bo.getInnerImage() != null, PzcActivity::getInnerImage, bo.getInnerImage());
         lqw.eq(StringUtils.isNotBlank(bo.getShowTime()), PzcActivity::getShowTime, bo.getShowTime());
         lqw.eq(StringUtils.isNotBlank(bo.getCoverImage()), PzcActivity::getCoverImage, bo.getCoverImage());
         lqw.between(params.get("beginCreateTime") != null && params.get("endCreateTime") != null,
@@ -218,7 +222,48 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
     public void saveActivityConfigs(PzcActivityBo bo)
     {
 
-        if (bo.getIntroList().size() != 0) {
+        if(bo.getOrganizerList()!=null) //主办方票务
+        {
+            List<PzcOrganizerTicket> organizerTickets = bo.getOrganizerList().getOrganizerTickets();
+            if(organizerTickets.size()!=0)
+            {
+               //校验PzcOrganizerTicket 的 "organizerId": 是否 是当前组织下的
+                organizerTickets.forEach(o->{
+                    if(o.getOrganizerId()!=bo.getOrganizerList().getOrganizerId())
+                    {
+                        throw new RuntimeException("票务组织者id不是当前组织者id");
+                    }
+                });
+            }
+        }
+
+        if(bo.getStageList().size()!=0) //舞台介绍
+        {
+            bo.getStageList().forEach(stage-> {
+                //首先查询这个介绍是否存在
+                LambdaQueryWrapper<PzcIntro> lqw = Wrappers.lambdaQuery();
+                lqw.eq(PzcIntro::getIntroId, stage.getIntroId());
+                PzcIntro pzcIntro = pzcIntroMapper.selectOne(lqw);
+                if (pzcIntro == null) {
+                    throw new RuntimeException("舞台介绍不存在 id is " + stage.getIntroId());
+                }
+                //介绍表关联活动表 先查询关联关系是否存在
+                LambdaQueryWrapper<PzcActivityConnIntro> lqw2 = Wrappers.lambdaQuery();
+                lqw2.eq(PzcActivityConnIntro::getActivityId, bo.getActivityId());
+                lqw2.eq(PzcActivityConnIntro::getIntroId, stage.getIntroId());
+                PzcActivityConnIntro pzcActivityConnIntro1 = pzcActivityConnIntroMapper.selectOne(lqw2);
+                if (pzcActivityConnIntro1 != null) {
+//                    throw new RuntimeException("介绍已经关联 id is "+stage.getIntroId()+"无需重复关联");
+                    return;
+                }
+                PzcActivityConnIntro pzcActivityConnIntro = new PzcActivityConnIntro();
+                pzcActivityConnIntro.setActivityId(bo.getActivityId());
+                pzcActivityConnIntro.setIntroId(Math.toIntExact(stage.getIntroId()));
+                pzcActivityConnIntroMapper.insert(pzcActivityConnIntro);
+            });
+        }
+
+        if (bo.getIntroList().size() != 0) { //介绍
             bo.getIntroList().forEach(intro -> {
                 //首先查询这个介绍是否存在
                 LambdaQueryWrapper<PzcIntro> lqw = Wrappers.lambdaQuery();
@@ -245,7 +290,7 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
             });
 
         }
-        if (bo.getArtistList().size() != 0) {
+        if (bo.getArtistList().size() != 0) { //艺人
             bo.getArtistList().forEach(artist -> {
                 //首先查询这个艺人是否存在
                 LambdaQueryWrapper<PzcArtist> lqw = Wrappers.lambdaQuery();
@@ -272,7 +317,7 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
             });
 
         }
-        if (bo.getTagList().size() != 0) {
+        if (bo.getTagList().size() != 0) { //标签
             bo.getTagList().forEach(tag -> {
                 //首先查询这个标签是否存在
                 LambdaQueryWrapper<PzcTag> lqw = Wrappers.lambdaQuery();
@@ -331,6 +376,7 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
             if (pzcOrganizer == null) {
                 throw new RuntimeException("活动组织者不存在 id is " + entity.getOrganizerId());
             }
+
         }
     }
 

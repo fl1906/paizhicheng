@@ -1,9 +1,14 @@
 package top.flya.system.domain;
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import top.flya.common.core.domain.BaseEntity;
+
+import java.util.List;
 
 
 /**
@@ -44,5 +49,8 @@ public class PzcOrganizer extends BaseEntity {
      * 删除状态，默认为1表示正常状态
      */
     private Integer state;
+
+    @TableField(exist = false)
+    private List<PzcOrganizerTicket> organizerTickets;  // 组织者票务列表
 
 }

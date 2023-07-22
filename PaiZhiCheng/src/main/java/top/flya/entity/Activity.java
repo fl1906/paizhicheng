@@ -27,7 +27,7 @@ public class Activity extends FLBaseEntity {
 
     private String endDate;  // 结束日期
 
-    private long saleEndTime;  // 销售结束时间
+    private String innerImage;  // 活动详情主图
 
     private String showTime;  // 展示时间
 

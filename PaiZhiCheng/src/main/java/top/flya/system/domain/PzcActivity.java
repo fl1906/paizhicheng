@@ -45,9 +45,9 @@ public class PzcActivity extends BaseEntity {
      */
     private String endDate;
     /**
-     * 销售结束时间
+     * 活动详情主图
      */
-    private Long saleEndTime;
+    private String innerImage;
     /**
      * 展示时间
      */
