@@ -55,7 +55,7 @@ public class BatchUtils {
             // 对列表中的每个元素进行处理
             .map(artist -> {
                 // 从 Map 中获取新的 imageUrl
-                String newImageUrl = newImageUrls.get(Long.parseLong(artist.getImageUrl()));
+                String newImageUrl = artist.getImageUrl().contains("http")?artist.getImageUrl():newImageUrls.get(Long.parseLong(artist.getImageUrl()));
                 // 创建一个新的 PzcArtistVo 对象，使用查询到的新 imageUrl
                 return new PzcArtistVo(
                     artist.getArtistId(),
@@ -83,7 +83,7 @@ public class BatchUtils {
             // 对列表中的每个元素进行处理
             .map(organizer -> {
                 // 从 Map 中获取新的 imageUrl
-                String newImageUrl = newImageUrls.get(Long.parseLong(organizer.getLogo()));
+                String newImageUrl = organizer.getLogo().contains("http")?organizer.getLogo():newImageUrls.get(Long.parseLong(organizer.getLogo()));
                 // 创建一个新的 PzcArtistVo 对象，使用查询到的新 imageUrl
                 return new PzcOrganizerVo(
                     organizer.getOrganizerId(),
@@ -114,7 +114,7 @@ public class BatchUtils {
             // 对列表中的每个元素进行处理
             .map(tag -> {
                 // 从 Map 中获取新的 imageUrl
-                String newImageUrl = newImageUrls.get(Long.parseLong(tag.getImageUrl()));
+                String newImageUrl = tag.getImageUrl().contains("http")?tag.getImageUrl():newImageUrls.get(Long.parseLong(tag.getImageUrl()));
                 // 创建一个新的 PzcArtistVo 对象，使用查询到的新 imageUrl
                 return new PzcTagVo(
                     tag.getTagId(),
@@ -141,7 +141,7 @@ public class BatchUtils {
             // 对列表中的每个元素进行处理
             .map(intro -> {
                 // 从 Map 中获取新的 imageUrl
-                String newImageUrl = newImageUrls.get(Long.parseLong(intro.getImageFullUrl()));
+                String newImageUrl = intro.getImageFullUrl().contains("http")?intro.getImageFullUrl():newImageUrls.get(Long.parseLong(intro.getImageFullUrl()));
                 // 创建一个新的 PzcArtistVo 对象，使用查询到的新 imageUrl
                 return new PzcIntroVo(
                     intro.getIntroId(),
@@ -222,7 +222,7 @@ public class BatchUtils {
             // 对列表中的每个元素进行处理
             .map(viewPager -> {
                 // 从 Map 中获取新的 imageUrl
-                String newImageUrl = newImageUrls.get(Long.parseLong(viewPager.getImageUrl()));
+                String newImageUrl = viewPager.getImageUrl().contains("http")?viewPager.getImageUrl():newImageUrls.get(Long.parseLong(viewPager.getImageUrl()));
                 // 创建一个新的 PzcArtistVo 对象，使用查询到的新 imageUrl
                 return new PzcViewPagerVo(
                     viewPager.getViewPagerId(),
