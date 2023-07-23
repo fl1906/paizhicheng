@@ -1,29 +1,29 @@
 package top.flya.system.controller;
 
-import java.util.List;
-import java.util.Arrays;
-
 import lombok.RequiredArgsConstructor;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.*;
-import cn.dev33.satoken.annotation.SaCheckPermission;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
-import top.flya.common.annotation.RepeatSubmit;
+import org.springframework.web.bind.annotation.*;
 import top.flya.common.annotation.Log;
+import top.flya.common.annotation.RepeatSubmit;
 import top.flya.common.core.controller.BaseController;
 import top.flya.common.core.domain.PageQuery;
 import top.flya.common.core.domain.R;
+import top.flya.common.core.page.TableDataInfo;
 import top.flya.common.core.validate.AddGroup;
 import top.flya.common.core.validate.EditGroup;
 import top.flya.common.enums.BusinessType;
 import top.flya.common.helper.LoginHelper;
 import top.flya.common.utils.poi.ExcelUtil;
-import top.flya.system.domain.vo.PzcActivityGroupApplyVo;
 import top.flya.system.domain.bo.PzcActivityGroupApplyBo;
+import top.flya.system.domain.vo.PzcActivityGroupApplyVo;
 import top.flya.system.service.IPzcActivityGroupApplyService;
-import top.flya.common.core.page.TableDataInfo;
 import top.flya.system.utils.ActivityUtils;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * 活动组队申请列表
@@ -40,6 +40,11 @@ public class PzcActivityGroupApplyController extends BaseController {
     private final IPzcActivityGroupApplyService iPzcActivityGroupApplyService;
 
     private final ActivityUtils activityUtils;
+
+
+
+
+
 
     /**
      * 查询活动组队申请列表列表

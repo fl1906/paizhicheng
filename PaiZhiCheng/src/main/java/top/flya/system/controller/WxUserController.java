@@ -29,7 +29,6 @@ import top.flya.common.core.domain.event.LogininforEvent;
 import top.flya.common.core.domain.model.XcxLoginUser;
 import top.flya.common.enums.DeviceType;
 import top.flya.common.helper.LoginHelper;
-import top.flya.common.utils.JsonUtils;
 import top.flya.common.utils.MessageUtils;
 import top.flya.common.utils.ServletUtils;
 import top.flya.common.utils.spring.SpringUtils;
@@ -165,6 +164,7 @@ public class WxUserController extends BaseController {
             pzcUserBo.setRealname(user.getRealname());//真实姓名不允许修改
             pzcUserBo.setPhone(user.getPhone());//手机号不允许修改
             pzcUserBo.setOpenid(user.getOpenid());//openid不允许修改
+            pzcUserBo.setExemptCancel(user.getExemptCancel());//免责不允许修改
 
             Map<String, Object> map = BeanUtil.beanToMap(pzcUserBo);
 

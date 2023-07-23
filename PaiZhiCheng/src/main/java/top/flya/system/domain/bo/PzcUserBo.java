@@ -142,4 +142,7 @@ public class PzcUserBo extends BaseEntity {
     private Integer state;
 
 
+    private Integer exemptCancel;
+
+
 }

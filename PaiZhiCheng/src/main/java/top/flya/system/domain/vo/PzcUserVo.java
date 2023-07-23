@@ -172,4 +172,6 @@ public class PzcUserVo {
     private Long state;
 
 
+    private Integer  exemptCancel; // 用户免责取消次数
+
 }

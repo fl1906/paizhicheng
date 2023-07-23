@@ -3,7 +3,6 @@ package top.flya.system.utils;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import top.flya.common.helper.LoginHelper;
@@ -24,6 +23,32 @@ public class WxUtils {
     @Resource
     private PzcUserMapper userMapper;
 
+
+
+    public String applyStatus(Integer applyStatus)
+    {
+        if(applyStatus==-1)
+        {
+            return "已取消";
+        }
+        if(applyStatus==0)
+        {
+            return "位于申请列表中";
+        }
+        if(applyStatus==1)
+        {
+            return "申请通过待确认";
+        }
+        if(applyStatus==2)
+        {
+            return "已确认，进行中";
+        }
+        if(applyStatus==3)
+        {
+            return "已完成";
+        }
+        return null;
+    }
 
     public String getAccessToken() {
         String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" + appId +

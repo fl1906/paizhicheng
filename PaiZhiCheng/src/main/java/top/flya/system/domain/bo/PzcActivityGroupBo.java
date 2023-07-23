@@ -2,14 +2,14 @@ package top.flya.system.domain.bo;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import javax.validation.constraints.*;
-
-import java.math.BigDecimal;
-import java.util.Date;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import top.flya.common.core.domain.BaseEntity;
 import top.flya.common.core.validate.AddGroup;
 import top.flya.common.core.validate.EditGroup;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * 活动组队业务对象 pzc_activity_group
@@ -24,7 +24,6 @@ public class PzcActivityGroupBo extends BaseEntity {
 
     /**
      * 组队ID
-
      */
     @NotNull(message = "组队ID不能为空", groups = { EditGroup.class })
     private Long groupId;

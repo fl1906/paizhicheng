@@ -1,7 +1,9 @@
 package top.flya.system.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import top.flya.common.annotation.Log;
@@ -16,17 +18,21 @@ import top.flya.common.enums.BusinessType;
 import top.flya.common.helper.LoginHelper;
 import top.flya.common.utils.poi.ExcelUtil;
 import top.flya.system.domain.PzcUser;
+import top.flya.system.domain.PzcUserPhoto;
 import top.flya.system.domain.bo.PzcActivityGroupBo;
 import top.flya.system.domain.vo.PzcActivityGroupApplyVo;
 import top.flya.system.domain.vo.PzcActivityGroupVo;
 import top.flya.system.mapper.PzcActivityMapper;
 import top.flya.system.mapper.PzcUserMapper;
+import top.flya.system.mapper.PzcUserPhotoMapper;
 import top.flya.system.service.IPzcActivityGroupApplyService;
 import top.flya.system.service.IPzcActivityGroupService;
+import top.flya.system.utils.WxUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -50,6 +56,60 @@ public class PzcActivityGroupController extends BaseController {
     private final PzcUserMapper pzcUserMapper;
 
     private final PzcActivityMapper pzcActivityMapper;
+
+    private final PzcUserPhotoMapper pzcUserPhotoMapper;
+
+    private final WxUtils wxUtils;
+
+
+
+    @PostMapping("/cancel")
+    @Transactional
+    @RepeatSubmit()
+    public R cancel(@RequestParam("applyId")Integer applyId)
+    {
+
+        //首先查询这个组队是否是我发起的
+        PzcActivityGroupApplyVo pzcActivityGroupApplyVo = iPzcActivityGroupApplyService.queryById(applyId.longValue());
+        if(pzcActivityGroupApplyVo==null)
+        {
+            return R.fail("申请不存在");
+        }
+        Long userId = LoginHelper.getUserId();
+        Long groupId = pzcActivityGroupApplyVo.getGroupId();
+        PzcActivityGroupVo pzcActivityGroupVo = iPzcActivityGroupService.queryById(groupId);
+        if(pzcActivityGroupVo==null)
+        {
+            return R.fail("组队不存在");
+        }
+        if(!pzcActivityGroupVo.getUserId().equals(userId))
+        {
+            return R.fail("你不是组队发起人");
+        }
+
+        Integer applyStatus = pzcActivityGroupApplyVo.getApplyStatus();
+        if(applyStatus==-1||applyStatus==2||applyStatus==3)
+        {
+            return R.fail("该订单位于【"+wxUtils.applyStatus(applyStatus)+"】状态，不可取消");
+        }
+
+        //查询用户是否有免责取消次数
+        PzcUser pzcUser = pzcUserMapper.selectById(LoginHelper.getUserId());
+        if(pzcUser.getExemptCancel()>0)
+        {
+            pzcUser.setExemptCancel(pzcUser.getExemptCancel()-1);
+        }else {
+            pzcUser.setMoney(pzcUser.getMoney().subtract(new BigDecimal("0.1"))); //扣除0.1派币
+        }
+        pzcUserMapper.updateById(pzcUser);
+        //TODO 给对方发官方消息 通知对方已取消
+
+        //修改状态为 已取消
+        return R.ok(iPzcActivityGroupApplyService.updateStatus(applyId.longValue(), -1));
+    }
+
+
+
 
 
     /** 我创建的活动的申请列表
@@ -79,8 +139,23 @@ public class PzcActivityGroupController extends BaseController {
                 s.setGroupTitle(pzcActivityGroupVos.stream().filter(s1 -> s1.getGroupId().equals(s.getGroupId())).findFirst().get().getTitle());
             }
         );
+        List<PzcActivityGroupApplyVo> result = pzcActivityGroupApplyVos.stream().filter(s -> s.getApplyStatus() != -1).collect(Collectors.toList());//过滤掉已取消的
+        return R.ok(result);
+    }
 
-        return R.ok(pzcActivityGroupApplyVos);
+    @GetMapping("/userInfo")
+    public R userInfo(@RequestParam("userId")Long userId,@RequestParam("groupId")Long groupId) {
+        //首先查询该用户是否申请了我的组 申请了 才有资格去查看
+        PzcActivityGroupApplyVo pzcActivityGroupApplyVo = iPzcActivityGroupApplyService.queryByUserIdAndGroupId(userId, groupId);
+        if(pzcActivityGroupApplyVo==null)
+        {
+            return R.fail("该用户未申请你的组");
+        }
+        PzcUser pzcUser = pzcUserMapper.selectById(userId);
+        pzcUser.setMoney(null);
+        pzcUser.setUserPhoto(pzcUserPhotoMapper.selectList(new QueryWrapper<>(new PzcUserPhoto()).eq("user_id", userId)));
+
+        return R.ok(pzcUser);
     }
 
 

@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import top.flya.common.core.domain.BaseEntity;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * 用户对象 pzc_user
@@ -105,5 +106,14 @@ public class PzcUser extends BaseEntity {
      * 状态 是否被封禁
      */
     private Long state;
+
+    @TableField(exist = false)
+    private List<PzcUserPhoto> userPhoto;
+
+
+    /**
+     * 用户免责取消次数  0点定时任务刷新
+     */
+    private Integer exemptCancel;
 
 }

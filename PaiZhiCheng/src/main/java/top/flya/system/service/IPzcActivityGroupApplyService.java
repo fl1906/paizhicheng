@@ -51,4 +51,6 @@ public interface IPzcActivityGroupApplyService {
     Integer updateStatus(Long applyId, int i);
 
     List<PzcActivityGroupApplyVo> queryListByGroupIds(List<Long> groupIds);
+
+    PzcActivityGroupApplyVo queryByUserIdAndGroupId(Long userId, Long groupId);
 }

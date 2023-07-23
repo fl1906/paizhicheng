@@ -31,6 +31,7 @@ public class PzcActivityGroupApplyServiceImpl implements IPzcActivityGroupApplyS
 
     private final PzcActivityGroupApplyMapper baseMapper;
 
+
     /**
      * 查询活动组队申请列
      */
@@ -145,5 +146,13 @@ public class PzcActivityGroupApplyServiceImpl implements IPzcActivityGroupApplyS
         lqw.in(PzcActivityGroupApply::getGroupId, groupIds);
         lqw.orderByDesc(PzcActivityGroupApply::getCreateTime);
         return baseMapper.selectVoList(lqw);
+    }
+
+    @Override
+    public PzcActivityGroupApplyVo queryByUserIdAndGroupId(Long userId, Long groupId) {
+        LambdaQueryWrapper<PzcActivityGroupApply> lqw = Wrappers.lambdaQuery();
+        lqw.eq(PzcActivityGroupApply::getUserId, userId);
+        lqw.eq(PzcActivityGroupApply::getGroupId, groupId);
+        return baseMapper.selectVoOne(lqw);
     }
 }

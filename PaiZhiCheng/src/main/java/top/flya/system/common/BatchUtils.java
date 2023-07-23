@@ -197,7 +197,8 @@ public class BatchUtils {
                         user.getCreateTime(),
                         user.getUpdateTime(),
                         user.getMusicStyle(),
-                        user.getState()
+                        user.getState(),
+                        user.getExemptCancel()
                     );
                 }
                 return user;
