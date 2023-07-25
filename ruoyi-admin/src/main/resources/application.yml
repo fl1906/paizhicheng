@@ -1,3 +1,8 @@
+
+
+
+
+
 wx:
   appId: wx154b16ff73dd046c
   appSecret: 60fd29555b883283b5b7a58425623dec
@@ -271,7 +276,17 @@ thread-pool:
   queueCapacity: 128
   # 线程池维护线程所允许的空闲时间
   keepAliveSeconds: 300
-
+xxl:
+  job:
+    enabled: true
+    admin-addresses: http://81.68.131.40:9100/xxl-job-admin
+    access-token: xxl-job
+    executor:
+      appname: pai-zhi-cheng
+      ip:
+      port: 9101
+      logpath: ./logs/xxl-job
+      logretentiondays: 30
 --- # 分布式锁 lock4j 全局配置
 lock4j:
   # 获取分布式锁超时时间，默认为 3000 毫秒
