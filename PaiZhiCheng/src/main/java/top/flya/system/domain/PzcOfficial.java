@@ -31,6 +31,10 @@ public class PzcOfficial extends BaseEntity {
      */
     private Long fromUserId;
     /**
+     * 给谁发的消息
+     */
+    private Long toUserId;
+    /**
      * 标题
      */
     private String title;

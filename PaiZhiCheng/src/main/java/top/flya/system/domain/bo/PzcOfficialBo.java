@@ -34,6 +34,12 @@ public class PzcOfficialBo extends BaseEntity {
     private Long fromUserId;
 
     /**
+     * 给谁发的消息
+     */
+    @NotNull(message = "给谁发的消息不能为空", groups = { AddGroup.class, EditGroup.class })
+    private Long toUserId;
+
+    /**
      * 标题
      */
     @NotBlank(message = "标题不能为空", groups = { AddGroup.class, EditGroup.class })

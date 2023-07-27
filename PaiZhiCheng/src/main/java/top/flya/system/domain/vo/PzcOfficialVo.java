@@ -32,6 +32,12 @@ public class PzcOfficialVo {
     private Long fromUserId;
 
     /**
+     * 给谁发的消息
+     */
+    @ExcelProperty(value = "给谁发的消息")
+    private Long toUserId;
+
+    /**
      * 标题
      */
     @ExcelProperty(value = "标题")

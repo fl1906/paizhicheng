@@ -62,6 +62,7 @@ public class PzcOfficialServiceImpl implements IPzcOfficialService {
         Map<String, Object> params = bo.getParams();
         LambdaQueryWrapper<PzcOfficial> lqw = Wrappers.lambdaQuery();
         lqw.eq(bo.getFromUserId() != null, PzcOfficial::getFromUserId, bo.getFromUserId());
+        lqw.eq(bo.getToUserId() != null, PzcOfficial::getToUserId, bo.getToUserId());
         lqw.eq(StringUtils.isNotBlank(bo.getTitle()), PzcOfficial::getTitle, bo.getTitle());
         lqw.eq(StringUtils.isNotBlank(bo.getContent()), PzcOfficial::getContent, bo.getContent());
         lqw.eq(bo.getRead() != null, PzcOfficial::getRead, bo.getRead());

@@ -9,6 +9,14 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
+      <el-form-item label="给谁发的消息" prop="toUserId">
+        <el-input
+          v-model="queryParams.toUserId"
+          placeholder="请输入给谁发的消息"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
       <el-form-item label="标题" prop="title">
         <el-input
           v-model="queryParams.title"
@@ -113,6 +121,7 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="ID" align="center" prop="officialId" v-if="true"/>
       <el-table-column label="来自谁的消息" align="center" prop="fromUserId" />
+      <el-table-column label="给谁发的消息" align="center" prop="toUserId" />
       <el-table-column label="标题" align="center" prop="title" />
       <el-table-column label="主体消息" align="center" prop="content" />
       <el-table-column label="是否已读" align="center" prop="read" />
@@ -161,6 +170,9 @@
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="来自谁的消息" prop="fromUserId">
           <el-input v-model="form.fromUserId" placeholder="请输入来自谁的消息" />
+        </el-form-item>
+        <el-form-item label="给谁发的消息" prop="toUserId">
+          <el-input v-model="form.toUserId" placeholder="请输入给谁发的消息" />
         </el-form-item>
         <el-form-item label="标题" prop="title">
           <el-input v-model="form.title" placeholder="请输入标题" />
@@ -218,6 +230,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
         fromUserId: undefined,
+        toUserId: undefined,
         title: undefined,
         content: undefined,
         read: undefined,
@@ -235,6 +248,9 @@ export default {
         ],
         fromUserId: [
           { required: true, message: "来自谁的消息不能为空", trigger: "blur" }
+        ],
+        toUserId: [
+          { required: true, message: "给谁发的消息不能为空", trigger: "blur" }
         ],
         title: [
           { required: true, message: "标题不能为空", trigger: "blur" }
@@ -277,6 +293,7 @@ export default {
       this.form = {
         officialId: undefined,
         fromUserId: undefined,
+        toUserId: undefined,
         title: undefined,
         content: undefined,
         read: undefined,
