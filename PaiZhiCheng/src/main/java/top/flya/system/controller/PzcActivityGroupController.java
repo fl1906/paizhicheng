@@ -164,7 +164,7 @@ public class PzcActivityGroupController extends BaseController {
      * @return
      */
 
-    @PostMapping("/pj") //双方评价 （可选）
+    @PostMapping("/pj") //双方评价 （可选）  //TODO
     @Transactional
     public R pj(@RequestParam("applyId")Integer applyId,@RequestParam("score")Integer score)
     {
@@ -183,6 +183,8 @@ public class PzcActivityGroupController extends BaseController {
             }
             otherUser.setIntegration(otherUser.getIntegration()+score);
             otherUser.setIntegrationNow(otherUser.getIntegrationNow()+score);
+            wxUtils.updateUserMsg(otherUser);
+
             pzcUserMapper.updateById(otherUser);
 
             if (applyStatus == 13) //发起方评价了
@@ -208,6 +210,7 @@ public class PzcActivityGroupController extends BaseController {
         PzcUser otherUser = pzcUserMapper.selectById(otherUserId);
         otherUser.setIntegration(otherUser.getIntegration()+score);
         otherUser.setIntegrationNow(otherUser.getIntegrationNow()+score);
+        wxUtils.updateUserMsg(otherUser);
         pzcUserMapper.updateById(otherUser);
 
 

@@ -151,4 +151,23 @@ public class WxUtils {
             throw new RuntimeException("评分只能为差评（-3 积分） 中评（+0 积分） 好评（+3 积分）");
         }
     }
+
+    public void updateUserMsg(PzcUser otherUser) {
+        if(otherUser.getIntegrationNow()>=30)
+        {
+            otherUser.setUserLevel(2L);
+        }
+        if(otherUser.getIntegrationNow()>=70)
+        {
+            otherUser.setUserLevel(3L);
+        }
+        if(otherUser.getIntegrationNow()>=150)
+        {
+            otherUser.setUserLevel(4L);
+        }
+        if(otherUser.getIntegrationNow()>=300)
+        {
+            otherUser.setUserLevel(5L);
+        }
+    }
 }
