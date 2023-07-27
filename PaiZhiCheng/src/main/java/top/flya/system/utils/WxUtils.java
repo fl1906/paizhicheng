@@ -145,4 +145,10 @@ public class WxUtils {
     }
 
 
+    public void checkApplyScore(Integer score) {
+        if(score!=0&&score!=3&&score!=-3)
+        {
+            throw new RuntimeException("评分只能为差评（-3 积分） 中评（+0 积分） 好评（+3 积分）");
+        }
+    }
 }

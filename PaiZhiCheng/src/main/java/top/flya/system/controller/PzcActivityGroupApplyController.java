@@ -159,8 +159,12 @@ public class PzcActivityGroupApplyController extends BaseController {
      * 1 做校验
      * 1.1 活动是否存在 1.2 活动是否已经开始 1.3 活动是否已经结束 1.4 活动是否已经满员
      * 2 组是否还存在
+     *
+     *
+     * ====================
+     * 用户申请活动的时候 判断 是否足够缴纳保证金
      */
-    @Log(title = "活动组队申请列表", businessType = BusinessType.INSERT)
+    @Log(title = "活动组队申请列表", businessType = BusinessType.INSERT) //
     @RepeatSubmit()
     @PostMapping()
     public R<Void> add(@Validated(AddGroup.class) @RequestBody PzcActivityGroupApplyBo bo) {
@@ -171,6 +175,15 @@ public class PzcActivityGroupApplyController extends BaseController {
         if (iPzcActivityGroupApplyService.queryByUserIdAndActivityId(bo.getUserId(), bo.getActivityId())) {
             return R.fail("申请失败，您已经申请过了");
         }
+
+        //======================================================
+        PzcUser applyUser = pzcUserMapper.selectById(bo.getUserId()); //我有2个币  申请需要 两个币  我则需要 根据当前他的余额来判断
+        if(applyUser.getMoney().compareTo(bo.getMoney())<0)
+        {
+            return R.fail("申请失败，您的余额不足");
+        }
+
+
         return toAjax(iPzcActivityGroupApplyService.insertByBo(bo));
     }
 
