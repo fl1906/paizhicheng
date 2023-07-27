@@ -149,13 +149,50 @@ public class PzcActivityGroupController extends BaseController {
         return R.ok(pzcUser);
     }
 
+    /**
+     * 13 发起方已评价
+     * 14 申请方已评价
+     * 15 双方已评价
+     * @param applyId
+     * @return
+     */
 
     @PostMapping("/pj") //双方评价 （可选）
-    public R pj(@RequestParam("applyId")Integer pj)
+    public R pj(@RequestParam("applyId")Integer applyId)
     {
+        PzcActivityGroupApplyVo pzcActivityGroupApplyVo = wxUtils.checkApplyPj(applyId.longValue());
+       //首先获取我的UserId
+        Long userId = LoginHelper.getUserId();
+        Long groupId = pzcActivityGroupApplyVo.getGroupId();
+        Integer applyStatus = pzcActivityGroupApplyVo.getApplyStatus();
+        if (pzcActivityGroupApplyVo.getUserId().equals(userId)) {
+            if (applyStatus == 13) //发起方评价了
+            {
+                return R.ok(iPzcActivityGroupApplyService.updateStatus(applyId.longValue(), 15)); //双方都已评价
+            }
+            if (applyStatus == 14) {
+                return R.fail("您已经评价过了 不可重复操作");
+            }
+            return R.ok(iPzcActivityGroupApplyService.updateStatus(applyId.longValue(), 14));//申请方评价
+        }
+        //判断当前 用户是否为组队发起人 如果不是 直接报错
+        PzcActivityGroupVo pzcActivityGroupVo = iPzcActivityGroupService.queryById(groupId);
+        if (pzcActivityGroupVo == null) {
+            return R.fail("组队不存在");
+        }
+        if (!pzcActivityGroupVo.getUserId().equals(userId)) {
+            return R.fail("你不是组队发起人");
+        }
+        //看看申请方是否评价了
+        if (applyStatus == 14) //申请方评价了
+        {
+            return R.ok(iPzcActivityGroupApplyService.updateStatus(applyId.longValue(), 15)); //双方都已评价
+        }
+        if (applyStatus == 13) {
+            return R.fail("您已经评价过了 不可重复操作");
+        }
+        return R.ok(iPzcActivityGroupApplyService.updateStatus(applyId.longValue(), 13));//发起方评价
 
-
-        return R.ok();
     }
 
 

@@ -67,6 +67,7 @@ public class PzcActivityGroupApplyController extends BaseController {
      * 12 申请方已打卡
      * 13 发起方已评价
      * 14 申请方已评价
+     * 15 双方已评价
      *
      * @return
      */

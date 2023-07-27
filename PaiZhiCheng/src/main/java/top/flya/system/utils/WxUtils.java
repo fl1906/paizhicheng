@@ -48,6 +48,29 @@ public class WxUtils {
         return pzcActivityGroupApplyVo;
     }
 
+    public PzcActivityGroupApplyVo checkApplyPj(long applyId) {
+        //首先判断 这个applyId 的状态 以及是否存在
+        PzcActivityGroupApplyVo pzcActivityGroupApplyVo = iPzcActivityGroupApplyService.queryById(applyId);
+        if(pzcActivityGroupApplyVo==null)
+        {
+            throw new RuntimeException("申请不存在");
+        }
+        Integer applyStatus = pzcActivityGroupApplyVo.getApplyStatus();
+//        if(applyStatus==-1||applyStatus==0||applyStatus==1||applyStatus==2||
+//            applyStatus==9|applyStatus==10||applyStatus==11||applyStatus==12||applyStatus==15)
+//        {
+//            throw  new RuntimeException("该订单位于【"+applyStatus(applyStatus)+"】状态，不可评价");
+//        }
+//
+        if(applyStatus==3||applyStatus==13||applyStatus==14)
+        {
+            return pzcActivityGroupApplyVo;
+        }else {
+            throw  new RuntimeException("该订单位于【"+applyStatus(applyStatus)+"】状态，不可评价");
+        }
+
+    }
+
 
 
 
@@ -89,6 +112,18 @@ public class WxUtils {
         {
             return "申请方已打卡";
         }
+        if (applyStatus==13)
+        {
+            return "发起方已评价";
+        }
+        if (applyStatus==14)
+        {
+            return "申请方已评价";
+        }
+        if (applyStatus==15)
+        {
+            return "双方已评价";
+        }
 
         return null;
     }
@@ -108,4 +143,6 @@ public class WxUtils {
         }
         return user;
     }
+
+
 }
