@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import top.flya.common.helper.LoginHelper;
 import top.flya.system.domain.PzcUser;
+import top.flya.system.domain.vo.PzcActivityGroupApplyVo;
 import top.flya.system.mapper.PzcUserMapper;
+import top.flya.system.service.IPzcActivityGroupApplyService;
 
 import javax.annotation.Resource;
 
@@ -22,6 +24,30 @@ public class WxUtils {
 
     @Resource
     private PzcUserMapper userMapper;
+
+    @Resource
+    private IPzcActivityGroupApplyService iPzcActivityGroupApplyService;
+
+    public PzcActivityGroupApplyVo  checkApplyConfirm(Long applyId)
+    {
+
+        //首先判断 这个applyId 的状态 以及是否存在
+        PzcActivityGroupApplyVo pzcActivityGroupApplyVo = iPzcActivityGroupApplyService.queryById(applyId);
+        if(pzcActivityGroupApplyVo==null)
+        {
+            throw new RuntimeException("申请不存在");
+//            return R.fail("申请不存在");
+        }
+        Integer applyStatus = pzcActivityGroupApplyVo.getApplyStatus();
+        if(applyStatus==-1||applyStatus==0||applyStatus==3)
+        {
+            throw  new RuntimeException("该订单位于【"+applyStatus(applyStatus)+"】状态，不可确认");
+        }
+
+
+        return pzcActivityGroupApplyVo;
+    }
+
 
 
 
@@ -47,6 +73,23 @@ public class WxUtils {
         {
             return "已完成";
         }
+        if(applyStatus==9)
+        {
+            return "发起方已确认";
+        }
+        if(applyStatus==10)
+        {
+            return "申请方已确认";
+        }
+        if(applyStatus==11)
+        {
+            return "发起方已打卡";
+        }
+        if (applyStatus==12)
+        {
+            return "申请方已打卡";
+        }
+
         return null;
     }
 

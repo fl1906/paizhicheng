@@ -57,4 +57,27 @@ public class PzcActivityGroupApply extends BaseEntity {
      */
     private Integer applyStatus;
 
+
+    @TableField(exist = false)
+    private BigDecimal otherMoney; //对方的保证金
+
+    @TableField(exist = false)
+    private String otherName; //对方的名字
+
+    @TableField(exist = false)
+    private String otherAvatar; //对方的头像
+
+    @TableField(exist = false)
+    private String otherUserId; //对方的userId
+
+    @TableField(exist = false)
+    private Integer otherLevel; //对方的等级
+
+
+    @TableField(exist = false)
+    private String myAvatar; //我的头像
+
+    @TableField(exist = false)
+    private String title;
+
 }

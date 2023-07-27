@@ -62,43 +62,36 @@ public class PzcActivityGroupController extends BaseController {
     private final WxUtils wxUtils;
 
 
-
     @PostMapping("/cancel")
     @Transactional
     @RepeatSubmit()
-    public R cancel(@RequestParam("applyId")Integer applyId)
-    {
+    public R cancel(@RequestParam("applyId") Integer applyId) {
 
         //首先查询这个组队是否是我发起的
         PzcActivityGroupApplyVo pzcActivityGroupApplyVo = iPzcActivityGroupApplyService.queryById(applyId.longValue());
-        if(pzcActivityGroupApplyVo==null)
-        {
+        if (pzcActivityGroupApplyVo == null) {
             return R.fail("申请不存在");
         }
         Long userId = LoginHelper.getUserId();
         Long groupId = pzcActivityGroupApplyVo.getGroupId();
         PzcActivityGroupVo pzcActivityGroupVo = iPzcActivityGroupService.queryById(groupId);
-        if(pzcActivityGroupVo==null)
-        {
+        if (pzcActivityGroupVo == null) {
             return R.fail("组队不存在");
         }
-        if(!pzcActivityGroupVo.getUserId().equals(userId))
-        {
+        if (!pzcActivityGroupVo.getUserId().equals(userId)) {
             return R.fail("你不是组队发起人");
         }
 
         Integer applyStatus = pzcActivityGroupApplyVo.getApplyStatus();
-        if(applyStatus==-1||applyStatus==2||applyStatus==3)
-        {
-            return R.fail("该订单位于【"+wxUtils.applyStatus(applyStatus)+"】状态，不可取消");
+        if (applyStatus == -1 || applyStatus == 2 || applyStatus == 3) {
+            return R.fail("该订单位于【" + wxUtils.applyStatus(applyStatus) + "】状态，不可取消");
         }
 
         //查询用户是否有免责取消次数
         PzcUser pzcUser = pzcUserMapper.selectById(LoginHelper.getUserId());
-        if(pzcUser.getExemptCancel()>0)
-        {
-            pzcUser.setExemptCancel(pzcUser.getExemptCancel()-1);
-        }else {
+        if (pzcUser.getExemptCancel() > 0) {
+            pzcUser.setExemptCancel(pzcUser.getExemptCancel() - 1);
+        } else {
             pzcUser.setMoney(pzcUser.getMoney().subtract(new BigDecimal("0.1"))); //扣除0.1派币
         }
         pzcUserMapper.updateById(pzcUser);
@@ -109,13 +102,12 @@ public class PzcActivityGroupController extends BaseController {
     }
 
 
-
-
-
-    /** 我创建的活动的申请列表
+    /**
+     * 我创建的活动的申请列表
      * 思路整理
      * 首先查出所有 GroupId
      * 然后查出groupId 对应的申请列表
+     *
      * @return
      */
     @GetMapping("/applyList")
@@ -124,14 +116,13 @@ public class PzcActivityGroupController extends BaseController {
         bo.setUserId(LoginHelper.getUserId());
         List<PzcActivityGroupVo> pzcActivityGroupVos = iPzcActivityGroupService.queryList(bo);
         List<Long> groupIds = pzcActivityGroupVos.stream().map(PzcActivityGroupVo::getGroupId).collect(Collectors.toList());
-        if(groupIds.size()==0)
-        {
+        if (groupIds.size() == 0) {
             return R.ok();
         }
 
         List<PzcActivityGroupApplyVo> pzcActivityGroupApplyVos = iPzcActivityGroupApplyService.queryListByGroupIds(groupIds);
         pzcActivityGroupApplyVos.forEach(
-            s-> {
+            s -> {
                 PzcUser pzcUser = pzcUserMapper.selectById(s.getUserId());
                 s.setNickName(pzcUser.getNickname());
                 s.setAvatar(pzcUser.getAvatar());
@@ -143,58 +134,145 @@ public class PzcActivityGroupController extends BaseController {
         return R.ok(result);
     }
 
-    @GetMapping("/userInfo")
-    public R userInfo(@RequestParam("userId")Long userId,@RequestParam("groupId")Long groupId) {
+    @GetMapping("/userInfo") //查看申请人或者发起人信息
+    public R userInfo(@RequestParam("userId") Long userId, @RequestParam("groupId") Long groupId) {
         //首先查询该用户是否申请了我的组 申请了 才有资格去查看
         PzcActivityGroupApplyVo pzcActivityGroupApplyVo = iPzcActivityGroupApplyService.queryByUserIdAndGroupId(userId, groupId);
-        if(pzcActivityGroupApplyVo==null)
-        {
+        if (pzcActivityGroupApplyVo == null) {
             return R.fail("该用户未申请你的组");
         }
         PzcUser pzcUser = pzcUserMapper.selectById(userId);
         pzcUser.setMoney(null);
         pzcUser.setUserPhoto(pzcUserPhotoMapper.selectList(new QueryWrapper<>(new PzcUserPhoto()).eq("user_id", userId)));
+        pzcUser.setPzcActivityGroupApplyVo(pzcActivityGroupApplyVo);
 
         return R.ok(pzcUser);
     }
 
 
+    @PostMapping("/pj") //双方评价 （可选）
+    public R pj(@RequestParam("applyId")Integer pj)
+    {
+
+
+        return R.ok();
+    }
+
+
+    @PostMapping("/confirmReach") //确认到达目的地
+    public R confirmReach(@RequestParam("applyId") Integer applyId) {
+        PzcActivityGroupApplyVo pzcActivityGroupApplyVo = wxUtils.checkApplyConfirm(applyId.longValue());
+        Long userId = LoginHelper.getUserId();
+        Long groupId = pzcActivityGroupApplyVo.getGroupId();
+        Integer applyStatus = pzcActivityGroupApplyVo.getApplyStatus();
+        if(applyStatus!=2&&applyStatus!=11&&applyStatus!=12)
+        {
+            return R.fail("该订单目前状态为【"+wxUtils.applyStatus(applyStatus)+"】不可确认");
+        }
+        if (pzcActivityGroupApplyVo.getUserId().equals(userId)) {
+            if (applyStatus == 11) //发起方确认了
+            {
+                return R.ok(iPzcActivityGroupApplyService.updateStatus(applyId.longValue(), 3)); //双方都已确认
+            }
+            if (applyStatus == 12) {
+                return R.fail("您已经确认过了 不可重复操作");
+            }
+            return R.ok(iPzcActivityGroupApplyService.updateStatus(applyId.longValue(), 12));//申请方确认
+        }
+        //判断当前 用户是否为组队发起人 如果不是 直接报错
+        PzcActivityGroupVo pzcActivityGroupVo = iPzcActivityGroupService.queryById(groupId);
+        if (pzcActivityGroupVo == null) {
+            return R.fail("组队不存在");
+        }
+        if (!pzcActivityGroupVo.getUserId().equals(userId)) {
+            return R.fail("你不是组队发起人");
+        }
+        //看看申请方是否确认了
+        if (applyStatus == 12) //申请方确认了
+        {
+            return R.ok(iPzcActivityGroupApplyService.updateStatus(applyId.longValue(), 3)); //双方都已确认
+        }
+        if (applyStatus == 11) {
+            return R.fail("您已经确认过了 不可重复操作");
+        }
+        return R.ok(iPzcActivityGroupApplyService.updateStatus(applyId.longValue(), 11));//发起方确认
+    }
+
+
+    @PostMapping("/confirm") //确认申请
+    public R confirm(@RequestParam("applyId") Integer applyId) {
+        PzcActivityGroupApplyVo pzcActivityGroupApplyVo = wxUtils.checkApplyConfirm(applyId.longValue());
+        Long userId = LoginHelper.getUserId();
+        Long groupId = pzcActivityGroupApplyVo.getGroupId();
+        Integer applyStatus = pzcActivityGroupApplyVo.getApplyStatus();
+
+        if(applyStatus==2)
+        {
+            return R.fail("该订单进行中，不可确认");
+        }
+        //如果可以确认 判断 是那一方确认的
+        if (pzcActivityGroupApplyVo.getUserId().equals(userId)) {
+            //如果是自己确认的 则修改状态为 已确认
+            if (applyStatus == 9) //发起方确认了
+            {
+                return R.ok(iPzcActivityGroupApplyService.updateStatus(applyId.longValue(), 2)); //双方都已确认
+            }
+            if (applyStatus == 10) {
+                return R.fail("您已经确认过了 不可重复操作");
+            }
+            return R.ok(iPzcActivityGroupApplyService.updateStatus(applyId.longValue(), 10));//申请方确认
+        } else {
+            //判断当前 用户是否为组队发起人 如果不是 直接报错‘
+            PzcActivityGroupVo pzcActivityGroupVo = iPzcActivityGroupService.queryById(groupId);
+            if (pzcActivityGroupVo == null) {
+                return R.fail("组队不存在");
+            }
+            if (!pzcActivityGroupVo.getUserId().equals(userId)) {
+                return R.fail("你不是组队发起人");
+            }
+            //看看申请方是否确认了
+            if (applyStatus == 10) //申请方确认了
+            {
+                return R.ok(iPzcActivityGroupApplyService.updateStatus(applyId.longValue(), 2)); //双方都已确认
+            }
+            if (applyStatus == 9) {
+                return R.fail("您已经确认过了 不可重复操作");
+            }
+            return R.ok(iPzcActivityGroupApplyService.updateStatus(applyId.longValue(), 9));//发起方确认
+        }
+    }
 
 
     /**
      * 同意用户申请 进入下一阶段
+     *
      * @return
      */
     @PostMapping("/apply")
-    public R apply(@RequestParam("applyId")Long applyId) {
+    public R apply(@RequestParam("applyId") Long applyId) {
         //首先查询这个组队是否是我发起的
         PzcActivityGroupApplyVo pzcActivityGroupApplyVo = iPzcActivityGroupApplyService.queryById(applyId);
-        if(pzcActivityGroupApplyVo==null)
-        {
+        if (pzcActivityGroupApplyVo == null) {
             return R.fail("申请不存在");
         }
         Long userId = LoginHelper.getUserId();
 
         Long groupId = pzcActivityGroupApplyVo.getGroupId();
         PzcActivityGroupVo pzcActivityGroupVo = iPzcActivityGroupService.queryById(groupId);
-        if(pzcActivityGroupVo==null)
-        {
+        if (pzcActivityGroupVo == null) {
             return R.fail("组队不存在");
         }
-        if(!pzcActivityGroupVo.getUserId().equals(userId))
-        {
+        if (!pzcActivityGroupVo.getUserId().equals(userId)) {
             return R.fail("你不是组队发起人");
         }
         //修改状态为 已同意
         Integer integer = iPzcActivityGroupApplyService.updateStatus(applyId, 1);
-        if(integer==null||integer!=1)
-        {
+        if (integer == null || integer != 1) {
             return R.fail("修改状态失败");
         }
 
         return R.ok();
     }
-
 
 
     /**

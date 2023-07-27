@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import top.flya.common.core.domain.BaseEntity;
+import top.flya.system.domain.vo.PzcActivityGroupApplyVo;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -109,6 +110,13 @@ public class PzcUser extends BaseEntity {
 
     @TableField(exist = false)
     private List<PzcUserPhoto> userPhoto;
+
+
+    @TableField(exist = false)
+    private PzcActivityGroup pzcActivityGroup;
+
+    @TableField(exist = false)
+    private PzcActivityGroupApplyVo pzcActivityGroupApplyVo;
 
 
     /**
