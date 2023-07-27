@@ -3,6 +3,7 @@ package top.flya.system.controller;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -46,6 +47,7 @@ import java.util.stream.Collectors;
 @Validated
 @RequiredArgsConstructor
 @RestController
+@Slf4j
 @RequestMapping("/system/activityGroup")
 public class PzcActivityGroupController extends BaseController {
 
@@ -335,6 +337,12 @@ public class PzcActivityGroupController extends BaseController {
             //如果是自己确认的 则修改状态为 已确认
             if (applyStatus == 9) //发起方确认了
             {
+                log.info("申请方的余额与保证金 {}----{}", applyUser.getMoney(), applyMoney);
+                // 如果有一方保证金不足以缴纳 则报错
+                if (applyUser.getMoney().compareTo(applyMoney) < 0) {
+                    return R.fail("您的保证金不足以缴纳");
+                }
+
 
                 //双方都已确认 开始 扣除保证金
                 //获取申请方保证金
@@ -365,6 +373,12 @@ public class PzcActivityGroupController extends BaseController {
             //看看申请方是否确认了
             if (applyStatus == 10) //申请方确认了
             {
+
+                log.info("发起方的余额与保证金 {}----{}", startUser.getMoney(), startMoney);
+                if (startUser.getMoney().compareTo(startMoney) < 0) {
+                    return R.fail("您的的保证金不足以缴纳");
+                }
+
                 //双方都已确认 开始 扣除保证金
                 //获取申请方保证金
                 applyUser.setMoney(applyUser.getMoney().subtract(applyMoney));
