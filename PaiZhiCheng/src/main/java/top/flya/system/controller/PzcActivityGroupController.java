@@ -465,6 +465,7 @@ public class PzcActivityGroupController extends BaseController {
             return R.fail("申请不存在");
         }
         Long userId = LoginHelper.getUserId();
+        PzcUser my = pzcUserMapper.selectById(userId);
 
         Long groupId = pzcActivityGroupApplyVo.getGroupId();
         PzcActivityGroupVo pzcActivityGroupVo = iPzcActivityGroupService.queryById(groupId);
@@ -496,6 +497,17 @@ public class PzcActivityGroupController extends BaseController {
         if (integer == null || integer != 1) {
             return R.fail("修改状态失败");
         }
+
+        //给对方发消息 已经同意了对方的申请 请尽快确认
+        PzcOfficial pzcOfficial = new PzcOfficial();
+        pzcOfficial.setRead(0L);
+        PzcUser otherUser = pzcUserMapper.selectById(applyUserId);
+        pzcOfficial.setToUserId(otherUser.getUserId());
+        pzcOfficial.setTitle("来自"+my.getNickname()+"与您的组队信息：");
+        pzcOfficial.setContent("您的组队申请已经被对方同意，请尽快确认~");
+        pzcOfficial.setGroupId(groupId);
+        pzcOfficial.setActivityId(activityId);
+        pzcOfficialMapper.insert(pzcOfficial);
 
         return R.ok();
     }

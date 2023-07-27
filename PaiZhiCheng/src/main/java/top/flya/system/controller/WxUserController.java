@@ -32,17 +32,13 @@ import top.flya.common.helper.LoginHelper;
 import top.flya.common.utils.MessageUtils;
 import top.flya.common.utils.ServletUtils;
 import top.flya.common.utils.spring.SpringUtils;
-import top.flya.system.domain.PzcOrder;
-import top.flya.system.domain.PzcUser;
-import top.flya.system.domain.PzcUserHistory;
+import top.flya.system.domain.*;
 import top.flya.system.domain.bo.PayOrderBo;
 import top.flya.system.domain.bo.PzcUserBo;
 import top.flya.system.domain.bo.SuccessCallBackObjBo;
 import top.flya.system.domain.vo.PzcUserHistoryVo;
 import top.flya.system.handel.WxPayInitHandel;
-import top.flya.system.mapper.PzcOrderMapper;
-import top.flya.system.mapper.PzcUserHistoryMapper;
-import top.flya.system.mapper.PzcUserMapper;
+import top.flya.system.mapper.*;
 import top.flya.system.utils.CreateSign;
 import top.flya.system.utils.WxUtils;
 
@@ -104,6 +100,21 @@ public class WxUserController extends BaseController {
     @Autowired
     private PzcOrderMapper orderMapper;
 
+    @Autowired
+    private PzcOfficialMapper officialMapper;
+
+    @Autowired
+    private PzcUserTalkMapper talkMapper;
+
+
+    @PostMapping("/notRead") // 获取首页 未读消息 （红点点）
+    public R notRead() {
+        PzcUser user = wxUtils.checkUser();
+        List<PzcOfficial> pzcOfficials = officialMapper.selectList(new QueryWrapper<PzcOfficial>().eq("user_id", user.getUserId()).eq("is_read", 0));
+        Integer size1 = pzcOfficials.size();
+        Integer size2 = talkMapper.selectList(new QueryWrapper<PzcUserTalk>().eq("to_user_id", user.getUserId()).eq("message_status", 0)).size();
+        return R.ok(size1+size2);
+    }
 
 
     @PostMapping("/login") // 登录
