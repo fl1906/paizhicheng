@@ -1,27 +1,29 @@
 package top.flya.system.controller;
 
-import java.util.List;
-import java.util.Arrays;
-
-import lombok.RequiredArgsConstructor;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.*;
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import org.springframework.web.bind.annotation.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import top.flya.common.annotation.RepeatSubmit;
+import org.springframework.web.bind.annotation.*;
 import top.flya.common.annotation.Log;
+import top.flya.common.annotation.RepeatSubmit;
 import top.flya.common.core.controller.BaseController;
 import top.flya.common.core.domain.PageQuery;
 import top.flya.common.core.domain.R;
+import top.flya.common.core.page.TableDataInfo;
 import top.flya.common.core.validate.AddGroup;
 import top.flya.common.core.validate.EditGroup;
 import top.flya.common.enums.BusinessType;
+import top.flya.common.helper.LoginHelper;
 import top.flya.common.utils.poi.ExcelUtil;
-import top.flya.system.domain.vo.PzcOfficialVo;
 import top.flya.system.domain.bo.PzcOfficialBo;
+import top.flya.system.domain.vo.PzcOfficialVo;
 import top.flya.system.service.IPzcOfficialService;
-import top.flya.common.core.page.TableDataInfo;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * 官方消息
@@ -40,11 +42,25 @@ public class PzcOfficialController extends BaseController {
     /**
      * 查询官方消息列表
      */
-    @SaCheckPermission("system:official:list")
     @GetMapping("/list")
     public TableDataInfo<PzcOfficialVo> list(PzcOfficialBo bo, PageQuery pageQuery) {
+        bo.setToUserId(LoginHelper.getUserId());
         return iPzcOfficialService.queryPageList(bo, pageQuery);
     }
+
+
+    /**
+     * 已读消息
+     * 如果officialId为空，则表示全部已读
+     * @param officialId
+     * @return
+     */
+    @PostMapping("/read")
+    public R read(@RequestParam(value = "officialId",required = false) Integer officialId) {
+        return R.ok(iPzcOfficialService.read(officialId));
+    }
+
+
 
     /**
      * 导出官方消息列表

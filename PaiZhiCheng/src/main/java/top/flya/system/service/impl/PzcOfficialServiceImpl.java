@@ -2,6 +2,7 @@ package top.flya.system.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import top.flya.common.core.domain.PageQuery;
 import top.flya.common.core.page.TableDataInfo;
+import top.flya.common.helper.LoginHelper;
 import top.flya.system.domain.PzcOfficial;
 import top.flya.system.domain.bo.PzcOfficialBo;
 import top.flya.system.domain.vo.PzcOfficialVo;
@@ -62,7 +64,7 @@ public class PzcOfficialServiceImpl implements IPzcOfficialService {
         Map<String, Object> params = bo.getParams();
         LambdaQueryWrapper<PzcOfficial> lqw = Wrappers.lambdaQuery();
         lqw.eq(bo.getFromUserId() != null, PzcOfficial::getFromUserId, bo.getFromUserId());
-        lqw.eq(bo.getToUserId() != null, PzcOfficial::getToUserId, bo.getToUserId());
+        lqw.in(bo.getToUserId() != null, PzcOfficial::getToUserId, bo.getToUserId(),0); //官方消息 和给我的消息
         lqw.eq(StringUtils.isNotBlank(bo.getTitle()), PzcOfficial::getTitle, bo.getTitle());
         lqw.eq(StringUtils.isNotBlank(bo.getContent()), PzcOfficial::getContent, bo.getContent());
         lqw.eq(bo.getRead() != null, PzcOfficial::getRead, bo.getRead());
@@ -113,5 +115,19 @@ public class PzcOfficialServiceImpl implements IPzcOfficialService {
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return baseMapper.deleteBatchIds(ids) > 0;
+    }
+
+
+    @Override
+    public Integer read(Integer officialId) {
+        if(officialId==null)
+        {
+            UpdateWrapper<PzcOfficial> set = new UpdateWrapper<PzcOfficial>().eq("to_user_id", LoginHelper.getUserId()).set("read", 1);
+            return baseMapper.update(new PzcOfficial(),set);
+        }else {
+            PzcOfficial pzcOfficial = baseMapper.selectById(officialId);
+            pzcOfficial.setRead(1L);
+            return baseMapper.updateById(pzcOfficial);
+        }
     }
 }

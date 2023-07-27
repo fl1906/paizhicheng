@@ -1,10 +1,9 @@
 package top.flya.system.service;
 
-import top.flya.system.domain.PzcOfficial;
-import top.flya.system.domain.vo.PzcOfficialVo;
-import top.flya.system.domain.bo.PzcOfficialBo;
-import top.flya.common.core.page.TableDataInfo;
 import top.flya.common.core.domain.PageQuery;
+import top.flya.common.core.page.TableDataInfo;
+import top.flya.system.domain.bo.PzcOfficialBo;
+import top.flya.system.domain.vo.PzcOfficialVo;
 
 import java.util.Collection;
 import java.util.List;
@@ -46,4 +45,6 @@ public interface IPzcOfficialService {
      * 校验并批量删除官方消息信息
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+    Integer read(Integer officialId);
 }
