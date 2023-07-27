@@ -10,7 +10,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="toUserId" column="to_user_id"/>
         <result property="title" column="title"/>
         <result property="content" column="content"/>
-        <result property="read" column="read"/>
+        <result property="isRead" column="is_read"/>
         <result property="groupId" column="group_id"/>
         <result property="activityId" column="activity_id"/>
         <result property="createTime" column="create_time"/>

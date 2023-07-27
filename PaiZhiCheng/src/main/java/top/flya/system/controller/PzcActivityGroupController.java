@@ -85,7 +85,7 @@ public class PzcActivityGroupController extends BaseController {
         }
         // 给对方发官方消息 通知对方已取消
         PzcOfficial pzcOfficial = new PzcOfficial();
-        pzcOfficial.setRead(0L);
+        pzcOfficial.setIsRead(0L);
 
 
         PzcUser otherUser = null;
@@ -132,7 +132,7 @@ public class PzcActivityGroupController extends BaseController {
             return R.fail("申请不存在");
         }
         PzcOfficial pzcOfficial = new PzcOfficial();
-        pzcOfficial.setRead(0L);
+        pzcOfficial.setIsRead(0L);
         if (pzcActivityGroupApplyVo.getUserId().equals(userId)) //我是申请方
         {
             //把钱都返还给发起方
@@ -500,7 +500,7 @@ public class PzcActivityGroupController extends BaseController {
 
         //给对方发消息 已经同意了对方的申请 请尽快确认
         PzcOfficial pzcOfficial = new PzcOfficial();
-        pzcOfficial.setRead(0L);
+        pzcOfficial.setIsRead(0L);
         PzcUser otherUser = pzcUserMapper.selectById(applyUserId);
         pzcOfficial.setToUserId(otherUser.getUserId());
         pzcOfficial.setTitle("来自"+my.getNickname()+"与您的组队信息：");

@@ -67,7 +67,7 @@ public class PzcOfficialServiceImpl implements IPzcOfficialService {
         lqw.in(bo.getToUserId() != null, PzcOfficial::getToUserId, bo.getToUserId(),0); //官方消息 和给我的消息
         lqw.eq(StringUtils.isNotBlank(bo.getTitle()), PzcOfficial::getTitle, bo.getTitle());
         lqw.eq(StringUtils.isNotBlank(bo.getContent()), PzcOfficial::getContent, bo.getContent());
-        lqw.eq(bo.getRead() != null, PzcOfficial::getRead, bo.getRead());
+        lqw.eq(bo.getIsRead() != null, PzcOfficial::getIsRead, bo.getIsRead());
         lqw.eq(bo.getGroupId() != null, PzcOfficial::getGroupId, bo.getGroupId());
         lqw.eq(bo.getActivityId() != null, PzcOfficial::getActivityId, bo.getActivityId());
         lqw.eq(bo.getCreateTime() != null, PzcOfficial::getCreateTime, bo.getCreateTime());
@@ -122,11 +122,11 @@ public class PzcOfficialServiceImpl implements IPzcOfficialService {
     public Integer read(Integer officialId) {
         if(officialId==null)
         {
-            UpdateWrapper<PzcOfficial> set = new UpdateWrapper<PzcOfficial>().eq("to_user_id", LoginHelper.getUserId()).set("read", 1);
+            UpdateWrapper<PzcOfficial> set = new UpdateWrapper<PzcOfficial>().eq("to_user_id", LoginHelper.getUserId()).set("is_read", 1);
             return baseMapper.update(new PzcOfficial(),set);
         }else {
             PzcOfficial pzcOfficial = baseMapper.selectById(officialId);
-            pzcOfficial.setRead(1L);
+            pzcOfficial.setIsRead(1L);
             return baseMapper.updateById(pzcOfficial);
         }
     }

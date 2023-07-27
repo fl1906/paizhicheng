@@ -45,7 +45,7 @@ public class PzcOfficial extends BaseEntity {
     /**
      * 是否已读
      */
-    private Long read;
+    private Long isRead;
     /**
      * 来自那场组队的消息
      */

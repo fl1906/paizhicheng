@@ -107,13 +107,13 @@ public class WxUserController extends BaseController {
     private PzcUserTalkMapper talkMapper;
 
 
-    @PostMapping("/notRead") // 获取首页 未读消息 （红点点）
+    @GetMapping("/notRead") // 获取首页 未读消息 （红点点）
     public R notRead() {
         PzcUser user = wxUtils.checkUser();
-        List<PzcOfficial> pzcOfficials = officialMapper.selectList(new QueryWrapper<PzcOfficial>().eq("user_id", user.getUserId()).eq("is_read", 0));
+        List<PzcOfficial> pzcOfficials = officialMapper.selectList(new QueryWrapper<PzcOfficial>().eq("to_user_id", user.getUserId()).eq("is_read", 0));
         Integer size1 = pzcOfficials.size();
         Integer size2 = talkMapper.selectList(new QueryWrapper<PzcUserTalk>().eq("to_user_id", user.getUserId()).eq("message_status", 0)).size();
-        return R.ok(size1+size2);
+        return R.ok(Math.min(size1 + size2, 99));
     }
 
 

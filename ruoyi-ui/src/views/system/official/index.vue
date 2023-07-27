@@ -25,7 +25,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="是否已读" prop="read">
+      <el-form-item label="是否已读" prop="isRead">
         <el-input
           v-model="queryParams.read"
           placeholder="请输入是否已读"
@@ -124,7 +124,7 @@
       <el-table-column label="给谁发的消息" align="center" prop="toUserId" />
       <el-table-column label="标题" align="center" prop="title" />
       <el-table-column label="主体消息" align="center" prop="content" />
-      <el-table-column label="是否已读" align="center" prop="read" />
+      <el-table-column label="是否已读" align="center" prop="isRead" />
       <el-table-column label="来自那场组队的消息" align="center" prop="groupId" />
       <el-table-column label="来自那场活动的消息" align="center" prop="activityId" />
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
@@ -180,7 +180,7 @@
         <el-form-item label="主体消息">
           <editor v-model="form.content" :min-height="192"/>
         </el-form-item>
-        <el-form-item label="是否已读" prop="read">
+        <el-form-item label="是否已读" prop="isRead">
           <el-input v-model="form.read" placeholder="请输入是否已读" />
         </el-form-item>
         <el-form-item label="来自那场组队的消息" prop="groupId">

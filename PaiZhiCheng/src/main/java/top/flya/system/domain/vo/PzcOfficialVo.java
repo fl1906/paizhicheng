@@ -53,7 +53,7 @@ public class PzcOfficialVo {
      * 是否已读
      */
     @ExcelProperty(value = "是否已读")
-    private Long read;
+    private Long isRead;
 
     /**
      * 来自那场组队的消息
