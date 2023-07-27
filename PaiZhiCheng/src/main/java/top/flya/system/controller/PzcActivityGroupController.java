@@ -65,7 +65,6 @@ public class PzcActivityGroupController extends BaseController {
 
     private final PzcActivityGroupMapper pzcActivityGroupMapper;
 
-
     private final PzcActivityGroupApplyMapper pzcActivityGroupApplyMapper;
 
 
@@ -90,7 +89,7 @@ public class PzcActivityGroupController extends BaseController {
         }
 
         Integer applyStatus = pzcActivityGroupApplyVo.getApplyStatus();
-        if (applyStatus == -1 || applyStatus == 2 || applyStatus == 3) {
+        if (applyStatus != 0 && applyStatus != 1 && applyStatus != 9 && applyStatus != 10) {
             return R.fail("该订单位于【" + wxUtils.applyStatus(applyStatus) + "】状态，不可取消");
         }
 
@@ -108,6 +107,37 @@ public class PzcActivityGroupController extends BaseController {
         return R.ok(iPzcActivityGroupApplyService.updateStatus(applyId.longValue(), -1));
     }
 
+
+    @PostMapping("/cancelByGroupIn") //活动过程中取消组队 扣除保证金 + 0.2派币 退还对方派币 + 对方的保证金 通知对方
+    @Transactional
+    @RepeatSubmit()
+    public R cancelByGroupIn(@RequestParam("applyId") Integer applyId) {
+        Long userId = LoginHelper.getUserId();
+        PzcActivityGroupApplyVo pzcActivityGroupApplyVo = iPzcActivityGroupApplyService.queryById(applyId.longValue());
+        if (pzcActivityGroupApplyVo == null) {
+            return R.fail("申请不存在");
+        }
+        if (pzcActivityGroupApplyVo.getUserId().equals(userId)) //我是申请方
+        {
+            //把钱都返还给发起方
+            BigDecimal money = pzcActivityGroupApplyVo.getMoney();
+            money = money.subtract(new BigDecimal("0.2"));
+            PzcActivityGroup pzcActivityGroup = pzcActivityGroupMapper.selectById(pzcActivityGroupApplyVo.getGroupId());
+            PzcUser startUser = pzcUserMapper.selectById(pzcActivityGroup.getUserId());
+            startUser.setMoney(startUser.getMoney().add(money).add(pzcActivityGroup.getMoney())); //全额返回给发起方的保证金 + 对方扣除 0.2保证金 后的派币
+            pzcUserMapper.updateById(startUser);
+        }else {
+            //我是发起方
+            PzcUser applyUser = pzcUserMapper.selectById(pzcActivityGroupApplyVo.getUserId());
+            PzcActivityGroup pzcActivityGroup = pzcActivityGroupMapper.selectById(pzcActivityGroupApplyVo.getGroupId());
+            applyUser.setMoney(applyUser.getMoney().
+                add(pzcActivityGroup.getMoney().subtract(new BigDecimal("0.2")))
+                .add(pzcActivityGroupApplyVo.getMoney())); //全额返回给申请方的保证金
+            pzcUserMapper.updateById(applyUser);
+        }
+        //TODO 给对方发官方消息 通知对方已取消 退还自己的保证金 + 对方的保证金 -0.2派币
+        return R.ok(iPzcActivityGroupApplyService.updateStatus(applyId.longValue(), -1));//修改状态为 已取消
+    }
 
     /**
      * 我创建的活动的申请列表
@@ -160,17 +190,17 @@ public class PzcActivityGroupController extends BaseController {
      * 13 发起方已评价
      * 14 申请方已评价
      * 15 双方已评价
+     *
      * @param applyId
      * @return
      */
 
-    @PostMapping("/pj") //双方评价 （可选）  //TODO
+    @PostMapping("/pj") //双方评价 （可选）
     @Transactional
-    public R pj(@RequestParam("applyId")Integer applyId,@RequestParam("score")Integer score)
-    {
+    public R pj(@RequestParam("applyId") Integer applyId, @RequestParam("score") Integer score) {
         wxUtils.checkApplyScore(score);
         PzcActivityGroupApplyVo pzcActivityGroupApplyVo = wxUtils.checkApplyPj(applyId.longValue());
-       //首先获取我的UserId
+        //首先获取我的UserId
         Long userId = LoginHelper.getUserId();
         Long groupId = pzcActivityGroupApplyVo.getGroupId();
         Integer applyStatus = pzcActivityGroupApplyVo.getApplyStatus();
@@ -181,8 +211,8 @@ public class PzcActivityGroupController extends BaseController {
             if (applyStatus == 14) {
                 return R.fail("您已经评价过了 不可重复操作");
             }
-            otherUser.setIntegration(otherUser.getIntegration()+score);
-            otherUser.setIntegrationNow(otherUser.getIntegrationNow()+score);
+            otherUser.setIntegration(otherUser.getIntegration() + score);
+            otherUser.setIntegrationNow(otherUser.getIntegrationNow() + score);
             wxUtils.updateUserMsg(otherUser);
 
             pzcUserMapper.updateById(otherUser);
@@ -208,8 +238,8 @@ public class PzcActivityGroupController extends BaseController {
         // ============================================================================================
         Long otherUserId = pzcActivityGroupApplyVo.getUserId();
         PzcUser otherUser = pzcUserMapper.selectById(otherUserId);
-        otherUser.setIntegration(otherUser.getIntegration()+score);
-        otherUser.setIntegrationNow(otherUser.getIntegrationNow()+score);
+        otherUser.setIntegration(otherUser.getIntegration() + score);
+        otherUser.setIntegrationNow(otherUser.getIntegrationNow() + score);
         wxUtils.updateUserMsg(otherUser);
         pzcUserMapper.updateById(otherUser);
 
@@ -226,11 +256,8 @@ public class PzcActivityGroupController extends BaseController {
 
 
     /**
-     *
-     *
-     *
-     *
      * 双方都到达了目的地 开始扣手续费
+     *
      * @param applyId
      * @return
      */
@@ -241,9 +268,8 @@ public class PzcActivityGroupController extends BaseController {
         Long userId = LoginHelper.getUserId();
         Long groupId = pzcActivityGroupApplyVo.getGroupId();
         Integer applyStatus = pzcActivityGroupApplyVo.getApplyStatus();
-        if(applyStatus!=2&&applyStatus!=11&&applyStatus!=12)
-        {
-            return R.fail("该订单目前状态为【"+wxUtils.applyStatus(applyStatus)+"】不可确认");
+        if (applyStatus != 2 && applyStatus != 11 && applyStatus != 12) {
+            return R.fail("该订单目前状态为【" + wxUtils.applyStatus(applyStatus) + "】不可确认");
         }
 
         //获取发起方的保证金
@@ -319,8 +345,7 @@ public class PzcActivityGroupController extends BaseController {
         Long groupId = pzcActivityGroupApplyVo.getGroupId();
         Integer applyStatus = pzcActivityGroupApplyVo.getApplyStatus();
 
-        if(applyStatus==2)
-        {
+        if (applyStatus == 2) {
             return R.fail("该订单进行中，不可确认");
         }
         PzcActivityGroupVo group = iPzcActivityGroupService.queryById(groupId);
@@ -397,8 +422,9 @@ public class PzcActivityGroupController extends BaseController {
 
 
     /**
-     *   同意用户申请 进入下一阶段
-     *  同意用户申请时 先判断对方是否  处于组队进程
+     * 同意用户申请 进入下一阶段
+     * 同意用户申请时 先判断对方是否  处于组队进程
+     *
      * @return
      */
     @PostMapping("/apply")
@@ -428,9 +454,8 @@ public class PzcActivityGroupController extends BaseController {
         //然后获取当前对方申请了几个队伍 判断每个队伍的进程 如果有 进程处于 组队状态中 则不可以同意
         List<PzcActivityGroupApply> applies = pzcActivityGroupApplyMapper.selectList(new QueryWrapper<PzcActivityGroupApply>().in("group_id", groupIds).eq("user_id", applyUserId));
         applies.forEach(
-            a->{
-                if(a.getApplyStatus()!=0&&a.getApplyStatus()!=3&&a.getApplyStatus()!=13&&a.getApplyStatus()!=14&&a.getApplyStatus()!=15)
-                {
+            a -> {
+                if (a.getApplyStatus() != 0 && a.getApplyStatus() != 3 && a.getApplyStatus() != 13 && a.getApplyStatus() != 14 && a.getApplyStatus() != 15) {
                     throw new RuntimeException("该用户已经处于组队进程中 等待对方结束活动再试哦");
                 }
             }
