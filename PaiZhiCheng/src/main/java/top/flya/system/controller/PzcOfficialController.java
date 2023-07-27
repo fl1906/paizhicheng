@@ -45,6 +45,8 @@ public class PzcOfficialController extends BaseController {
     @GetMapping("/list")
     public TableDataInfo<PzcOfficialVo> list(PzcOfficialBo bo, PageQuery pageQuery) {
         bo.setToUserId(LoginHelper.getUserId());
+        pageQuery.setOrderByColumn("create_time");
+        pageQuery.setIsAsc("desc");
         return iPzcOfficialService.queryPageList(bo, pageQuery);
     }
 

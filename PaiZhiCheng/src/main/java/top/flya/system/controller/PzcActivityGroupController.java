@@ -18,10 +18,7 @@ import top.flya.common.core.validate.EditGroup;
 import top.flya.common.enums.BusinessType;
 import top.flya.common.helper.LoginHelper;
 import top.flya.common.utils.poi.ExcelUtil;
-import top.flya.system.domain.PzcActivityGroup;
-import top.flya.system.domain.PzcActivityGroupApply;
-import top.flya.system.domain.PzcUser;
-import top.flya.system.domain.PzcUserPhoto;
+import top.flya.system.domain.*;
 import top.flya.system.domain.bo.PzcActivityGroupBo;
 import top.flya.system.domain.vo.PzcActivityGroupApplyVo;
 import top.flya.system.domain.vo.PzcActivityGroupVo;
@@ -67,8 +64,10 @@ public class PzcActivityGroupController extends BaseController {
 
     private final PzcActivityGroupApplyMapper pzcActivityGroupApplyMapper;
 
+    private final PzcOfficialMapper pzcOfficialMapper;
 
-    @PostMapping("/cancel")
+
+    @PostMapping("/cancel") //取消 双方都可以取消
     @Transactional
     @RepeatSubmit()
     public R cancel(@RequestParam("applyId") Integer applyId) {
@@ -84,9 +83,25 @@ public class PzcActivityGroupController extends BaseController {
         if (pzcActivityGroupVo == null) {
             return R.fail("组队不存在");
         }
-        if (!pzcActivityGroupVo.getUserId().equals(userId)) {
-            return R.fail("你不是组队发起人");
+        // 给对方发官方消息 通知对方已取消
+        PzcOfficial pzcOfficial = new PzcOfficial();
+        pzcOfficial.setRead(0L);
+
+
+        PzcUser otherUser = null;
+        if(pzcActivityGroupVo.getUserId().equals(userId)) //我是申请人 取消
+        {
+         otherUser = pzcUserMapper.selectById(pzcActivityGroupMapper.selectById(groupId).getUserId());
+
+        }else { //我是发起人
+          otherUser = pzcUserMapper.selectById(pzcActivityGroupApplyVo.getUserId());
         }
+        pzcOfficial.setToUserId(otherUser.getUserId());
+        pzcOfficial.setTitle("来自"+otherUser.getNickname()+"与您的组队信息：");
+        pzcOfficial.setContent("在【"+pzcActivityGroupVo.getTitle()+"】组队中途，对方已经取消本次组队。请重新选择队伍进行匹配~");
+        pzcOfficial.setGroupId(groupId);
+        pzcOfficial.setActivityId(pzcActivityGroupVo.getActivityId());
+        pzcOfficialMapper.insert(pzcOfficial);
 
         Integer applyStatus = pzcActivityGroupApplyVo.getApplyStatus();
         if (applyStatus != 0 && applyStatus != 1 && applyStatus != 9 && applyStatus != 10) {
@@ -101,8 +116,6 @@ public class PzcActivityGroupController extends BaseController {
             pzcUser.setMoney(pzcUser.getMoney().subtract(new BigDecimal("0.1"))); //扣除0.1派币
         }
         pzcUserMapper.updateById(pzcUser);
-        //TODO 给对方发官方消息 通知对方已取消
-
         //修改状态为 已取消
         return R.ok(iPzcActivityGroupApplyService.updateStatus(applyId.longValue(), -1));
     }
@@ -113,10 +126,13 @@ public class PzcActivityGroupController extends BaseController {
     @RepeatSubmit()
     public R cancelByGroupIn(@RequestParam("applyId") Integer applyId) {
         Long userId = LoginHelper.getUserId();
+        PzcUser my = pzcUserMapper.selectById(userId);
         PzcActivityGroupApplyVo pzcActivityGroupApplyVo = iPzcActivityGroupApplyService.queryById(applyId.longValue());
         if (pzcActivityGroupApplyVo == null) {
             return R.fail("申请不存在");
         }
+        PzcOfficial pzcOfficial = new PzcOfficial();
+        pzcOfficial.setRead(0L);
         if (pzcActivityGroupApplyVo.getUserId().equals(userId)) //我是申请方
         {
             //把钱都返还给发起方
@@ -126,6 +142,14 @@ public class PzcActivityGroupController extends BaseController {
             PzcUser startUser = pzcUserMapper.selectById(pzcActivityGroup.getUserId());
             startUser.setMoney(startUser.getMoney().add(money).add(pzcActivityGroup.getMoney())); //全额返回给发起方的保证金 + 对方扣除 0.2保证金 后的派币
             pzcUserMapper.updateById(startUser);
+
+            pzcOfficial.setTitle("来自"+my.getNickname()+"与您的组队信息：");
+            pzcOfficial.setContent("在【"+pzcActivityGroup.getTitle()+"】组队中途，申请方已经取消本次组队。对方的违约金 【"+money+"派币】已纳入您的账户。请查收~");
+            pzcOfficial.setToUserId(startUser.getUserId());
+            pzcOfficial.setGroupId(pzcActivityGroup.getGroupId());
+            pzcOfficial.setActivityId(pzcActivityGroup.getActivityId());
+            pzcOfficialMapper.insert(pzcOfficial);
+
         }else {
             //我是发起方
             PzcUser applyUser = pzcUserMapper.selectById(pzcActivityGroupApplyVo.getUserId());
@@ -134,8 +158,14 @@ public class PzcActivityGroupController extends BaseController {
                 add(pzcActivityGroup.getMoney().subtract(new BigDecimal("0.2")))
                 .add(pzcActivityGroupApplyVo.getMoney())); //全额返回给申请方的保证金
             pzcUserMapper.updateById(applyUser);
+
+            pzcOfficial.setTitle("来自"+my.getNickname()+"与您的组队信息：");
+            pzcOfficial.setContent("在【"+pzcActivityGroup.getTitle()+"】组队中途，发起方已经取消本次组队。对方的违约金 【"+pzcActivityGroup.getMoney().subtract(new BigDecimal("0.2"))+"派币】已纳入您的账户。请查收~");
+            pzcOfficial.setToUserId(applyUser.getUserId());
+            pzcOfficial.setGroupId(pzcActivityGroup.getGroupId());
+            pzcOfficial.setActivityId(pzcActivityGroup.getActivityId());
+            pzcOfficialMapper.insert(pzcOfficial);
         }
-        //TODO 给对方发官方消息 通知对方已取消 退还自己的保证金 + 对方的保证金 -0.2派币
         return R.ok(iPzcActivityGroupApplyService.updateStatus(applyId.longValue(), -1));//修改状态为 已取消
     }
 
