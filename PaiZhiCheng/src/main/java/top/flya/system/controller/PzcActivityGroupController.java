@@ -367,6 +367,20 @@ public class PzcActivityGroupController extends BaseController {
     }
 
 
+    @GetMapping("/applyRole")
+    public R applyRole(@RequestParam("applyId")Integer applyId )
+    {
+        Long userId = LoginHelper.getUserId();
+        PzcActivityGroupApplyVo pzcActivityGroupApplyVo = wxUtils.checkApplyConfirm(applyId.longValue());
+        if (pzcActivityGroupApplyVo.getUserId().equals(userId))
+        {
+            return R.ok(1); //我是申请方
+        }else {
+            return R.ok(0); //我是发起方
+        }
+    }
+
+
     @PostMapping("/confirm") //确认申请 (这里判断 保证金 是否足够缴纳 保证 新人卡 bug)
     @Transactional
     public R confirm(@RequestParam("applyId") Integer applyId) {

@@ -10,13 +10,11 @@ import com.corundumstudio.socketio.annotation.OnEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import top.flya.common.helper.LoginHelper;
 import top.flya.system.config.ClientCache;
 import top.flya.system.config.Event;
 import top.flya.system.domain.PzcUser;
 import top.flya.system.domain.bo.PzcUserTalkBo;
 import top.flya.system.mapper.PzcUserMapper;
-
 import top.flya.system.service.IPzcUserTalkService;
 
 import javax.annotation.Resource;
@@ -126,6 +124,14 @@ public class MessageEventHandler {
         }
 
     }
+
+
+    /**
+     * 给指定用户发送消息：
+     *
+     * 如果接收者在线，则直接发送消息；
+     * 否则将消息存储到redis，等用户上线后主动拉取未读消息。
+     */
 
 
 
