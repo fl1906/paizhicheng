@@ -109,7 +109,6 @@ public class WxUserController extends BaseController {
 
 
 
-
     @GetMapping("/notRead") // 获取首页 未读消息 （红点点）
     public R notRead() {
         PzcUser user = wxUtils.checkUser();
