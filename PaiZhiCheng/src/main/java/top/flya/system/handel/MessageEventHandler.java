@@ -46,7 +46,7 @@ public class MessageEventHandler {
 
 
     @Resource
-    private StringRedisTemplate redisTemplate;
+    private StringRedisTemplate stringRedisTemplate;
 
     /**
      * 添加connect事件，当客户端发起连接时调用
@@ -70,7 +70,7 @@ public class MessageEventHandler {
                     client.disconnect();
                 }
                 log.info("与对方建立连接成功,【userId】= {},【sessionId】= {}", userId, sessionId);
-                String result = redisTemplate.opsForValue().get("officialMessage:" + userId);
+                String result = stringRedisTemplate.opsForValue().get("officialMessage:" + userId);
                 if(result!=null)
                 {
                     WxzApplyBo wxzApplyBo = JsonUtils.parseObject(result, WxzApplyBo.class);
@@ -160,7 +160,7 @@ public class MessageEventHandler {
         }
         else {
             //TODO 这里需要将消息存储到redis 等待用户上线后推送
-            redisTemplate.opsForValue().set("officialMessage:"+wxzApplyBo.getToUserId(), JsonUtils.toJsonString(wxzApplyBo));
+            stringRedisTemplate.opsForValue().set("officialMessage:"+wxzApplyBo.getToUserId(), JsonUtils.toJsonString(wxzApplyBo));
             request.sendAckData(Dict.create().set("flag", false).set("message", "用户不在线~ 对方上线后可见 "));
         }
 

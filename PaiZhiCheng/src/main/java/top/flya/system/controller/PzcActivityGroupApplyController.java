@@ -30,6 +30,7 @@ import top.flya.system.mapper.PzcActivityGroupMapper;
 import top.flya.system.mapper.PzcUserMapper;
 import top.flya.system.service.IPzcActivityGroupApplyService;
 import top.flya.system.utils.ActivityUtils;
+import top.flya.system.utils.WxUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotEmpty;
@@ -62,7 +63,9 @@ public class PzcActivityGroupApplyController extends BaseController {
     private final PzcActivityGroupMapper pzcActivityGroupMapper;
 
 
-    private final StringRedisTemplate redisTemplate;
+    private final StringRedisTemplate stringRedisTemplate;
+
+    private final WxUtils wxUtils;
 
 
 
@@ -76,9 +79,13 @@ public class PzcActivityGroupApplyController extends BaseController {
         if (pzcActivityGroupApply == null) {
             return R.fail("申请不存在");
         }
+
+         if(pzcActivityGroupApply.getApplyStatus()!=2&&pzcActivityGroupApply.getApplyStatus()!=9&&pzcActivityGroupApply.getApplyStatus()!=10&&pzcActivityGroupApply.getApplyStatus()!=11&&pzcActivityGroupApply.getApplyStatus()!=12) {
+             return R.fail("当前状态为【"+wxUtils.applyStatus(pzcActivityGroupApply.getApplyStatus())+"】，不能进行此操作");
+         }
         //这里取消redis缓存
         Long userId = LoginHelper.getUserId();
-        String result = redisTemplate.opsForValue().get("officialMessage:" + userId);
+        String result = stringRedisTemplate.opsForValue().get("officialMessage:" + userId);
         log.info("result:{}",result);
         if(result!=null){
             WxzApplyBo wxzApplyBo = JsonUtils.parseObject(result, WxzApplyBo.class);
@@ -89,7 +96,7 @@ public class PzcActivityGroupApplyController extends BaseController {
             if(!wxzApplyBo.getApplyId().equals(applyId)){
                 return R.fail("申请方请求不存在");
             }
-            redisTemplate.delete("officialMessage:" + userId);
+            stringRedisTemplate.delete("officialMessage:" + userId);
         }else {
             return R.fail("申请方请求不存在");
         }
