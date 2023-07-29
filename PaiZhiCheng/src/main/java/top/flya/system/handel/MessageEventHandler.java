@@ -155,7 +155,7 @@ public class MessageEventHandler {
         wxzApplyBo.setMessage("对方想要超限制确认\n已与本人见面");
         log.info("用户 {} 刚刚给用户 {} 发起了一条无限制确认到达弹窗", wxzApplyBo.getFromUserId(), wxzApplyBo.getToUserId());
         //这里分 用户是否在线
-        if(officialMessage(String.valueOf(wxzApplyBo.getToUserId()),wxzApplyBo)) {
+        if(officialMessage(String.valueOf(wxzApplyBo.getFromUserId()),wxzApplyBo)) { //测试时修改一下
             request.sendAckData(Dict.create().set("flag", true).set("message", "发送成功"));
         }
         else {
