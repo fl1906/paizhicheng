@@ -14,6 +14,8 @@ public class WxzApplyBo {
 
     private Integer groupId;
 
+    private Integer applyId;
+
     private String message;
 
 }

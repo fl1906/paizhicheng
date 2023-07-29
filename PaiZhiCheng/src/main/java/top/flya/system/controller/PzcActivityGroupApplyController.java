@@ -2,6 +2,9 @@ package top.flya.system.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import top.flya.common.annotation.Log;
@@ -14,11 +17,13 @@ import top.flya.common.core.validate.AddGroup;
 import top.flya.common.core.validate.EditGroup;
 import top.flya.common.enums.BusinessType;
 import top.flya.common.helper.LoginHelper;
+import top.flya.common.utils.JsonUtils;
 import top.flya.common.utils.poi.ExcelUtil;
 import top.flya.system.domain.PzcActivityGroup;
 import top.flya.system.domain.PzcActivityGroupApply;
 import top.flya.system.domain.PzcUser;
 import top.flya.system.domain.bo.PzcActivityGroupApplyBo;
+import top.flya.system.domain.bo.WxzApplyBo;
 import top.flya.system.domain.vo.PzcActivityGroupApplyVo;
 import top.flya.system.mapper.PzcActivityGroupApplyMapper;
 import top.flya.system.mapper.PzcActivityGroupMapper;
@@ -43,6 +48,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/system/activityGroupApply")
+@Slf4j
 public class PzcActivityGroupApplyController extends BaseController {
 
     private final IPzcActivityGroupApplyService iPzcActivityGroupApplyService;
@@ -54,6 +60,43 @@ public class PzcActivityGroupApplyController extends BaseController {
     private final PzcUserMapper pzcUserMapper;
 
     private final PzcActivityGroupMapper pzcActivityGroupMapper;
+
+
+    private final StringRedisTemplate redisTemplate;
+
+
+
+    @PostMapping("/wxzApply")
+    @Transactional
+    public R wxzApply(@RequestParam("applyId") Integer applyId,@RequestParam("wxz")Integer wxz) {  //wxz 0 未选择 1 选择
+        if(wxz!=0&&wxz!=1){
+            return R.fail("参数错误");
+        }
+        PzcActivityGroupApply pzcActivityGroupApply = pzcActivityGroupApplyMapper.selectById(applyId);
+        if (pzcActivityGroupApply == null) {
+            return R.fail("申请不存在");
+        }
+        //这里取消redis缓存
+        Long userId = LoginHelper.getUserId();
+        String result = redisTemplate.opsForValue().get("officialMessage:" + userId);
+        log.info("result:{}",result);
+        if(result!=null){
+            WxzApplyBo wxzApplyBo = JsonUtils.parseObject(result, WxzApplyBo.class);
+            if(wxzApplyBo==null)
+            {
+                return R.fail("转换JSON异常");
+            }
+            if(!wxzApplyBo.getApplyId().equals(applyId)){
+                return R.fail("申请方请求不存在");
+            }
+            redisTemplate.delete("officialMessage:" + userId);
+        }else {
+            return R.fail("申请方请求不存在");
+        }
+        pzcActivityGroupApply.setWxz(wxz);
+        pzcActivityGroupApplyMapper.updateById(pzcActivityGroupApply);
+        return R.ok();
+    }
 
     /**
      * -1 已取消

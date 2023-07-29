@@ -70,7 +70,7 @@ public class MessageEventHandler {
                     client.disconnect();
                 }
                 log.info("与对方建立连接成功,【userId】= {},【sessionId】= {}", userId, sessionId);
-                String result = redisTemplate.opsForValue().getAndDelete("officialMessage:" + userId);
+                String result = redisTemplate.opsForValue().get("officialMessage:" + userId);
                 if(result!=null)
                 {
                     WxzApplyBo wxzApplyBo = JsonUtils.parseObject(result, WxzApplyBo.class);
