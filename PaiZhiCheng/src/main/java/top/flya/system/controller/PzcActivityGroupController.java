@@ -35,6 +35,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static top.flya.system.config.ClientCache.concurrentHashMap;
+
 /**
  * 活动组队
  *
@@ -65,6 +67,8 @@ public class PzcActivityGroupController extends BaseController {
     private final PzcActivityGroupApplyMapper pzcActivityGroupApplyMapper;
 
     private final PzcOfficialMapper pzcOfficialMapper;
+
+    private final PzcUserTalkMapper pzcUserTalkMapper;
 
 
     @PostMapping("/cancel") //取消 双方都可以取消
@@ -212,7 +216,9 @@ public class PzcActivityGroupController extends BaseController {
         pzcUser.setMoney(null);
         pzcUser.setUserPhoto(pzcUserPhotoMapper.selectList(new QueryWrapper<>(new PzcUserPhoto()).eq("user_id", userId)));
         pzcUser.setPzcActivityGroupApplyVo(pzcActivityGroupApplyVo);
-
+        pzcUser.setPzcActivityGroup(pzcActivityGroupMapper.selectById(groupId));
+        pzcUser.setLiveStatus(concurrentHashMap.get(userId)!=null);
+        pzcUser.setNotReadCount(pzcUserTalkMapper.selectNotReadCount(userId,LoginHelper.getUserId()));
         return R.ok(pzcUser);
     }
 

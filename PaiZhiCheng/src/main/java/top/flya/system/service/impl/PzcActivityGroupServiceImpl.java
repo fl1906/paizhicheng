@@ -1,30 +1,29 @@
 package top.flya.system.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import lombok.extern.slf4j.Slf4j;
-import top.flya.common.core.page.TableDataInfo;
-import top.flya.common.core.domain.PageQuery;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import top.flya.system.domain.PzcActivityGroupApply;
+import top.flya.common.core.domain.PageQuery;
+import top.flya.common.core.page.TableDataInfo;
+import top.flya.system.domain.PzcActivityGroup;
 import top.flya.system.domain.PzcUserPhoto;
 import top.flya.system.domain.bo.PzcActivityGroupBo;
 import top.flya.system.domain.vo.PzcActivityGroupVo;
-import top.flya.system.domain.PzcActivityGroup;
 import top.flya.system.mapper.PzcActivityGroupMapper;
 import top.flya.system.mapper.PzcActivityMapper;
 import top.flya.system.mapper.PzcUserPhotoMapper;
 import top.flya.system.service.IPzcActivityGroupService;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Collection;
 
 /**
  * 活动组队Service业务层处理
@@ -53,7 +52,6 @@ public class PzcActivityGroupServiceImpl implements IPzcActivityGroupService {
         {
             return null;
         }
-
         if(pzcActivityGroupVo.getAuth()==2)
         {
             log.info("私密组队，不返回用户信息");

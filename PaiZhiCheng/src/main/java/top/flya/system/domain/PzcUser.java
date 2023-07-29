@@ -124,4 +124,12 @@ public class PzcUser extends BaseEntity {
      */
     private Integer exemptCancel;
 
+
+    @TableField(exist = false)
+    private Boolean liveStatus;
+
+
+    @TableField(exist = false)
+    private Integer notReadCount;
+
 }
