@@ -164,6 +164,7 @@ public class PzcActivityGroupServiceImpl implements IPzcActivityGroupService {
         LambdaQueryWrapper<PzcActivityGroup> lqw = Wrappers.lambdaQuery();
         lqw.eq(PzcActivityGroup::getUserId, userId);
         lqw.eq(PzcActivityGroup::getActivityId, activityId);
+        //
         return baseMapper.selectCount(lqw) > 0;
     }
 }

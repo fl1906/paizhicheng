@@ -576,10 +576,10 @@ public class PzcActivityGroupController extends BaseController {
         if (!iPzcActivityGroupService.checkActivity(bo.getActivityId())) {
             return R.fail("活动不存在");
         }
-        //是否已经发起过组队
-        if (iPzcActivityGroupService.checkGroup(userId, bo.getActivityId())) {
-            return R.fail("已经发起过组队 不可重复发起");
-        }
+        //是否已经发起过组队  这个可以重复发起
+//        if (iPzcActivityGroupService.checkGroup(userId, bo.getActivityId())) {
+//            return R.fail("已经发起过组队 不可重复发起");
+//        }
 
         return toAjax(iPzcActivityGroupService.insertByBo(bo));
     }

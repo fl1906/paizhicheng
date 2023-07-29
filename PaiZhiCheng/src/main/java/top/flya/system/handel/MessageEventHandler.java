@@ -159,12 +159,10 @@ public class MessageEventHandler {
             request.sendAckData(Dict.create().set("flag", true).set("message", "发送成功"));
         }
         else {
-            //TODO 这里需要将消息存储到redis 等待用户上线后推送
+            // 这里需要将消息存储到redis 等待用户上线后推送
             stringRedisTemplate.opsForValue().set("officialMessage:"+wxzApplyBo.getToUserId(), JsonUtils.toJsonString(wxzApplyBo));
             request.sendAckData(Dict.create().set("flag", false).set("message", "用户不在线~ 对方上线后可见 "));
         }
-
-
 
     }
 
