@@ -9,11 +9,14 @@ import com.corundumstudio.socketio.annotation.OnDisconnect;
 import com.corundumstudio.socketio.annotation.OnEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
+import top.flya.common.utils.JsonUtils;
 import top.flya.system.config.ClientCache;
 import top.flya.system.config.Event;
 import top.flya.system.domain.PzcUser;
 import top.flya.system.domain.bo.PzcUserTalkBo;
+import top.flya.system.domain.bo.WxzApplyBo;
 import top.flya.system.mapper.PzcUserMapper;
 import top.flya.system.service.IPzcUserTalkService;
 
@@ -41,6 +44,10 @@ public class MessageEventHandler {
     @Resource
     private IPzcUserTalkService userTalkService;
 
+
+    @Resource
+    private StringRedisTemplate redisTemplate;
+
     /**
      * 添加connect事件，当客户端发起连接时调用
      *
@@ -63,6 +70,15 @@ public class MessageEventHandler {
                     client.disconnect();
                 }
                 log.info("与对方建立连接成功,【userId】= {},【sessionId】= {}", userId, sessionId);
+                String result = redisTemplate.opsForValue().getAndDelete("officialMessage:" + userId);
+                if(result!=null)
+                {
+                    WxzApplyBo wxzApplyBo = JsonUtils.parseObject(result, WxzApplyBo.class);
+                    officialMessage(userId,wxzApplyBo);
+                    log.info("与对方建立联系时 推送官方消息成功");
+                }
+
+                //TODO创建连接成功之后拉取redis 中的消息 如果有就推送出去
             }else {
                 log.error("无效连接");
                 client.disconnect();
@@ -108,6 +124,48 @@ public class MessageEventHandler {
             return true;
         }
         return false;
+    }
+
+
+    /**
+     * 官方弹窗消息
+     * @return
+     */
+    public boolean officialMessage(String toUserId, WxzApplyBo wxzApplyBo) {
+        HashMap<UUID, SocketIOClient> userClient = cache.getUserClient(toUserId);
+        if(userClient!=null)
+        {
+            userClient.forEach(((uuid, socketIOClient) ->
+            {
+                socketIOClient.sendEvent(Event.CHAT, wxzApplyBo);
+            }));
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 这里用户给对方发起 一条消息  请求无限制到达
+     * @param client
+     * @param request
+     */
+    @OnEvent(value = Event.OFFICIAL)
+    public void onOfficialEvent(SocketIOClient client, AckRequest request, WxzApplyBo wxzApplyBo)
+    {
+        wxzApplyBo.setMessage("对方想要超限制确认\n已与本人见面");
+        log.info("用户 {} 刚刚给用户 {} 发起了一条无限制确认到达弹窗", wxzApplyBo.getFromUserId(), wxzApplyBo.getToUserId());
+        //这里分 用户是否在线
+        if(officialMessage(String.valueOf(wxzApplyBo.getToUserId()),wxzApplyBo)) {
+            request.sendAckData(Dict.create().set("flag", true).set("message", "发送成功"));
+        }
+        else {
+            //TODO 这里需要将消息存储到redis 等待用户上线后推送
+            redisTemplate.opsForValue().set("officialMessage:"+wxzApplyBo.getToUserId(), JsonUtils.toJsonString(wxzApplyBo));
+            request.sendAckData(Dict.create().set("flag", false).set("message", "用户不在线~ 对方上线后可见 "));
+        }
+
+
+
     }
 
 

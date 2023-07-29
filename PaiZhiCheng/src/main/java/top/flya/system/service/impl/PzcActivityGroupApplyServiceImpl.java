@@ -72,6 +72,7 @@ public class PzcActivityGroupApplyServiceImpl implements IPzcActivityGroupApplyS
         lqw.eq(StringUtils.isNotBlank(bo.getMessage()), PzcActivityGroupApply::getMessage, bo.getMessage());
         lqw.eq(bo.getCreateTime() != null, PzcActivityGroupApply::getCreateTime, bo.getCreateTime());
         lqw.eq(bo.getUpdateTime() != null, PzcActivityGroupApply::getUpdateTime, bo.getUpdateTime());
+        lqw.eq(bo.getWxz()!=null,PzcActivityGroupApply::getWxz,bo.getWxz());
         return lqw;
     }
 

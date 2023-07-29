@@ -57,6 +57,11 @@ public class PzcActivityGroupApply extends BaseEntity {
      */
     private Integer applyStatus;
 
+    /**
+     * 无限制确认到达  0 未确认 1 已确认
+     */
+    private Integer wxz;
+
 
     @TableField(exist = false)
     private BigDecimal otherMoney; //对方的保证金

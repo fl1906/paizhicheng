@@ -14,6 +14,11 @@ public interface Event {
      */
     String CHAT = "chat";
 
+    /**
+     * 官方消息事件
+     */
+    String OFFICIAL = "official";
+
 //    /**
 //     * 广播消息
 //     */

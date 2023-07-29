@@ -101,5 +101,10 @@ public class PzcActivityGroupApplyVo {
 
     private String avatar;
 
+    /**
+     *  无限制确认到达 0 未确认 1 已确认
+     */
+    private Integer wxz;
+
 
 }

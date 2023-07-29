@@ -71,4 +71,7 @@ public class PzcActivityGroupApplyBo extends BaseEntity {
     private String message;
 
 
+    // 无限制确认到达
+    private Integer wxz;
+
 }
