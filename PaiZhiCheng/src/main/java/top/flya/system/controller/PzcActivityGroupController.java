@@ -610,6 +610,11 @@ public class PzcActivityGroupController extends BaseController {
 //        if (iPzcActivityGroupService.checkGroup(userId, bo.getActivityId())) {
 //            return R.fail("已经发起过组队 不可重复发起");
 //        }
+        // 校验保证金
+        PzcUser pzcUser = pzcUserMapper.selectById(userId);
+        if (pzcUser.getMoney().compareTo(bo.getMoney())<0||bo.getMoney().compareTo(new BigDecimal(1))<0) {
+            return R.fail("保证金不足 至少拥有1个派币");
+        }
 
         return toAjax(iPzcActivityGroupService.insertByBo(bo));
     }
