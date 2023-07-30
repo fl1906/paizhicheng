@@ -107,4 +107,9 @@ public class PzcActivityGroupApplyVo {
     private Integer wxz;
 
 
+    //发起方当前位置
+    private String startAddress;
+    //申请方当前位置
+    private String applyAddress;
+
 }

@@ -85,4 +85,10 @@ public class PzcActivityGroupApply extends BaseEntity {
     @TableField(exist = false)
     private String title;
 
+
+    //发起方当前位置
+    private String startAddress;
+//申请方当前位置
+    private String applyAddress;
+
 }
