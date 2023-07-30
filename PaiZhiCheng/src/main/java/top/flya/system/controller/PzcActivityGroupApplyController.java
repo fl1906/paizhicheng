@@ -142,30 +142,32 @@ public class PzcActivityGroupApplyController extends BaseController {
                 p.setTitle(pzcActivityGroup.getTitle());
             }
         );
+        List<PzcActivityGroupApply> result = new java.util.ArrayList<>();
 
         //申请我的 并处于进行中的活动
         //1 找出所有我创建的组
         List<PzcActivityGroup> pzcActivityGroups = pzcActivityGroupMapper.selectList(new QueryWrapper<PzcActivityGroup>().eq("user_id", userId));
         List<Long> groupIds = pzcActivityGroups.stream().map(PzcActivityGroup::getGroupId).collect(java.util.stream.Collectors.toList());
-        List<PzcActivityGroupApply> step2 = pzcActivityGroupApplyMapper.selectList(new QueryWrapper<>(new PzcActivityGroupApply()).in("group_id", groupIds).in("apply_status", 1, 2, 9, 10, 11, 12, 13, 14));
-        step2.forEach(
-            p -> {
-                PzcActivityGroup pzcActivityGroup = pzcActivityGroupMapper.selectById(p.getGroupId());
-                PzcUser other = pzcUserMapper.selectById(p.getUserId());
-                PzcUser my = pzcUserMapper.selectById(pzcActivityGroup.getUserId());
-                p.setOtherMoney(pzcActivityGroup.getMoney());
-                p.setOtherName(other.getNickname());
-                p.setOtherAvatar(other.getAvatar());
-                p.setOtherUserId(String.valueOf(other.getUserId()));
-                p.setOtherLevel(Math.toIntExact(other.getUserLevel()));
-                p.setMyAvatar(my.getAvatar());
-                p.setTitle(pzcActivityGroup.getTitle());
-            }
-        );
-        List<PzcActivityGroupApply> result = new java.util.ArrayList<>();
+        if(groupIds.size()!=0)
+        {
+            List<PzcActivityGroupApply> step2 = pzcActivityGroupApplyMapper.selectList(new QueryWrapper<>(new PzcActivityGroupApply()).in("group_id", groupIds).in("apply_status", 1, 2, 9, 10, 11, 12, 13, 14));
+            step2.forEach(
+                p -> {
+                    PzcActivityGroup pzcActivityGroup = pzcActivityGroupMapper.selectById(p.getGroupId());
+                    PzcUser other = pzcUserMapper.selectById(p.getUserId());
+                    PzcUser my = pzcUserMapper.selectById(pzcActivityGroup.getUserId());
+                    p.setOtherMoney(pzcActivityGroup.getMoney());
+                    p.setOtherName(other.getNickname());
+                    p.setOtherAvatar(other.getAvatar());
+                    p.setOtherUserId(String.valueOf(other.getUserId()));
+                    p.setOtherLevel(Math.toIntExact(other.getUserLevel()));
+                    p.setMyAvatar(my.getAvatar());
+                    p.setTitle(pzcActivityGroup.getTitle());
+                }
+            );
+            result.addAll(step2);
+        }
         result.addAll(step1);
-        result.addAll(step2);
-
 
         //按照更新时间倒序排列
         List<PzcActivityGroupApply> collect = result.stream().sorted((o1, o2) -> o2.getUpdateTime().compareTo(o1.getUpdateTime())).collect(Collectors.toList());
