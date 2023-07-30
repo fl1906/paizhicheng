@@ -137,7 +137,7 @@ public class MessageEventHandler {
         {
             userClient.forEach(((uuid, socketIOClient) ->
             {
-                socketIOClient.sendEvent(Event.CHAT, wxzApplyBo);
+                socketIOClient.sendEvent(Event.OFFICIAL, wxzApplyBo);
             }));
             return true;
         }
@@ -156,9 +156,11 @@ public class MessageEventHandler {
         log.info("用户 {} 刚刚给用户 {} 发起了一条无限制确认到达弹窗", wxzApplyBo.getFromUserId(), wxzApplyBo.getToUserId());
         //这里分 用户是否在线
         if(officialMessage(String.valueOf(wxzApplyBo.getFromUserId()),wxzApplyBo)) { //测试时修改一下
+            log.info("弹窗消息发送成功");
             request.sendAckData(Dict.create().set("flag", true).set("message", "发送成功"));
         }
         else {
+            log.info("弹窗消息发送到Redis 用户不在线");
             // 这里需要将消息存储到redis 等待用户上线后推送
             stringRedisTemplate.opsForValue().set("officialMessage:"+wxzApplyBo.getToUserId(), JsonUtils.toJsonString(wxzApplyBo));
             request.sendAckData(Dict.create().set("flag", false).set("message", "用户不在线~ 对方上线后可见 "));
