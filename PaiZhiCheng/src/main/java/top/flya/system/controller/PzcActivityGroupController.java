@@ -246,6 +246,7 @@ public class PzcActivityGroupController extends BaseController {
             if(!userId.equals(pzcActivityGroupVo.getUserId())){
                 return R.fail("无权查看该用户信息");
             }
+            pzcActivityGroupApplyVo = iPzcActivityGroupApplyService.queryByUserIdAndGroupId(LoginHelper.getUserId(), groupId);
         }
         PzcUser pzcUser = pzcUserMapper.selectById(userId);
         pzcUser.setMoney(null);
