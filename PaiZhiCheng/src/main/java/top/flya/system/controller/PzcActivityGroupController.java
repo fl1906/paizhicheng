@@ -414,9 +414,9 @@ public class PzcActivityGroupController extends BaseController {
         Long userId = LoginHelper.getUserId();
         PzcActivityGroupApplyVo pzcActivityGroupApplyVo = wxUtils.checkApplyConfirm(applyId.longValue());
         if (pzcActivityGroupApplyVo.getUserId().equals(userId)) {
-            return R.ok(1); //我是申请方
+            return R.ok(0); //我是申请方
         } else {
-            return R.ok(0); //我是发起方
+            return R.ok(1); //我是发起方
         }
     }
 
