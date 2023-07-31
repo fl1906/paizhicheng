@@ -39,12 +39,17 @@ public class ActivityUtils {
         PzcActivityVo pzcActivityVo = iPzcActivityService.queryById(activityId);
         if (pzcActivityVo == null) {
             log.error("活动不存在");
-            return false;
+            throw  new RuntimeException("活动不存在");
         }
         String endDate = pzcActivityVo.getEndDate();
         Date now = new Date();
         Date end = DateUtils.parseDate(endDate);
-        return !now.after(end);
+        if(!now.after(end))
+        {
+            log.error("活动已结束");
+            throw  new RuntimeException("活动已结束");
+        }
+        return true;
     }
 
     /**
@@ -57,17 +62,24 @@ public class ActivityUtils {
         PzcActivityGroupVo pzcActivityGroupVo = iPzcActivityGroupService.queryById(groupId);
         if(pzcActivityGroupVo == null) {
             log.error("组队不存在");
-            return false;
+           throw new RuntimeException("组队不存在");
         }
         //不可以参与自己发起的组队
         if(pzcActivityGroupVo.getUserId().equals(LoginHelper.getUserId()))
         {
             log.error("不可以参与自己发起的组队");
-            return false;
+            throw new RuntimeException("不可以参与自己发起的组队");
         }
 
         Long activityId1 = pzcActivityGroupVo.getActivityId();
-        return activityId.equals(Math.toIntExact(activityId1));
+        if(activityId.equals(Math.toIntExact(activityId1)))
+        {
+            return true;
+        }else {
+            log.error("组队不在当前活动下");
+            throw new RuntimeException("组队不在当前活动下");
+        }
+
     }
 
 

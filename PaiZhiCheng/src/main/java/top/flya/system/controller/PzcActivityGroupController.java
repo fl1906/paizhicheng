@@ -233,7 +233,7 @@ public class PzcActivityGroupController extends BaseController {
                 s.setGroupTitle(pzcActivityGroupVos.stream().filter(s1 -> s1.getGroupId().equals(s.getGroupId())).findFirst().get().getTitle());
             }
         );
-        List<PzcActivityGroupApplyVo> result = pzcActivityGroupApplyVos.stream().filter(s -> s.getApplyStatus() != -1).collect(Collectors.toList());//过滤掉已取消的
+        List<PzcActivityGroupApplyVo> result = pzcActivityGroupApplyVos.stream().filter(s -> s.getApplyStatus() == 0).collect(Collectors.toList());//过滤掉已取消的
         return R.ok(result);
     }
 
