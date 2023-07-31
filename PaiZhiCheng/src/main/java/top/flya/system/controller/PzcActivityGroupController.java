@@ -239,10 +239,13 @@ public class PzcActivityGroupController extends BaseController {
 
     @GetMapping("/userInfo") //查看申请人或者发起人信息
     public R userInfo(@RequestParam("userId") Long userId, @RequestParam("groupId") Long groupId) {
-        //首先查询该用户是否申请了我的组 申请了 才有资格去查看
+        //首先查询该用户是否申请了我的组 申请了 才有资格去查看  这个不应该是申请的 人才能看   双方都能互相看
         PzcActivityGroupApplyVo pzcActivityGroupApplyVo = iPzcActivityGroupApplyService.queryByUserIdAndGroupId(userId, groupId);
         if (pzcActivityGroupApplyVo == null) {
-            return R.fail("该用户未申请你的组");
+            PzcActivityGroupVo pzcActivityGroupVo = iPzcActivityGroupService.queryById(groupId);
+            if(!userId.equals(pzcActivityGroupVo.getUserId())){
+                return R.fail("无权查看该用户信息");
+            }
         }
         PzcUser pzcUser = pzcUserMapper.selectById(userId);
         pzcUser.setMoney(null);
