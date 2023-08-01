@@ -75,6 +75,7 @@ public class PzcActivityGroupServiceImpl implements IPzcActivityGroupService {
      */
     @Override
     public TableDataInfo<PzcActivityGroupVo> queryPageList(PzcActivityGroupBo bo, PageQuery pageQuery) {
+
         Page<PzcActivityGroupVo> result = baseMapper.selectDetailsList(pageQuery.build(), bo);
         result.getRecords().forEach(
                 pzcActivityGroupVo -> {

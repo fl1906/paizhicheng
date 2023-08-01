@@ -160,6 +160,7 @@ public class MessageEventHandler {
         //这里分 用户是否在线
         if(officialMessage(String.valueOf(wxzApplyBo.getToUserId()),wxzApplyBo)) { //测试时修改一下
             log.info("弹窗消息发送成功");
+            stringRedisTemplate.opsForValue().set("officialMessage:"+wxzApplyBo.getToUserId(), JsonUtils.toJsonString(wxzApplyBo)); //这里也需要存储到redis
             request.sendAckData(Dict.create().set("flag", true).set("message", "发送成功"));
         }
         else {

@@ -17,6 +17,7 @@ import top.flya.common.core.validate.AddGroup;
 import top.flya.common.core.validate.EditGroup;
 import top.flya.common.enums.BusinessType;
 import top.flya.common.helper.LoginHelper;
+import top.flya.common.utils.JsonUtils;
 import top.flya.common.utils.poi.ExcelUtil;
 import top.flya.system.domain.*;
 import top.flya.system.domain.bo.PzcActivityGroupBo;
@@ -75,6 +76,7 @@ public class PzcActivityGroupController extends BaseController {
 
     @PostMapping("/refurbish") //刷新
     public R refurbish(@RequestBody RefurbishBo refurbishBo) {
+        log.info("刷新: {}", JsonUtils.toJsonString(refurbishBo));
         //首先查询这个组队是否是我发起的
         PzcActivityGroupApply pzcActivityGroupApply = pzcActivityGroupApplyMapper.selectById(refurbishBo.getApplyId());
         if (pzcActivityGroupApply == null) {
@@ -94,6 +96,7 @@ public class PzcActivityGroupController extends BaseController {
 
         } else {
             pzcActivityGroupApply.setStartAddress(refurbishBo.getAddress());
+            pzcActivityGroupApplyMapper.updateById(pzcActivityGroupApply);
             RefurbishVO refurbishVO = new RefurbishVO();
             refurbishVO.setApplyAddress(pzcActivityGroupApply.getApplyAddress());
             refurbishVO.setApplyId(refurbishBo.getApplyId());
@@ -572,6 +575,7 @@ public class PzcActivityGroupController extends BaseController {
      */
     @GetMapping("/list")
     public TableDataInfo<PzcActivityGroupVo> list(PzcActivityGroupBo bo, PageQuery pageQuery) {
+        log.info("组队大厅 查询条件是： {}",JsonUtils.toJsonString(bo));
         return iPzcActivityGroupService.queryPageList(bo, pageQuery);
     }
 

@@ -72,6 +72,7 @@ public class PzcActivityGroupApplyController extends BaseController {
     @PostMapping("/wxzApply")
     @Transactional
     public R wxzApply(@RequestParam("applyId") Integer applyId,@RequestParam("wxz")Integer wxz) {  //wxz 0 未选择 1 选择
+        log.info("applyId:{},wxz:{}",applyId,wxz);
         if(wxz!=0&&wxz!=1){
             return R.fail("参数错误");
         }
