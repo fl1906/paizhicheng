@@ -44,7 +44,7 @@ public class ActivityUtils {
         String endDate = pzcActivityVo.getEndDate();
         Date now = new Date();
         Date end = DateUtils.parseDate(endDate);
-        if(!now.after(end))
+        if(now.after(end))
         {
             log.error("活动已结束");
             throw  new RuntimeException("活动已结束");
