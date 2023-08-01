@@ -12,18 +12,17 @@ import org.springframework.stereotype.Service;
 import top.flya.common.core.domain.PageQuery;
 import top.flya.common.core.page.TableDataInfo;
 import top.flya.system.domain.PzcActivityGroup;
+import top.flya.system.domain.PzcActivityGroupApply;
 import top.flya.system.domain.PzcUserPhoto;
 import top.flya.system.domain.bo.PzcActivityGroupBo;
 import top.flya.system.domain.vo.PzcActivityGroupVo;
+import top.flya.system.mapper.PzcActivityGroupApplyMapper;
 import top.flya.system.mapper.PzcActivityGroupMapper;
 import top.flya.system.mapper.PzcActivityMapper;
 import top.flya.system.mapper.PzcUserPhotoMapper;
 import top.flya.system.service.IPzcActivityGroupService;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 活动组队Service业务层处理
@@ -41,6 +40,9 @@ public class PzcActivityGroupServiceImpl implements IPzcActivityGroupService {
     private final PzcActivityMapper  pzcActivityMapper;
 
     private final PzcUserPhotoMapper pzcUserPhotoMapper;
+
+
+    private final PzcActivityGroupApplyMapper pzcActivityGroupApplyMapper;
 
     /**
      * 查询活动组队
@@ -77,16 +79,28 @@ public class PzcActivityGroupServiceImpl implements IPzcActivityGroupService {
     public TableDataInfo<PzcActivityGroupVo> queryPageList(PzcActivityGroupBo bo, PageQuery pageQuery) {
 
         Page<PzcActivityGroupVo> result = baseMapper.selectDetailsList(pageQuery.build(), bo);
+        ArrayList<PzcActivityGroupVo> pzcActivityGroupVos = new ArrayList<>();
         result.getRecords().forEach(
                 pzcActivityGroupVo -> {
+                    pzcActivityGroupVos.add(pzcActivityGroupVo);
                     if (pzcActivityGroupVo.getAuth() == 2) {
                         log.info("私密组队，不返回用户信息");
                         pzcActivityGroupVo.setUser(null);
                     }//如果是私密组队，不返回用户信息
+                    //查询当前组队 是否正在进行中 如果是 则 不进入组队大厅
+                    Long groupId = pzcActivityGroupVo.getGroupId();
+                    Long count = pzcActivityGroupApplyMapper.selectCount(new QueryWrapper<PzcActivityGroupApply>().eq("group_id", groupId).notIn("apply_status", -1,0,13,14,15));
+                    if(count>0)
+                    {
+                        //从列表中移除这个对象、
+                        log.info("当前组队正在进行中，不返回组队信息 groupId is {}",pzcActivityGroupVo.getGroupId());
+                        pzcActivityGroupVos.remove(pzcActivityGroupVo);
+                    }
+
                 }
         );
-
-        return TableDataInfo.build(result);
+        //查询当前组队 是否正在进行中 如果是 则 不进入组队大厅
+        return TableDataInfo.build(pzcActivityGroupVos);
     }
 
     /**

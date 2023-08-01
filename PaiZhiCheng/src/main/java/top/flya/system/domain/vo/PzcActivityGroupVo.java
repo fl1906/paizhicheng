@@ -103,4 +103,7 @@ public class PzcActivityGroupVo {
 
 
     private List<PzcUserPhoto> photo;
+
+
+    private Boolean ifShow =  true;
 }
