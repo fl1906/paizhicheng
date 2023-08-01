@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
+import top.flya.common.annotation.RepeatSubmit;
 import top.flya.common.utils.JsonUtils;
 import top.flya.system.config.ClientCache;
 import top.flya.system.config.Event;
@@ -23,6 +24,7 @@ import top.flya.system.service.IPzcUserTalkService;
 import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -150,6 +152,7 @@ public class MessageEventHandler {
      * @param request
      */
     @OnEvent(value = Event.OFFICIAL)
+    @RepeatSubmit(interval =5 ,timeUnit = TimeUnit.MINUTES,message = "发送频繁，请过五分钟之后再试")
     public void onOfficialEvent(SocketIOClient client, AckRequest request, WxzApplyBo wxzApplyBo)
     {
         wxzApplyBo.setMessage("对方想要超限制确认\n已与本人见面");
