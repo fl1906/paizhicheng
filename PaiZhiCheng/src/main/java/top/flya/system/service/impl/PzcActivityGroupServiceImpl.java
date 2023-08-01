@@ -65,6 +65,7 @@ public class PzcActivityGroupServiceImpl implements IPzcActivityGroupService {
                 pzcActivityGroupVo.setPhoto(userPhotos.size()>=1? Collections.singletonList(userPhotos.get(0)):null);
             }
         }
+        pzcActivityGroupVo.setActivityTitle(pzcActivityMapper.selectVoById(pzcActivityGroupVo.getActivityId()).getTitle());
 
         return pzcActivityGroupVo;
     }

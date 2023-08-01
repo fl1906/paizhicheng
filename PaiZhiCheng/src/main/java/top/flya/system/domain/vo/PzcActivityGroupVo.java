@@ -1,17 +1,15 @@
 package top.flya.system.domain.vo;
 
+import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
+import com.alibaba.excel.annotation.ExcelProperty;
+import lombok.Data;
+import top.flya.common.annotation.ExcelDictFormat;
+import top.flya.common.convert.ExcelDictConvert;
+import top.flya.system.domain.PzcUserPhoto;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
-import com.alibaba.excel.annotation.ExcelProperty;
-import top.flya.common.annotation.ExcelDictFormat;
-import top.flya.common.convert.ExcelDictConvert;
-import lombok.Data;
-import top.flya.system.domain.PzcUser;
-import top.flya.system.domain.PzcUserPhoto;
 
 
 /**
@@ -55,6 +53,9 @@ public class PzcActivityGroupVo {
      */
     @ExcelProperty(value = "活动主题")
     private String title;
+
+
+    private String activityTitle;
 
     /**
      * 活动组队所缴纳的保证金
