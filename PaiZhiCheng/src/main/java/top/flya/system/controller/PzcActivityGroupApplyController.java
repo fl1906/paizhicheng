@@ -220,11 +220,12 @@ public class PzcActivityGroupApplyController extends BaseController {
     @RepeatSubmit()
     @PostMapping()
     public R<Void> add(@Validated(AddGroup.class) @RequestBody PzcActivityGroupApplyBo bo) {
+        log.info("申请参与组队:{}", JsonUtils.toJsonString(bo));
         if (!activityUtils.allCheck(Math.toIntExact(bo.getActivityId()), bo.getGroupId())) {
             return R.fail("申请失败，活动不存在或者已经结束或者组不存在");
         }
         bo.setUserId(LoginHelper.getUserId());
-        if (iPzcActivityGroupApplyService.queryByUserIdAndActivityId(bo.getUserId(), bo.getActivityId())) {
+        if (iPzcActivityGroupApplyService.queryByUserIdAndGroupId(bo.getUserId(), bo.getGroupId())!=null) {
             return R.fail("申请失败，您已经申请过了");
         }
 
