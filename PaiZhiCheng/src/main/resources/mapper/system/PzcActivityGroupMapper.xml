@@ -51,9 +51,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </sql>
 
     <select id="selectDetailsList" resultMap="PzcActivityGroupResult">
-         <include refid="base"/>
+        <include refid="base"/>
         from pzc_activity_group as g inner join pzc_user as u
         where 1=1
+            and g.user_id = u.user_id
         <if test="bo.userSex != null">
             and (g.user_id = u.user_id and u.sex = #{bo.userSex})
         </if>
@@ -63,9 +64,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <if test="bo.userLevelMax != null">
             and u.user_level &lt;= #{bo.userLevelMax}
         </if>
-        <if test="bo.userId != null">
-            and g.user_id = #{bo.userId}
-        </if>
+
 
     </select>
     <select id="selectVoByIdDIY" resultMap="PzcActivityGroupResult">
