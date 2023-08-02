@@ -172,7 +172,7 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
         LambdaQueryWrapper<PzcActivity> lqw = Wrappers.lambdaQuery();
         lqw.eq(StringUtils.isNotBlank(bo.getAddress()), PzcActivity::getAddress, bo.getAddress());
         lqw.eq(bo.getRegionId() != null, PzcActivity::getRegionId, bo.getRegionId());
-        lqw.eq(StringUtils.isNotBlank(bo.getTitle()), PzcActivity::getTitle, bo.getTitle());
+        lqw.like(StringUtils.isNotBlank(bo.getTitle()), PzcActivity::getTitle, bo.getTitle());
         lqw.eq(StringUtils.isNotBlank(bo.getStartTime()), PzcActivity::getStartTime, bo.getStartTime());
         lqw.eq(StringUtils.isNotBlank(bo.getEndDate()), PzcActivity::getEndDate, bo.getEndDate());
         lqw.eq(bo.getInnerImage() != null, PzcActivity::getInnerImage, bo.getInnerImage());
