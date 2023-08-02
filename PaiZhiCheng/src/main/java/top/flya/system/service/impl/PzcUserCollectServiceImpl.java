@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import top.flya.system.domain.bo.PzcUserCollectBo;
 import top.flya.system.domain.vo.PzcUserCollectVo;
 import top.flya.system.domain.PzcUserCollect;
+import top.flya.system.mapper.PzcActivityMapper;
 import top.flya.system.mapper.PzcUserCollectMapper;
 import top.flya.system.service.IPzcUserCollectService;
 
@@ -30,6 +31,8 @@ public class PzcUserCollectServiceImpl implements IPzcUserCollectService {
 
     private final PzcUserCollectMapper baseMapper;
 
+    private final PzcActivityMapper pzcActivityMapper;
+
     /**
      * 查询用户收藏活动
      */
@@ -45,6 +48,13 @@ public class PzcUserCollectServiceImpl implements IPzcUserCollectService {
     public TableDataInfo<PzcUserCollectVo> queryPageList(PzcUserCollectBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<PzcUserCollect> lqw = buildQueryWrapper(bo);
         Page<PzcUserCollectVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+
+            result.getRecords().forEach(
+                vo -> {
+                    vo.setActivity(pzcActivityMapper.selectById(vo.getActivityId()));
+                }
+            );
+
         return TableDataInfo.build(result);
     }
 

@@ -63,7 +63,7 @@ public class PzcUserHistoryServiceImpl implements IPzcUserHistoryService {
         LambdaQueryWrapper<PzcUserHistory> lqw = Wrappers.lambdaQuery();
         lqw.eq(bo.getUserId() != null, PzcUserHistory::getUserId, bo.getUserId());
         lqw.eq(bo.getActivityId() != null, PzcUserHistory::getActivityId, bo.getActivityId());
-        lqw.eq(bo.getType() != null, PzcUserHistory::getType, bo.getType());
+        lqw.in(bo.getType() != null, PzcUserHistory::getType, bo.getType());
         lqw.eq(StringUtils.isNotBlank(bo.getMessage()), PzcUserHistory::getMessage, bo.getMessage());
         return lqw;
     }

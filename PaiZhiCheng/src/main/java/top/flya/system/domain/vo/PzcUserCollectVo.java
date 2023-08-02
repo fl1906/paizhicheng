@@ -2,9 +2,8 @@ package top.flya.system.domain.vo;
 
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
-import top.flya.common.annotation.ExcelDictFormat;
-import top.flya.common.convert.ExcelDictConvert;
 import lombok.Data;
+import top.flya.system.domain.PzcActivity;
 
 
 /**
@@ -37,5 +36,7 @@ public class PzcUserCollectVo {
     @ExcelProperty(value = "收藏活动的Id")
     private Long activityId;
 
+
+    private PzcActivity activity;
 
 }

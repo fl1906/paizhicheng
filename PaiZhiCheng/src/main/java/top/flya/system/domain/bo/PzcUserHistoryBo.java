@@ -42,7 +42,7 @@ public class PzcUserHistoryBo extends BaseEntity {
      * 操作类型
      */
     @NotNull(message = "操作类型不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Long type;
+    private Long[] type;
 
     /**
      * 信息

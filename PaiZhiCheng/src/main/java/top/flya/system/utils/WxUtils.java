@@ -3,17 +3,21 @@ package top.flya.system.utils;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import top.flya.common.helper.LoginHelper;
 import top.flya.system.domain.PzcUser;
+import top.flya.system.domain.PzcUserHistory;
 import top.flya.system.domain.vo.PzcActivityGroupApplyVo;
+import top.flya.system.mapper.PzcUserHistoryMapper;
 import top.flya.system.mapper.PzcUserMapper;
 import top.flya.system.service.IPzcActivityGroupApplyService;
 
 import javax.annotation.Resource;
 
 @Component
+@Slf4j
 public class WxUtils {
 
     @Value("${wx.appId}")
@@ -24,6 +28,9 @@ public class WxUtils {
 
     @Resource
     private PzcUserMapper userMapper;
+
+    @Resource
+    private PzcUserHistoryMapper userHistoryMapper;
 
     @Resource
     private IPzcActivityGroupApplyService iPzcActivityGroupApplyService;
@@ -142,6 +149,17 @@ public class WxUtils {
             throw new RuntimeException("用户不存在 或者已被禁用");
         }
         return user;
+    }
+
+    public void insertUserHistory(Long userId,Long activityId,Long type,String message)
+    {
+        PzcUserHistory userHistory = new PzcUserHistory();
+        userHistory.setUserId(userId);
+        userHistory.setActivityId(activityId);
+        userHistory.setType(type);
+        userHistory.setMessage(message);
+        int insert = userHistoryMapper.insert(userHistory);
+        log.info("插入用户历史记录 信息为： {} 条数为： {}",message,insert);
     }
 
 

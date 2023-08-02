@@ -1,32 +1,30 @@
 package top.flya.system.controller;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Arrays;
-
-import lombok.RequiredArgsConstructor;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.*;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
-import top.flya.common.annotation.RepeatSubmit;
+import org.springframework.web.bind.annotation.*;
 import top.flya.common.annotation.Log;
+import top.flya.common.annotation.RepeatSubmit;
 import top.flya.common.core.controller.BaseController;
 import top.flya.common.core.domain.PageQuery;
 import top.flya.common.core.domain.R;
+import top.flya.common.core.page.TableDataInfo;
 import top.flya.common.core.validate.AddGroup;
-import top.flya.common.core.validate.EditGroup;
 import top.flya.common.enums.BusinessType;
 import top.flya.common.utils.JsonUtils;
 import top.flya.common.utils.poi.ExcelUtil;
+import top.flya.system.domain.bo.PzcUserCollectBo;
 import top.flya.system.domain.vo.PzcActivityVo;
 import top.flya.system.domain.vo.PzcUserCollectVo;
-import top.flya.system.domain.bo.PzcUserCollectBo;
 import top.flya.system.mapper.PzcActivityMapper;
 import top.flya.system.service.IPzcUserCollectService;
-import top.flya.common.core.page.TableDataInfo;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotNull;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * 用户收藏活动
@@ -53,6 +51,8 @@ public class PzcUserCollectController extends BaseController {
         if(bo.getUserId() == null){
             bo.setUserId(getLoginUser().getUserId());
         }
+        pageQuery.setOrderByColumn("create_time");
+        pageQuery.setIsAsc("desc");
         return iPzcUserCollectService.queryPageList(bo, pageQuery);
     }
 
