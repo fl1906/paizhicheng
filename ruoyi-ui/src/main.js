@@ -38,6 +38,8 @@ import VueMeta from 'vue-meta'
 // 字典数据组件
 import DictData from '@/components/DictData'
 
+// 高德地图组件
+import VueAMap from 'vue-amap';
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts
 Vue.prototype.getConfigKey = getConfigKey
@@ -62,6 +64,8 @@ Vue.component('ImagePreview', ImagePreview)
 Vue.use(directive)
 Vue.use(plugins)
 Vue.use(VueMeta)
+
+Vue.use(VueAMap); // 高德地图
 DictData.install()
 
 /**
@@ -79,6 +83,19 @@ Element.Dialog.props.closeOnClickModal.default = false
 Vue.use(Element, {
   size: Cookies.get('size') || 'medium' // set element-ui default size
 })
+
+VueAMap.initAMapApiLoader({
+  key: '112049d76fe83e408d4ecceafb2ad4e3',
+  plugin: ['AMap.Autocomplete', 'AMap.PlaceSearch', 'AMap.Scale', 'AMap.OverView', 'AMap.ToolBar', 'AMap.MapType', 'AMap.PolyEditor', 'AMap.CircleEditor'],
+  // 默认高德 sdk 版本为 1.4.4
+  v: '1.4.4',
+  uiVersion: '1.0.11' // 版本号
+});
+
+//配置安全密钥
+window._AMapSecurityConfig = {
+  securityJsCode: 'df0902aa53f34270d790ce32e8545f1e' //*  安全密钥
+}
 
 Vue.config.productionTip = false
 
