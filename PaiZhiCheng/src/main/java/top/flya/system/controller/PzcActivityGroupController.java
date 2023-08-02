@@ -446,7 +446,7 @@ public class PzcActivityGroupController extends BaseController {
     @GetMapping("/applyRole")
     public R applyRole(@RequestParam("applyId") Integer applyId) {
         Long userId = LoginHelper.getUserId();
-        PzcActivityGroupApplyVo pzcActivityGroupApplyVo = wxUtils.checkApplyConfirm(applyId.longValue());
+        PzcActivityGroupApplyVo pzcActivityGroupApplyVo = iPzcActivityGroupApplyService.queryById(applyId.longValue());
         if (pzcActivityGroupApplyVo.getUserId().equals(userId)) {
             return R.ok(0); //我是申请方
         } else {
