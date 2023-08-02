@@ -17,7 +17,7 @@
     "title": "可需值场列",
     "startTime": "1993-03-17 15:39:25",
     "endDate": "1978-09-02",
-    "innerImage": "1991-09-25 05:21:52",
+    "saleEndTime": "1991-09-25 05:21:52",
     "showTime": "1971-04-04 04:37:50",
     "coverImage": "http://dummyimage.com/400x400",
     "introList": [
@@ -74,7 +74,7 @@
     "title": "可需值场列",
     "startTime": "1993-03-17 15:39:25",
     "endDate": "1978-09-02",
-    "innerImage": "1991-09-25 05:21:52",
+    "saleEndTime": "1991-09-25 05:21:52",
     "showTime": "1971-04-04 04:37:50",
     "coverImage": "http://dummyimage.com/400x400",
     "introList": [
@@ -139,7 +139,7 @@
             "title": "可需值场列",
             "startTime": "1993-03-17 15:39:25",
             "endDate": "1978-09-02",
-            "innerImage": 1991,
+            "saleEndTime": 1991,
             "showTime": "1971-04-04 04:37:50",
             "coverImage": "http://dummyimage.com/400x400",
             "createTime": "2023-07-02 13:13:14",
@@ -197,7 +197,7 @@
             "title": "可需值场列",
             "startTime": "1993-03-17 15:39:25",
             "endDate": "1978-09-02",
-            "innerImage": 1991,
+            "saleEndTime": 1991,
             "showTime": "1971-04-04 04:37:50",
             "coverImage": "http://dummyimage.com/400x400",
             "createTime": "2023-07-02 13:15:41",
@@ -296,8 +296,6 @@ https://developers.weixin.qq.com/miniprogram/dev/api/open-api/login/wx.login.htm
 
 https://developers.weixin.qq.com/miniprogram/dev/api/open-api/user-info/wx.getUserInfo.html
 
-
-
 https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/userProfile.html
 
 获取用户手机号
@@ -374,7 +372,7 @@ https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/user-info/phone-numb
 
 ## 任务3 组队管理
 
-创建组队
+#### 创建组队
 
 groupType 买单方式  0 AA 制 1 我买单
 
@@ -382,13 +380,43 @@ auth 0 所有人可见  1 仅可见一张照片 2 全不可见
 
 ![image-20230710230120833](https://img.flya.top/img/image-20230710230120833.png)
 
- 组队列表（如果没有user 这个对象则为匿名用户  ）
+####  组队列表（如果没有user 这个对象则为匿名用户  ）
 
 ![image-20230711010229947](https://img.flya.top/img/image-20230711010229947.png)
 
-组队详情 同上   地址栏入参 groupId 例如 1 2 3...
+#### 组队详情 
+
+同上   地址栏入参 groupId 例如 1 2 3...
 
 ![image-20230711010309139](https://img.flya.top/img/image-20230711010309139.png)
+
+### =========
+
+<hr>
+
+#### 申请参与组队
+
+![image-20230718171937093](https://img.flya.top/img/image-20230718171937093.png)
+
+#### 我的组队申请列表
+
+![image-20230718171042547](https://img.flya.top/img/image-20230718171042547.png)
+
+
+
+#### 取消组队申请
+
+
+
+
+
+#### 同意组队
+
+
+
+
+
+
 
 
 
@@ -497,3 +525,106 @@ auth 0 所有人可见  1 仅可见一张照片 2 全不可见
 
 
 
+
+
+# 未完成的
+
+
+
+## 最重要的（后台管理的活动创建流程）
+
+![image-20230803021740747](https://img.flya.top/img/image-20230803021740747.png)
+
+
+
+## 我的收藏（分页）
+
+
+
+![image-20230803013853405](https://img.flya.top/img/image-20230803013853405.png)
+
+
+
+## 历史活动 （分页）
+
+![image-20230803014228514](https://img.flya.top/img/image-20230803014228514.png)
+
+
+
+## 账单 （分页）
+
+![image-20230803014511851](https://img.flya.top/img/image-20230803014511851.png)
+
+##  首页未读消息
+
+![image-20230803014548756](https://img.flya.top/img/image-20230803014548756.png)
+
+
+
+
+
+## 首页搜索与其他页面搜索活动
+
+![image-20230803015720746](https://img.flya.top/img/image-20230803015720746.png)
+
+
+
+
+
+## 音乐播放器
+
+看看这个可不可行
+
+https://aplayer.js.org/
+
+
+
+
+
+## 评价
+
+![image-20230803021635989](https://img.flya.top/img/image-20230803021635989.png)
+
+## 问题
+
+### 这里获取派币也调用一下最新的用户信息接口 刷新一下余额（顺便做一下字段校验）
+
+<img src="https://img.flya.top/img/c524b22c03b5580dc7ac8b25eeabe06.jpg" alt="c524b22c03b5580dc7ac8b25eeabe06" style="zoom:25%;" />
+
+![image-20230803022539552](https://img.flya.top/img/image-20230803022539552.png)  现在存入数据库的地址是这个...
+
+### 加个 黄色强调色
+
+![image-20230803022616518](https://img.flya.top/img/image-20230803022616518.png)
+
+
+
+### 申请方无法点击免责取消 （没调用接口）
+
+<img src="https://img.flya.top/img/c6c0bebe7ad5ba3ea20e8ac09e5261a.jpg" alt="c6c0bebe7ad5ba3ea20e8ac09e5261a" style="zoom: 33%;" />
+
+
+
+### 聊天室
+
+
+
+### 地址取最精确的地址
+
+
+
+### 组队大厅的刷新
+
+
+
+### 我的页面的刷新
+
+
+
+### 轮播图可以跳转到对应的活动
+
+![image-20230803014825709](https://img.flya.top/img/image-20230803014825709.png)
+
+
+
+### IOS下滑白屏问题
