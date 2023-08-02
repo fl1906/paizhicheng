@@ -580,15 +580,18 @@ public class PzcActivityGroupController extends BaseController {
         //获取活动组队列表 除了自己这个队伍外
         List<PzcActivityGroup> groups = pzcActivityGroupMapper.selectList(new QueryWrapper<PzcActivityGroup>().eq("activity_id", activityId));
         List<Long> groupIds = groups.stream().filter(s -> !s.getGroupId().equals(groupId)).map(PzcActivityGroup::getGroupId).collect(Collectors.toList());
-        //然后获取当前对方申请了几个队伍 判断每个队伍的进程 如果有 进程处于 组队状态中 则不可以同意
-        List<PzcActivityGroupApply> applies = pzcActivityGroupApplyMapper.selectList(new QueryWrapper<PzcActivityGroupApply>().in("group_id", groupIds).eq("user_id", applyUserId));
-        applies.forEach(
-            a -> {
-                if (a.getApplyStatus() != 0 && a.getApplyStatus() != 3 && a.getApplyStatus() != 13 && a.getApplyStatus() != 14 && a.getApplyStatus() != 15) {
-                    throw new RuntimeException("该用户已经处于组队进程中 等待对方结束活动再试哦");
+        if(groupIds.size() != 0){
+            //然后获取当前对方申请了几个队伍 判断每个队伍的进程 如果有 进程处于 组队状态中 则不可以同意
+            List<PzcActivityGroupApply> applies = pzcActivityGroupApplyMapper.selectList(new QueryWrapper<PzcActivityGroupApply>().in("group_id", groupIds).eq("user_id", applyUserId));
+            applies.forEach(
+                a -> {
+                    if (a.getApplyStatus() != 0 && a.getApplyStatus() != 3 && a.getApplyStatus() != 13 && a.getApplyStatus() != 14 && a.getApplyStatus() != 15) {
+                        throw new RuntimeException("该用户已经处于组队进程中 等待对方结束活动再试哦");
+                    }
                 }
-            }
-        );
+            );
+        }
+
 
         //修改状态为 已同意
         Integer integer = iPzcActivityGroupApplyService.updateStatus(applyId, 1);
