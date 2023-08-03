@@ -64,6 +64,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <if test="bo.userLevelMax != null">
             and u.user_level &lt;= #{bo.userLevelMax}
         </if>
+        <if test="bo.activityId !=null">
+            and g.activity_id = #{bo.activityId}
+        </if>
 
 
     </select>
