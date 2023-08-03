@@ -1,9 +1,9 @@
 <template>
   <div class="app-container">
 
-<!--    <div class="amap-wrapper">-->
-<!--      <el-amap class="amap-box" :vid="'amap-vue'"></el-amap>-->
-<!--    </div>-->
+    <!--    <div class="amap-wrapper">-->
+    <!--      <el-amap class="amap-box" :vid="'amap-vue'"></el-amap>-->
+    <!--    </div>-->
 
 
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
@@ -110,7 +110,8 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:activity:add']"
-        >新增</el-button>
+        >新增
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -121,7 +122,8 @@
           :disabled="single"
           @click="handleUpdate"
           v-hasPermi="['system:activity:edit']"
-        >修改</el-button>
+        >修改
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -132,7 +134,8 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['system:activity:remove']"
-        >删除</el-button>
+        >删除
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -142,21 +145,22 @@
           size="mini"
           @click="handleExport"
           v-hasPermi="['system:activity:export']"
-        >导出</el-button>
+        >导出
+        </el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
     <el-table v-loading="loading" :data="activityList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
+      <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="活动id" align="center" prop="activityId" v-if="true"/>
-      <el-table-column label="地址" align="center" prop="address" />
-      <el-table-column label="城市ID" align="center" prop="regionId" />
-      <el-table-column label="活动标题" align="center" prop="title" />
-      <el-table-column label="开始时间" align="center" prop="startTime" />
-      <el-table-column label="结束时间" align="center" prop="endDate" />
-      <el-table-column label="活动详情主图" align="center" prop="innerImage" />
-      <el-table-column label="展示时间" align="center" prop="showTime" />
+      <el-table-column label="地址" align="center" prop="address"/>
+      <el-table-column label="城市ID" align="center" prop="regionId"/>
+      <el-table-column label="活动标题" align="center" prop="title"/>
+      <el-table-column label="开始时间" align="center" prop="startTime"/>
+      <el-table-column label="结束时间" align="center" prop="endDate"/>
+      <el-table-column label="活动详情主图" align="center" prop="innerImage"/>
+      <el-table-column label="展示时间" align="center" prop="showTime"/>
       <el-table-column label="封面图片" align="center" prop="coverImage" width="100">
         <template slot-scope="scope">
           <image-preview :src="scope.row.coverImage" :width="50" :height="50"/>
@@ -172,7 +176,7 @@
           <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="删除状态，默认为1表示正常状态" align="center" prop="state" />
+      <el-table-column label="删除状态，默认为1表示正常状态" align="center" prop="state"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -181,14 +185,16 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:activity:edit']"
-          >修改</el-button>
+          >修改
+          </el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:activity:remove']"
-          >删除</el-button>
+          >删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -205,31 +211,31 @@
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="活动地址" prop="address">
-          <el-input v-model="form.address" placeholder="请选择活动地址" />
+          <el-input v-model="form.address" placeholder="请选择活动地址"/>
         </el-form-item>
         <el-form-item label="城市ID" prop="regionId">
-          <el-input v-model="form.regionId" placeholder="请输入城市ID" />
+          <el-input v-model="form.regionId" placeholder="请输入城市ID"/>
         </el-form-item>
         <el-form-item label="活动标题" prop="title">
-          <el-input v-model="form.title" placeholder="请输入活动标题" />
+          <el-input v-model="form.title" placeholder="请输入活动标题"/>
         </el-form-item>
         <el-form-item label="开始时间" prop="startTime">
-          <el-input v-model="form.startTime" placeholder="请输入开始时间" />
+          <el-input v-model="form.startTime" placeholder="请输入开始时间"/>
         </el-form-item>
         <el-form-item label="结束时间" prop="endDate">
-          <el-input v-model="form.endDate" placeholder="请输入结束时间" />
+          <el-input v-model="form.endDate" placeholder="请输入结束时间"/>
         </el-form-item>
         <el-form-item label="活动详情主图" prop="innerImage">
-          <el-input v-model="form.innerImage" placeholder="请输入活动详情主图" />
+          <el-input v-model="form.innerImage" placeholder="请输入活动详情主图"/>
         </el-form-item>
         <el-form-item label="展示时间" prop="showTime">
-          <el-input v-model="form.showTime" placeholder="请输入展示时间" />
+          <el-input v-model="form.showTime" placeholder="请输入展示时间"/>
         </el-form-item>
         <el-form-item label="封面图片" prop="coverImage">
           <image-upload v-model="form.coverImage"/>
         </el-form-item>
         <el-form-item label="删除状态，默认为1表示正常状态" prop="state">
-          <el-input v-model="form.state" placeholder="请输入删除状态，默认为1表示正常状态" />
+          <el-input v-model="form.state" placeholder="请输入删除状态，默认为1表示正常状态"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -241,7 +247,8 @@
 </template>
 
 <script>
-import { listActivity, getActivity, delActivity, addActivity, updateActivity } from "@/api/system/activity";
+import {listActivity, getActivity, delActivity, addActivity, updateActivity} from "@/api/system/activity";
+
 export default {
   name: "Activity",
   data() {
@@ -291,31 +298,31 @@ export default {
       // 表单校验
       rules: {
         activityId: [
-          { required: true, message: "活动id不能为空", trigger: "blur" }
+          {required: true, message: "活动id不能为空", trigger: "blur"}
         ],
         address: [
-          { required: true, message: "地址不能为空", trigger: "blur" }
+          {required: true, message: "地址不能为空", trigger: "blur"}
         ],
         regionId: [
-          { required: true, message: "城市ID不能为空", trigger: "blur" }
+          {required: true, message: "城市ID不能为空", trigger: "blur"}
         ],
         title: [
-          { required: true, message: "活动标题不能为空", trigger: "blur" }
+          {required: true, message: "活动标题不能为空", trigger: "blur"}
         ],
         startTime: [
-          { required: true, message: "开始时间不能为空", trigger: "blur" }
+          {required: true, message: "开始时间不能为空", trigger: "blur"}
         ],
         endDate: [
-          { required: true, message: "结束时间不能为空", trigger: "blur" }
+          {required: true, message: "结束时间不能为空", trigger: "blur"}
         ],
         innerImage: [
-          { required: true, message: "活动详情主图不能为空", trigger: "blur" }
+          {required: true, message: "活动详情主图不能为空", trigger: "blur"}
         ],
         showTime: [
-          { required: true, message: "展示时间不能为空", trigger: "blur" }
+          {required: true, message: "展示时间不能为空", trigger: "blur"}
         ],
         coverImage: [
-          { required: true, message: "封面图片不能为空", trigger: "blur" }
+          {required: true, message: "封面图片不能为空", trigger: "blur"}
         ],
       }
     };
@@ -380,26 +387,25 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.activityId)
-      this.single = selection.length!==1
+      this.single = selection.length !== 1
       this.multiple = !selection.length
     },
     /** 新增按钮操作 */
     handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "创建一个新活动";
+      this.$router.push({path: "/pzcActivity/add"})
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
-      this.loading = true;
-      this.reset();
-      const activityId = row.activityId || this.ids
-      getActivity(activityId).then(response => {
-        this.loading = false;
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改活动";
-      });
+      this.$router.push({path: "/pzcActivity/add", query: {activityId: row.activityId}})
+      // this.loading = true;
+      // this.reset();
+      // const activityId = row.activityId || this.ids
+      // getActivity(activityId).then(response => {
+      //   this.loading = false;
+      //   this.form = response.data;
+      //   this.open = true;
+      //   this.title = "修改活动";
+      // });
     },
     /** 提交按钮 */
     submitForm() {

@@ -41,6 +41,7 @@
     "clipboard": "2.0.8",
     "cnpm": "^9.2.0",
     "core-js": "3.25.3",
+    "dayjs": "^1.11.9",
     "echarts": "5.4.0",
     "element-ui": "2.15.12",
     "file-saver": "2.0.5",
