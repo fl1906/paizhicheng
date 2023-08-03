@@ -61,6 +61,9 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
         List<PzcActivityVo> pzcActivityVos = new ArrayList<>();
         pzcActivityVos.add(pzcActivityVo);
         pzcActivityVos.forEach(r->{
+            r.setInnerImage(pzcActivityVo.getInnerImage().contains("http")?pzcActivityVo.getInnerImage():batchUtils.getNewImageUrls(Collections.singletonList(pzcActivityVo.getInnerImage())).get(Long.parseLong(pzcActivityVo.getInnerImage())));
+            r.setCoverImage(pzcActivityVo.getCoverImage().contains("http")?pzcActivityVo.getCoverImage():batchUtils.getNewImageUrls(Collections.singletonList(pzcActivityVo.getCoverImage())).get(Long.parseLong(pzcActivityVo.getCoverImage())));
+            log.info("pzcActivityVo.getInnerImage() = {}",pzcActivityVo.getInnerImage());
             ArrayList<PzcIntro> introList = new ArrayList<>();
             ArrayList<PzcArtist> artistList = new ArrayList<>();
             ArrayList<PzcTag> tagList = new ArrayList<>();
@@ -126,24 +129,6 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
     public TableDataInfo<PzcActivityVo> queryPageList(PzcActivityBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<PzcActivity> lqw = buildQueryWrapper(bo);
         Page<PzcActivityVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
-//        result.getRecords().forEach(r->{
-//            ArrayList<PzcIntro> introList = new ArrayList<>();
-//            ArrayList<PzcArtist> artistList = new ArrayList<>();
-//            ArrayList<PzcTag> tagList = new ArrayList<>();
-//            pzcActivityConnIntroMapper.selectList(Wrappers.<PzcActivityConnIntro>lambdaQuery().eq(PzcActivityConnIntro::getActivityId, r.getActivityId())).forEach(c->{
-//              introList.add(pzcIntroMapper.selectById(c.getIntroId()));
-//            });
-//            r.setIntroList(introList);
-//           pzcActivityConnArtistMapper.selectList(Wrappers.<PzcActivityConnArtist>lambdaQuery().eq(PzcActivityConnArtist::getActivityId, r.getActivityId())).forEach(c->{
-//                artistList.add(pzcArtistMapper.selectById(c.getArtistId()));
-//           });
-//              r.setArtistList(artistList);
-//           pzcActivityConnTagMapper.selectVoList(Wrappers.<PzcActivityConnTag>lambdaQuery().eq(PzcActivityConnTag::getActivityId, r.getActivityId())).forEach(c->{
-//              tagList.add(pzcTagMapper.selectById(c.getTagId()));
-//           });
-//            r.setTagList(tagList);
-//           r.setOrganizerList(pzcOrganizerMapper.selectOne(Wrappers.<PzcOrganizer>lambdaQuery().eq(PzcOrganizer::getOrganizerId, r.getOrganizerId())));
-//        });
         return TableDataInfo.build(result);
     }
 
@@ -154,6 +139,7 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
     public TableDataInfo<PzcActivityVo> queryPageListWx(PzcActivityBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<PzcActivity> lqw = buildQueryWrapper(bo);
         Page<PzcActivityVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        result.setRecords(batchUtils.transformToPzcActivityVo(result.getRecords()));
         return TableDataInfo.build(result);
     }
 
@@ -241,8 +227,7 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
             {
                //校验PzcOrganizerTicket 的 "organizerId": 是否 是当前组织下的
                 organizerTickets.forEach(o->{
-
-                    if(o.getOrganizerId()==null)
+                    if(o.getOrganizerTicketId()==null)
                     {
                         //新建
                         PzcOrganizerTicket pzcOrganizerTicket = new PzcOrganizerTicket();
@@ -254,8 +239,10 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
                         pzcOrganizerTicketMapper.insert(pzcOrganizerTicket);
                         o.setOrganizerTicketId(pzcOrganizerTicket.getOrganizerTicketId());
                         o.setOrganizerId(pzcOrganizerTicket.getOrganizerId());
+                        return;
                     }
-                    if(!Objects.equals(o.getOrganizerId(), bo.getOrganizerList().getOrganizerId()))
+                    PzcOrganizerTicket pzcOrganizerTicket = pzcOrganizerTicketMapper.selectById(o.getOrganizerTicketId());
+                    if(!Objects.equals(bo.getOrganizerList().getOrganizerId(),pzcOrganizerTicket.getOrganizerId()))
                     {
                         throw new RuntimeException("票务组织者id不是当前组织者id");
                     }

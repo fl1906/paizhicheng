@@ -243,5 +243,42 @@ public class BatchUtils {
     }
 
 
-
+    public List<PzcActivityVo> transformToPzcActivityVo(List<PzcActivityVo> records) {
+        log.info("transform activityList start: {}", JSONUtil.toJsonPrettyStr(records));
+        // 获取所有旧的 imageUrl
+        List<String> oldImageUrls = records.stream()
+            .map(PzcActivityVo::getCoverImage)
+            .collect(Collectors.toList());
+        // 批量查询新的 imageUrl
+        Map<Long, String> newImageUrls = getNewImageUrls(oldImageUrls);
+        // 使用 Stream API 进行处理
+        return records.stream()
+            .map(
+                r->{
+                    String newImageUrl = r.getCoverImage().contains("http")?r.getCoverImage():newImageUrls.get(Long.parseLong(r.getCoverImage()));
+                    return  new PzcActivityVo(
+                        r.getActivityId(),
+                        r.getAddress(),
+                        r.getRegionId(),
+                        r.getTitle(),
+                        r.getStartTime(),
+                        r.getEndDate(),
+                        r.getInnerImage(),
+                        r.getShowTime(),
+                        newImageUrl,
+                        r.getCreateTime(),
+                        r.getUpdateTime(),
+                        r.getState(),
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null
+                    );
+                }
+            ).collect(Collectors.toList());
+    }
 }

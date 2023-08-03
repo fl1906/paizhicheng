@@ -2,7 +2,9 @@ package top.flya.system.domain.vo;
 
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import top.flya.system.domain.PzcArtist;
 import top.flya.system.domain.PzcIntro;
 import top.flya.system.domain.PzcOrganizer;
@@ -20,6 +22,8 @@ import java.util.List;
  */
 @Data
 @ExcelIgnoreUnannotated
+@AllArgsConstructor
+@NoArgsConstructor
 public class PzcActivityVo {
 
     private static final long serialVersionUID = 1L;
@@ -95,6 +99,8 @@ public class PzcActivityVo {
      */
     @ExcelProperty(value = "删除状态，默认为1表示正常状态")
     private Integer state;
+
+
 
     private Long organizerId; // 主办方id
 
