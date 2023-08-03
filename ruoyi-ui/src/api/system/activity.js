@@ -42,3 +42,11 @@ export function delActivity(activityId) {
     method: 'delete'
   })
 }
+
+// 获取地址列表
+export function getAddressList() {
+  return request({
+    url: '/system/region/list',
+    method: 'get'
+  })
+}
