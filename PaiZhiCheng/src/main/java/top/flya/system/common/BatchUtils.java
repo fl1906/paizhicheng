@@ -82,6 +82,9 @@ public class BatchUtils {
         return organizerList.stream()
             // 对列表中的每个元素进行处理
             .map(organizer -> {
+                if(organizer.getLogo()==null){
+                    return organizer;
+                }
                 // 从 Map 中获取新的 imageUrl
                 String newImageUrl = organizer.getLogo().contains("http")?organizer.getLogo():newImageUrls.get(Long.parseLong(organizer.getLogo()));
                 // 创建一个新的 PzcArtistVo 对象，使用查询到的新 imageUrl
