@@ -1,6 +1,30 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+      <el-form-item label="标题" prop="title">
+        <el-input
+          v-model="queryParams.title"
+          placeholder="请输入标题"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="创建时间" prop="createTime">
+        <el-date-picker clearable
+          v-model="queryParams.createTime"
+          type="date"
+          value-format="yyyy-MM-dd"
+          placeholder="请选择创建时间">
+        </el-date-picker>
+      </el-form-item>
+      <el-form-item label="更新时间" prop="updateTime">
+        <el-date-picker clearable
+          v-model="queryParams.updateTime"
+          type="date"
+          value-format="yyyy-MM-dd"
+          placeholder="请选择更新时间">
+        </el-date-picker>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -56,10 +80,23 @@
     <el-table v-loading="loading" :data="introList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="ID" align="center" prop="introId" v-if="true"/>
+      <el-table-column label="标题" align="center" prop="title" />
       <el-table-column label="内容" align="center" prop="content" />
-      <el-table-column label="活动介绍 可放图片" align="center" prop="imageFullUrl" width="100">
+      <el-table-column label="0 场地舞台介绍 1 更多介绍" align="center" prop="type" />
+      <el-table-column label="图片" align="center" prop="imageFullUrl" width="100">
         <template slot-scope="scope">
+<!--          <image-upload v-model="scope.row.imageFullUrl" :width="50" :height="50"/>-->
           <image-preview :src="scope.row.imageFullUrl" :width="50" :height="50"/>
+        </template>
+      </el-table-column>
+      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="更新时间" align="center" prop="updateTime" width="180">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -93,13 +130,20 @@
     <!-- 添加或修改活动介绍对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="标题" prop="title">
+          <el-input v-model="form.title" placeholder="请输入标题" />
+        </el-form-item>
+        <el-form-item label="介绍类型" prop="type">
+          <el-input v-model="form.type" placeholder="请输入介绍类型 0舞台介绍 1更多介绍" />
+        </el-form-item>
         <el-form-item label="内容">
           <editor v-model="form.content" :min-height="192"/>
         </el-form-item>
-        <el-form-item label="活动介绍 可放图片" prop="imageFullUrl">
+        <el-form-item label="图片" prop="imageFullUrl">
           <image-upload v-model="form.imageFullUrl"/>
         </el-form-item>
       </el-form>
+
       <div slot="footer" class="dialog-footer">
         <el-button :loading="buttonLoading" type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
@@ -139,8 +183,12 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
+        title: undefined,
         content: undefined,
+        type: undefined,
         imageFullUrl: undefined,
+        createTime: undefined,
+        updateTime: undefined,
       },
       // 表单参数
       form: {},
@@ -149,12 +197,25 @@ export default {
         introId: [
           { required: true, message: "ID不能为空", trigger: "blur" }
         ],
+        title: [
+          { required: true, message: "标题不能为空", trigger: "blur" }
+        ],
         content: [
           { required: true, message: "内容不能为空", trigger: "blur" }
         ],
-        imageFullUrl: [
-          { required: true, message: "活动介绍 可放图片不能为空", trigger: "blur" }
+        type: [
+          { required: true, message: "0 场地舞台介绍 1 更多介绍不能为空", trigger: "change" }
         ],
+        imageFullUrl: [
+          { required: true, message: "图片不能为空", trigger: "blur" }
+        ]
+        // ],
+        // createTime: [
+        //   { required: true, message: "创建时间不能为空", trigger: "blur" }
+        // ],
+        // updateTime: [
+        //   { required: true, message: "更新时间不能为空", trigger: "blur" }
+        // ],
       }
     };
   },
@@ -180,7 +241,9 @@ export default {
     reset() {
       this.form = {
         introId: undefined,
+        title: undefined,
         content: undefined,
+        type: undefined,
         imageFullUrl: undefined,
         createTime: undefined,
         updateTime: undefined,

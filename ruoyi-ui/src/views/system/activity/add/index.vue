@@ -124,12 +124,12 @@
         <el-button @click="addTicket">新增票务</el-button>
       </el-form-item>
       <div class="flex">
-        <el-form-item label="活动介绍" prop="introList">
+        <el-form-item label="舞台介绍" prop="introList">
           <el-select v-model="queryParams.stageList" placeholder="请选择" multiple>
             <el-option
               v-for="item in listIntro"
               :key="item.introId"
-              :label="item.title"
+              :label="item.content"
               :value="item.introId">
             </el-option>
           </el-select>
@@ -139,7 +139,7 @@
             <el-option
               v-for="item in listIntro"
               :key="item.introId"
-              :label="item.title"
+              :label="item.content"
               :value="item.introId">
             </el-option>
           </el-select>
@@ -293,6 +293,7 @@ export default {
     },
     /*获取详情数据*/
     async getDetail(activityId) {
+      if(activityId === undefined) return
       const data = await getActivity(activityId)
       this.queryParams = data.data
     },

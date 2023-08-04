@@ -8,7 +8,7 @@ import top.flya.common.core.mapper.BaseMapperPlus;
  * 活动介绍Mapper接口
  *
  * @author ruoyi
- * @date 2023-06-01
+ * @date 2023-08-04
  */
 public interface PzcIntroMapper extends BaseMapperPlus<PzcIntroMapper, PzcIntro, PzcIntroVo> {
 

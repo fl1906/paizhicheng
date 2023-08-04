@@ -17,7 +17,6 @@ import top.flya.system.mapper.PzcIntroMapper;
 import top.flya.system.service.IPzcIntroService;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +24,7 @@ import java.util.Map;
  * 活动介绍Service业务层处理
  *
  * @author ruoyi
- * @date 2023-06-01
+ * @date 2023-08-04
  */
 @RequiredArgsConstructor
 @Service
@@ -34,17 +33,12 @@ public class PzcIntroServiceImpl implements IPzcIntroService {
     private final PzcIntroMapper baseMapper;
 
     private final BatchUtils batchUtils;
-
     /**
      * 查询活动介绍
      */
     @Override
     public PzcIntroVo queryById(Long introId){
-
-        PzcIntroVo pzcIntroVo = baseMapper.selectVoById(introId);
-        List<PzcIntroVo> pzcIntroVos = batchUtils.transformToPzcIntroVo(Collections.singletonList(pzcIntroVo));
-        return pzcIntroVos.get(0);
-
+        return baseMapper.selectVoById(introId);
     }
 
     /**
@@ -70,9 +64,12 @@ public class PzcIntroServiceImpl implements IPzcIntroService {
     private LambdaQueryWrapper<PzcIntro> buildQueryWrapper(PzcIntroBo bo) {
         Map<String, Object> params = bo.getParams();
         LambdaQueryWrapper<PzcIntro> lqw = Wrappers.lambdaQuery();
-        lqw.eq(StringUtils.isNotBlank(bo.getContent()), PzcIntro::getContent, bo.getContent());
         lqw.eq(StringUtils.isNotBlank(bo.getTitle()), PzcIntro::getTitle, bo.getTitle());
+        lqw.eq(StringUtils.isNotBlank(bo.getContent()), PzcIntro::getContent, bo.getContent());
+        lqw.eq(bo.getType() != null, PzcIntro::getType, bo.getType());
         lqw.eq(StringUtils.isNotBlank(bo.getImageFullUrl()), PzcIntro::getImageFullUrl, bo.getImageFullUrl());
+        lqw.eq(bo.getCreateTime() != null, PzcIntro::getCreateTime, bo.getCreateTime());
+        lqw.eq(bo.getUpdateTime() != null, PzcIntro::getUpdateTime, bo.getUpdateTime());
         return lqw;
     }
 

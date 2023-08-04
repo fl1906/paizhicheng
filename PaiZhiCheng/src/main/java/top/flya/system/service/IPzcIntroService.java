@@ -1,10 +1,9 @@
 package top.flya.system.service;
 
-import top.flya.system.domain.PzcIntro;
-import top.flya.system.domain.vo.PzcIntroVo;
-import top.flya.system.domain.bo.PzcIntroBo;
-import top.flya.common.core.page.TableDataInfo;
 import top.flya.common.core.domain.PageQuery;
+import top.flya.common.core.page.TableDataInfo;
+import top.flya.system.domain.bo.PzcIntroBo;
+import top.flya.system.domain.vo.PzcIntroVo;
 
 import java.util.Collection;
 import java.util.List;
@@ -13,7 +12,7 @@ import java.util.List;
  * 活动介绍Service接口
  *
  * @author ruoyi
- * @date 2023-06-01
+ * @date 2023-08-04
  */
 public interface IPzcIntroService {
 

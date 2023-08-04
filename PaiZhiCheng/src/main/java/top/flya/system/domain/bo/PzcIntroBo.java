@@ -6,14 +6,15 @@ import top.flya.common.core.domain.BaseEntity;
 import top.flya.common.core.validate.AddGroup;
 import top.flya.common.core.validate.EditGroup;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 
 /**
  * 活动介绍业务对象 pzc_intro
  *
  * @author ruoyi
- * @date 2023-06-01
+ * @date 2023-08-04
  */
 
 @Data
@@ -27,29 +28,28 @@ public class PzcIntroBo extends BaseEntity {
     private Long introId;
 
     /**
+     * 标题
+     */
+    @NotBlank(message = "标题不能为空", groups = { AddGroup.class, EditGroup.class })
+    private String title;
+
+    /**
      * 内容
      */
     @NotBlank(message = "内容不能为空", groups = { AddGroup.class, EditGroup.class })
     private String content;
 
     /**
-     * 活动介绍 可放图片
+     * 0 场地舞台介绍 1 更多介绍
      */
-    @NotBlank(message = "活动介绍 可放图片不能为空", groups = { AddGroup.class, EditGroup.class })
+    @NotNull(message = "0 场地舞台介绍 1 更多介绍不能为空", groups = { AddGroup.class, EditGroup.class })
+    private Long type;
+
+    /**
+     * 图片
+     */
+    @NotBlank(message = "图片不能为空", groups = { AddGroup.class, EditGroup.class })
     private String imageFullUrl;
-
-    /**
-     * 介绍的主标题
-     */
-    @NotBlank(message = "介绍的主标题不能为空", groups = { AddGroup.class, EditGroup.class })
-    private String title;
-
-    /**
-     * 0 场地介绍 1 更多介绍
-     */
-    @NotNull(message = "0 场地介绍 1 更多介绍不能为空", groups = { AddGroup.class, EditGroup.class })
-    private Integer type;
-
 
 
 }

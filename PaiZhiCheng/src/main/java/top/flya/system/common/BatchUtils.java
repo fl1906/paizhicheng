@@ -150,8 +150,11 @@ public class BatchUtils {
                     intro.getIntroId(),
                     intro.getTitle(),
                     intro.getContent(),
+                    intro.getType(),
                     newImageUrl,
-                    intro.getType()
+                    intro.getCreateTime(),
+                    intro.getUpdateTime()
+
                 );
             })
             // 将处理后的元素收集到一个新的 List 中

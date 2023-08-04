@@ -1,6 +1,8 @@
 package top.flya.system.domain;
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import top.flya.common.core.domain.BaseEntity;
@@ -10,7 +12,7 @@ import top.flya.common.core.domain.BaseEntity;
  * 活动介绍对象 pzc_intro
  *
  * @author ruoyi
- * @date 2023-06-01
+ * @date 2023-08-04
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -22,11 +24,10 @@ public class PzcIntro extends BaseEntity {
     /**
      * ID
      */
-    @TableId(value = "intro_id", type = IdType.AUTO)
+    @TableId(value = "intro_id",type = IdType.AUTO)
     private Long introId;
-
     /**
-     * 介绍的主标题
+     * 标题
      */
     private String title;
     /**
@@ -34,14 +35,13 @@ public class PzcIntro extends BaseEntity {
      */
     private String content;
     /**
-     * 活动介绍 可放图片
+     * 0 场地舞台介绍 1 更多介绍
+     */
+    private Long type;
+    /**
+     * 图片
      */
     private String imageFullUrl;
-
-    /**
-     * 0 场地介绍 1 更多介绍
-     */
-    private Integer type;
     /**
      * 删除状态，默认为1表示正常状态
      */
