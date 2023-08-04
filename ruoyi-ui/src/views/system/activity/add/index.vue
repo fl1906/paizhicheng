@@ -78,24 +78,24 @@
             value-format="yyyy-MM-dd HH:mm:ss"
           ></el-date-picker>
         </el-form-item>
-        <el-form-item label="售票结束时间" prop="saleEndTime">
-          <el-date-picker
-            v-model="queryParams.saleEndTime"
-            type="datetime"
-            placeholder="选择日期"
-            value-format="yyyy-MM-dd HH:mm:ss"
-          >
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="展示时间" prop="showTime">
-          <el-date-picker
-            v-model="queryParams.showTime"
-            type="datetime"
-            placeholder="选择日期"
-            value-format="yyyy-MM-dd HH:mm:ss"
-          >
-          </el-date-picker>
-        </el-form-item>
+<!--        <el-form-item label="售票结束时间" prop="saleEndTime">-->
+<!--          <el-date-picker-->
+<!--            v-model="queryParams.saleEndTime"-->
+<!--            type="datetime"-->
+<!--            placeholder="选择日期"-->
+<!--            value-format="yyyy-MM-dd HH:mm:ss"-->
+<!--          >-->
+<!--          </el-date-picker>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="展示时间" prop="showTime">-->
+<!--          <el-date-picker-->
+<!--            v-model="queryParams.showTime"-->
+<!--            type="datetime"-->
+<!--            placeholder="选择日期"-->
+<!--            value-format="yyyy-MM-dd HH:mm:ss"-->
+<!--          >-->
+<!--          </el-date-picker>-->
+<!--        </el-form-item>-->
       </div>
       <el-form-item label="活动主办方" prop="organizerLists">
         <el-select v-model="queryParams.organizerLists" placeholder="请选择">
@@ -127,7 +127,7 @@
         <el-form-item label="舞台介绍" prop="introList">
           <el-select v-model="queryParams.stageList" placeholder="请选择" multiple>
             <el-option
-              v-for="item in listIntro"
+              v-for="item in wtIntro"
               :key="item.introId"
               :label="item.content"
               :value="item.introId">
@@ -195,6 +195,7 @@ export default {
       listArtist: [],
       // 活动介绍列表
       listIntro: [],
+      wtIntro: [],
       // 标签列表
       listTag: [],
       // 主办方列表
@@ -215,12 +216,12 @@ export default {
         region: undefined,
         regionId: undefined,
         classify: undefined,
-        saleEndTime: undefined,
+        saleEndTime: '2023/8/4 12:00:00',
         title: undefined,
         startTime: undefined,
         endDate: undefined,
         innerImage: undefined,
-        showTime: undefined,
+        showTime: '2023/8/4 12:00:00',
         coverImage: undefined,
         createTime: undefined,
         updateTime: undefined,
@@ -245,9 +246,9 @@ export default {
         artistList: [
           {required: true, message: "艺人不能为空", trigger: "blur"}
         ],
-        saleEndTime: [
-          {required: true, message: "售票结束时间不能为空", trigger: "blur"}
-        ],
+        // saleEndTime: [
+        //   {required: true, message: "售票结束时间不能为空", trigger: "blur"}
+        // ],
         startTime: [
           {required: true, message: "开始时间不能为空", trigger: "blur"}
         ],
@@ -257,9 +258,9 @@ export default {
         innerImage: [
           {required: true, message: "活动详情主图不能为空", trigger: "blur"}
         ],
-        showTime: [
-          {required: true, message: "展示时间不能为空", trigger: "blur"}
-        ],
+        // showTime: [
+        //   {required: true, message: "展示时间不能为空", trigger: "blur"}
+        // ],
         coverImage: [
           {required: true, message: "封面图片不能为空", trigger: "blur"}
         ],
@@ -310,7 +311,15 @@ export default {
     /*查询活动介绍列表*/
     async queryListIntro() {
       const data = await listIntro()
-      this.listIntro = data.rows
+      data.rows.forEach(item => {
+        if(item.type==0)
+        {
+          this.listIntro.push(item)
+        }else {
+          this.wtIntro.push(item)
+        }
+      })
+      // this.listIntro = data.rows
     },
     /*查询标签列表*/
     async queryListTag() {
