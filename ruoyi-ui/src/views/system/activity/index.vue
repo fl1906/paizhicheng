@@ -149,9 +149,14 @@
     <el-table v-loading="loading" :data="activityList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="活动id" align="center" prop="activityId" v-if="true"/>
+      <el-table-column label="活动标题" align="center" prop="title"/>
+      <el-table-column label="活动类型" align="center" prop="classify">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.activity_type" :value="scope.row.classify"/>
+        </template>
+      </el-table-column>
       <el-table-column label="地址" align="center" prop="address"/>
       <el-table-column label="城市ID" align="center" prop="regionId"/>
-      <el-table-column label="活动标题" align="center" prop="title"/>
       <el-table-column label="开始时间" align="center" prop="startTime"/>
       <el-table-column label="结束时间" align="center" prop="endDate"/>
       <el-table-column label="活动详情主图" align="center" prop="innerImage" width="100">
@@ -167,18 +172,19 @@
       </el-table-column>
 
       <!--      <el-table-column label="展示时间" align="center" prop="showTime"/>-->
+      <el-table-column label="创建时间" align="center" prop="createTime"/>
+      <el-table-column label="更新时间" align="center" prop="updateTime"/>
 
-
-      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="更新时间" align="center" prop="updateTime" width="180">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d}') }}</span>
-        </template>
-      </el-table-column>
+<!--      <el-table-column label="创建时间" align="center" prop="createTime" width="180">-->
+<!--        <template slot-scope="scope">-->
+<!--          <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
+<!--      <el-table-column label="更新时间" align="center" prop="updateTime" width="180">-->
+<!--        <template slot-scope="scope">-->
+<!--          <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d}') }}</span>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <!--      <el-table-column label="删除状态，默认为1表示正常状态" align="center" prop="state"/>-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -235,9 +241,9 @@
           >
           </el-date-picker>
         </el-form-item>
-<!--        <el-form-item label="结束时间" prop="endDate">-->
-<!--          <el-input v-model="form.endDate" placeholder="请输入结束时间"/>-->
-<!--        </el-form-item>-->
+        <!--        <el-form-item label="结束时间" prop="endDate">-->
+        <!--          <el-input v-model="form.endDate" placeholder="请输入结束时间"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="活动详情主图" prop="innerImage">
           <el-input v-model="form.innerImage" placeholder="请输入活动详情主图"/>
         </el-form-item>
@@ -264,6 +270,7 @@ import {listActivity, getActivity, delActivity, addActivity, updateActivity} fro
 
 export default {
   name: "Activity",
+  dicts: ['activity_type'],
   data() {
     return {
       // 按钮loading
@@ -297,6 +304,7 @@ export default {
         address: undefined,
         regionId: undefined,
         title: undefined,
+        classify: undefined,
         rangeTime: [],
         startTime: undefined,
         endDate: undefined,
@@ -359,6 +367,7 @@ export default {
       }
       listActivity(this.queryParams).then(response => {
         this.activityList = response.rows;
+        console.log(this.activityList)
         this.total = response.total;
         this.loading = false;
       });
@@ -375,6 +384,7 @@ export default {
         address: undefined,
         regionId: undefined,
         title: undefined,
+        classify: undefined,
         startTime: undefined,
         endDate: undefined,
         innerImage: undefined,
@@ -427,9 +437,9 @@ export default {
         if (valid) {
           this.buttonLoading = true;
           if (this.form.activityId != null) {
-            console.log("活动起止时间是： "+this.form.rangeTime)
-            this.form.startTime= this.form.rangeTime[0];
-            this.form.endDate= this.form.rangeTime[1];
+            console.log("活动起止时间是： " + this.form.rangeTime)
+            this.form.startTime = this.form.rangeTime[0];
+            this.form.endDate = this.form.rangeTime[1];
             updateActivity(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
