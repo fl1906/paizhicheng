@@ -1,11 +1,6 @@
 <template>
   <div class="app-container">
 
-    <!--    <div class="amap-wrapper">-->
-    <!--      <el-amap class="amap-box" :vid="'amap-vue'"></el-amap>-->
-    <!--    </div>-->
-
-
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="地址" prop="address">
         <el-input
@@ -159,13 +154,21 @@
       <el-table-column label="活动标题" align="center" prop="title"/>
       <el-table-column label="开始时间" align="center" prop="startTime"/>
       <el-table-column label="结束时间" align="center" prop="endDate"/>
-      <el-table-column label="活动详情主图" align="center" prop="innerImage"/>
-      <el-table-column label="展示时间" align="center" prop="showTime"/>
+      <el-table-column label="活动详情主图" align="center" prop="innerImage" width="100">
+        <template slot-scope="scope">
+          <image-preview :src="scope.row.innerImage" :width="50" :height="50"/>
+        </template>
+      </el-table-column>
+
       <el-table-column label="封面图片" align="center" prop="coverImage" width="100">
         <template slot-scope="scope">
           <image-preview :src="scope.row.coverImage" :width="50" :height="50"/>
         </template>
       </el-table-column>
+
+      <!--      <el-table-column label="展示时间" align="center" prop="showTime"/>-->
+
+
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
@@ -176,7 +179,7 @@
           <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="删除状态，默认为1表示正常状态" align="center" prop="state"/>
+      <!--      <el-table-column label="删除状态，默认为1表示正常状态" align="center" prop="state"/>-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -208,7 +211,7 @@
     />
 
     <!-- 添加或修改活动对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="600px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="活动地址" prop="address">
           <el-input v-model="form.address" placeholder="请选择活动地址"/>
@@ -219,24 +222,34 @@
         <el-form-item label="活动标题" prop="title">
           <el-input v-model="form.title" placeholder="请输入活动标题"/>
         </el-form-item>
-        <el-form-item label="开始时间" prop="startTime">
-          <el-input v-model="form.startTime" placeholder="请输入开始时间"/>
+        <el-form-item label="活动起止时间" prop="startTime">
+          <!--          <el-input v-model="form.startTime" placeholder="请输入开始时间"/>-->
+
+          <el-date-picker
+            v-model="form.rangeTime"
+            type="datetimerange"
+            range-separator="至"
+            start-placeholder="活动开始时间"
+            end-placeholder="活动结束时间"
+            value-format="yyyy-MM-dd HH:mm:ss"
+          >
+          </el-date-picker>
         </el-form-item>
-        <el-form-item label="结束时间" prop="endDate">
-          <el-input v-model="form.endDate" placeholder="请输入结束时间"/>
-        </el-form-item>
+<!--        <el-form-item label="结束时间" prop="endDate">-->
+<!--          <el-input v-model="form.endDate" placeholder="请输入结束时间"/>-->
+<!--        </el-form-item>-->
         <el-form-item label="活动详情主图" prop="innerImage">
           <el-input v-model="form.innerImage" placeholder="请输入活动详情主图"/>
         </el-form-item>
-        <el-form-item label="展示时间" prop="showTime">
-          <el-input v-model="form.showTime" placeholder="请输入展示时间"/>
-        </el-form-item>
+        <!--        <el-form-item label="展示时间" prop="showTime">-->
+        <!--          <el-input v-model="form.showTime" placeholder="请输入展示时间"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="封面图片" prop="coverImage">
           <image-upload v-model="form.coverImage"/>
         </el-form-item>
-        <el-form-item label="删除状态，默认为1表示正常状态" prop="state">
-          <el-input v-model="form.state" placeholder="请输入删除状态，默认为1表示正常状态"/>
-        </el-form-item>
+        <!--        <el-form-item label="删除状态，默认为1表示正常状态" prop="state">-->
+        <!--          <el-input v-model="form.state" placeholder="请输入删除状态，默认为1表示正常状态"/>-->
+        <!--        </el-form-item>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button :loading="buttonLoading" type="primary" @click="submitForm">确 定</el-button>
@@ -284,6 +297,7 @@ export default {
         address: undefined,
         regionId: undefined,
         title: undefined,
+        rangeTime: [],
         startTime: undefined,
         endDate: undefined,
         innerImage: undefined,
@@ -396,16 +410,16 @@ export default {
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
-      this.$router.push({path: "/pzcActivity/add", query: {activityId: row.activityId}})
-      // this.loading = true;
-      // this.reset();
-      // const activityId = row.activityId || this.ids
-      // getActivity(activityId).then(response => {
-      //   this.loading = false;
-      //   this.form = response.data;
-      //   this.open = true;
-      //   this.title = "修改活动";
-      // });
+      // this.$router.push({path: "/pzcActivity/add", query: {activityId: row.activityId}})
+      this.loading = true;
+      this.reset();
+      const activityId = row.activityId || this.ids
+      getActivity(activityId).then(response => {
+        this.loading = false;
+        this.form = response.data;
+        this.open = true;
+        this.title = "修改活动";
+      });
     },
     /** 提交按钮 */
     submitForm() {
@@ -413,6 +427,9 @@ export default {
         if (valid) {
           this.buttonLoading = true;
           if (this.form.activityId != null) {
+            console.log("活动起止时间是： "+this.form.rangeTime)
+            this.form.startTime= this.form.rangeTime[0];
+            this.form.endDate= this.form.rangeTime[1];
             updateActivity(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;

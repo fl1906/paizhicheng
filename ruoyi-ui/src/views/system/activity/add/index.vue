@@ -66,7 +66,7 @@
             v-model="queryParams.startTime"
             type="datetime"
             placeholder="选择日期"
-            format="yyyy-MM-dd HH:mm:ss"
+            value-format="yyyy-MM-dd HH:mm:ss"
           >
           </el-date-picker>
         </el-form-item>
@@ -75,7 +75,7 @@
             v-model="queryParams.endDate"
             type="datetime"
             placeholder="选择日期"
-            format="yyyy-MM-dd HH:mm:ss"
+            value-format="yyyy-MM-dd HH:mm:ss"
           ></el-date-picker>
         </el-form-item>
         <el-form-item label="售票结束时间" prop="saleEndTime">
@@ -83,7 +83,7 @@
             v-model="queryParams.saleEndTime"
             type="datetime"
             placeholder="选择日期"
-            format="yyyy-MM-dd HH:mm:ss"
+            value-format="yyyy-MM-dd HH:mm:ss"
           >
           </el-date-picker>
         </el-form-item>
@@ -92,7 +92,7 @@
             v-model="queryParams.showTime"
             type="datetime"
             placeholder="选择日期"
-            format="yyyy-MM-dd HH:mm:ss"
+            value-format="yyyy-MM-dd HH:mm:ss"
           >
           </el-date-picker>
         </el-form-item>
@@ -349,6 +349,10 @@ export default {
           } else {
             addActivity({...this.queryParams, createTime: now, organizerList}).then(response => {
               this.$modal.msgSuccess("新增成功");
+              //跳转到活动列表页面 并刷新活动列表
+              this.$router.push({path: '/pzcActivity/activity'})
+
+
             }).finally(() => {
               this.buttonLoading = false;
             });

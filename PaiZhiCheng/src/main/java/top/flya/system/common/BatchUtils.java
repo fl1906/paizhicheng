@@ -252,13 +252,20 @@ public class BatchUtils {
         List<String> oldImageUrls = records.stream()
             .map(PzcActivityVo::getCoverImage)
             .collect(Collectors.toList());
+
+        List<String> innerImageUrls = records.stream()
+            .map(PzcActivityVo::getInnerImage)
+            .collect(Collectors.toList());
         // 批量查询新的 imageUrl
         Map<Long, String> newImageUrls = getNewImageUrls(oldImageUrls);
+        Map<Long, String> newInnerImageUrls = getNewImageUrls(innerImageUrls);
         // 使用 Stream API 进行处理
         return records.stream()
             .map(
                 r->{
                     String newImageUrl = r.getCoverImage().contains("http")?r.getCoverImage():newImageUrls.get(Long.parseLong(r.getCoverImage()));
+                    String innerImage = r.getInnerImage().contains("http")?r.getInnerImage():newInnerImageUrls.get(Long.parseLong(r.getInnerImage()));
+                    log.info("innerImage: {}", innerImage);
                     return  new PzcActivityVo(
                         r.getActivityId(),
                         r.getAddress(),
@@ -266,7 +273,7 @@ public class BatchUtils {
                         r.getTitle(),
                         r.getStartTime(),
                         r.getEndDate(),
-                        r.getInnerImage(),
+                        innerImage,
                         r.getShowTime(),
                         newImageUrl,
                         r.getCreateTime(),

@@ -129,6 +129,7 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
     public TableDataInfo<PzcActivityVo> queryPageList(PzcActivityBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<PzcActivity> lqw = buildQueryWrapper(bo);
         Page<PzcActivityVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        result.setRecords(batchUtils.transformToPzcActivityVo(result.getRecords()));
         return TableDataInfo.build(result);
     }
 
