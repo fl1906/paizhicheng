@@ -312,11 +312,13 @@ export default {
     async queryListIntro() {
       const data = await listIntro()
       data.rows.forEach(item => {
-        if(item.type==0)
+        if(item.type===0)
+        {
+          this.wtIntro.push(item)
+        }
+        if(item.type ===1)
         {
           this.listIntro.push(item)
-        }else {
-          this.wtIntro.push(item)
         }
       })
       // this.listIntro = data.rows

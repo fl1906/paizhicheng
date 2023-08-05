@@ -116,7 +116,14 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
             });
             r.setTagList(tagList);
             PzcOrganizer pzcOrganizer = pzcOrganizerMapper.selectOne(Wrappers.<PzcOrganizer>lambdaQuery().eq(PzcOrganizer::getOrganizerId, r.getOrganizerId()));
-            pzcOrganizer.setOrganizerTickets(pzcOrganizerTicketMapper.selectList(Wrappers.<PzcOrganizerTicket>lambdaQuery().eq(PzcOrganizerTicket::getOrganizerId, pzcOrganizer.getOrganizerId())));
+            List<PzcOrganizerTicket> pzcOrganizerTickets = pzcOrganizerTicketMapper.selectList(Wrappers.<PzcOrganizerTicket>lambdaQuery().eq(PzcOrganizerTicket::getOrganizerId, pzcOrganizer.getOrganizerId()));
+            pzcOrganizerTickets.forEach(
+                p->{
+                    p.setLogoImage(p.getLogoImage().contains("http")?p.getLogoImage():batchUtils.getNewImageUrls(Collections.singletonList(p.getLogoImage())).get(Long.parseLong(p.getLogoImage())));
+                    p.setQrImage(p.getQrImage().contains("http")?p.getQrImage():batchUtils.getNewImageUrls(Collections.singletonList(p.getQrImage())).get(Long.parseLong(p.getQrImage())));
+                }
+            );
+            pzcOrganizer.setOrganizerTickets(pzcOrganizerTickets);
             r.setOrganizerList(pzcOrganizer);
         });
         return pzcActivityVos.get(0);
