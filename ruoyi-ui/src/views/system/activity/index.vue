@@ -420,16 +420,16 @@ export default {
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
-      // this.$router.push({path: "/pzcActivity/add", query: {activityId: row.activityId}})
-      this.loading = true;
-      this.reset();
-      const activityId = row.activityId || this.ids
-      getActivity(activityId).then(response => {
-        this.loading = false;
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改活动";
-      });
+      this.$router.push({path: "/pzcActivity/add", query: {activityId: row.activityId}})
+      // this.loading = true;
+      // this.reset();
+      // const activityId = row.activityId || this.ids
+      // getActivity(activityId).then(response => {
+      //   this.loading = false;
+      //   this.form = response.data;
+      //   this.open = true;
+      //   this.title = "修改活动";
+      // });
     },
     /** 提交按钮 */
     submitForm() {

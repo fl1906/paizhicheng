@@ -337,11 +337,13 @@ export default {
     onSubmit() {
       const now = dayjs().format('YYYY-MM-DD HH:mm:ss')
       this.$refs["queryForm"].validate(valid => {
-        if (valid) {
-          this.buttonLoading = true;
+        if (this.queryParams.activityId === undefined) {
           this.queryParams.artistList = this.queryParams.artistList.map(item => ({artistId: item}))
           this.queryParams.introList = this.queryParams.introList.map(item => ({introId: item}))
           this.queryParams.tagList = this.queryParams.tagList.map(item => ({tagId: item}))
+          this.queryParams.stageList = this.queryParams.stageList.map(item => ({introId: item}))
+        }
+          this.buttonLoading = true;
           const organizerId = this.queryParams.organizerLists
           const organizer = this.listOrganizer.find(item => item.organizerId === organizerId)
           delete organizer.organizerId
@@ -349,12 +351,14 @@ export default {
             ...organizer,
             organizerTickets: this.queryParams.organizerTickets
           }
-          this.queryParams.stageList = this.queryParams.stageList.map(item => ({introId: item}))
 
           if (this.queryParams.activityId) {
             updateActivity({...this.queryParams, updateTime: now, organizerList}).then(response => {
               this.$modal.msgSuccess("修改成功");
-            }).finally(() => {
+              //跳转到活动列表页面 并刷新活动列表
+              this.$router.push({path: '/pzcActivity/activity'})
+            })
+              .finally(() => {
               this.buttonLoading = false;
             });
           } else {
@@ -368,7 +372,6 @@ export default {
               this.buttonLoading = false;
             });
           }
-        }
       })
     },
   },

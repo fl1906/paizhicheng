@@ -231,7 +231,7 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
         if(bo.getOrganizerList()!=null) //主办方票务
         {
             List<PzcOrganizerTicket> organizerTickets = bo.getOrganizerList().getOrganizerTickets();
-            if(organizerTickets.size()!=0)
+            if(organizerTickets!=null&&organizerTickets.size()!=0)
             {
                //校验PzcOrganizerTicket 的 "organizerId": 是否 是当前组织下的
                 organizerTickets.forEach(o->{
