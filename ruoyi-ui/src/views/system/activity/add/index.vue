@@ -306,6 +306,7 @@ export default {
         introList: data.data.introList.map(item => item.introId),
         stageList: data.data.stageList.map(item => item.introId),
         artistList: data.data.artistList.map(item => item.artistId),
+
       }
       this.submitText = '立即修改'
     },

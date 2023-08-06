@@ -94,6 +94,10 @@ export default {
           if (Array.isArray(val)) {
             list = val;
           } else {
+            if(val.includes('http')){
+              this.fileList = [{ name: val, url: val, ossId: val }];
+              return
+            }
             await listByIds(val).then(res => {
               list = res.data;
             })
