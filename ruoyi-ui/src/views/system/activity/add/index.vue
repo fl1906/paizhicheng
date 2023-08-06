@@ -78,24 +78,24 @@
             value-format="yyyy-MM-dd HH:mm:ss"
           ></el-date-picker>
         </el-form-item>
-<!--        <el-form-item label="售票结束时间" prop="saleEndTime">-->
-<!--          <el-date-picker-->
-<!--            v-model="queryParams.saleEndTime"-->
-<!--            type="datetime"-->
-<!--            placeholder="选择日期"-->
-<!--            value-format="yyyy-MM-dd HH:mm:ss"-->
-<!--          >-->
-<!--          </el-date-picker>-->
-<!--        </el-form-item>-->
-<!--        <el-form-item label="展示时间" prop="showTime">-->
-<!--          <el-date-picker-->
-<!--            v-model="queryParams.showTime"-->
-<!--            type="datetime"-->
-<!--            placeholder="选择日期"-->
-<!--            value-format="yyyy-MM-dd HH:mm:ss"-->
-<!--          >-->
-<!--          </el-date-picker>-->
-<!--        </el-form-item>-->
+        <!--        <el-form-item label="售票结束时间" prop="saleEndTime">-->
+        <!--          <el-date-picker-->
+        <!--            v-model="queryParams.saleEndTime"-->
+        <!--            type="datetime"-->
+        <!--            placeholder="选择日期"-->
+        <!--            value-format="yyyy-MM-dd HH:mm:ss"-->
+        <!--          >-->
+        <!--          </el-date-picker>-->
+        <!--        </el-form-item>-->
+        <!--        <el-form-item label="展示时间" prop="showTime">-->
+        <!--          <el-date-picker-->
+        <!--            v-model="queryParams.showTime"-->
+        <!--            type="datetime"-->
+        <!--            placeholder="选择日期"-->
+        <!--            value-format="yyyy-MM-dd HH:mm:ss"-->
+        <!--          >-->
+        <!--          </el-date-picker>-->
+        <!--        </el-form-item>-->
       </div>
       <el-form-item label="活动主办方" prop="organizerLists">
         <el-select v-model="queryParams.organizerLists" placeholder="请选择">
@@ -162,7 +162,7 @@
         <image-upload v-model="queryParams.coverImage"/>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="onSubmit" :loading="buttonLoading">立即创建</el-button>
+        <el-button type="primary" @click="onSubmit" :loading="buttonLoading">{{submitText}}</el-button>
         <el-button>取消</el-button>
       </el-form-item>
     </el-form>
@@ -180,6 +180,8 @@ import dayjs from "dayjs";
 export default {
   data() {
     return {
+      // 提交按钮文案
+      submitText: '立即创建',
       // 分类列表
       classifyList: [
         {value: 0, label: '电音节'},
@@ -207,7 +209,7 @@ export default {
         artistList: [],
         introList: [],
         tagList: [],
-        organizerLists: [],
+        organizerLists: null,
         organizerTickets: [
           {name: '', qrImage: '', logoImage: ''}
         ],
@@ -294,9 +296,14 @@ export default {
     },
     /*获取详情数据*/
     async getDetail(activityId) {
-      if(activityId === undefined) return
+      if (activityId === undefined) return
       const data = await getActivity(activityId)
-      this.queryParams = data.data
+      this.queryParams = {
+        ...data.data,
+        organizerLists: data.data.organizerList.organizerId,
+        organizerTickets: data.data.organizerList.organizerTickets
+      }
+      this.submitText = '立即修改'
     },
     /*查询地址列表*/
     async handleQuery() {
@@ -312,12 +319,10 @@ export default {
     async queryListIntro() {
       const data = await listIntro()
       data.rows.forEach(item => {
-        if(item.type===0)
-        {
+        if (item.type === 0) {
           this.wtIntro.push(item)
         }
-        if(item.type ===1)
-        {
+        if (item.type === 1) {
           this.listIntro.push(item)
         }
       })
@@ -343,35 +348,35 @@ export default {
           this.queryParams.tagList = this.queryParams.tagList.map(item => ({tagId: item}))
           this.queryParams.stageList = this.queryParams.stageList.map(item => ({introId: item}))
         }
-          this.buttonLoading = true;
-          const organizerId = this.queryParams.organizerLists
-          const organizer = this.listOrganizer.find(item => item.organizerId === organizerId)
-          delete organizer.organizerId
-          const organizerList = {
-            ...organizer,
-            organizerTickets: this.queryParams.organizerTickets
-          }
+        this.buttonLoading = true;
+        const organizerId = this.queryParams.organizerLists
+        const organizer = this.listOrganizer.find(item => item.organizerId === organizerId)
+        delete organizer.organizerId
+        const organizerList = {
+          ...organizer,
+          organizerTickets: this.queryParams.organizerTickets
+        }
 
-          if (this.queryParams.activityId) {
-            updateActivity({...this.queryParams, updateTime: now, organizerList}).then(response => {
-              this.$modal.msgSuccess("修改成功");
-              //跳转到活动列表页面 并刷新活动列表
-              this.$router.push({path: '/pzcActivity/activity'})
-            })
-              .finally(() => {
+        if (this.queryParams.activityId) {
+          updateActivity({...this.queryParams, updateTime: now, organizerList}).then(response => {
+            this.$modal.msgSuccess("修改成功");
+            //跳转到活动列表页面 并刷新活动列表
+            this.$router.push({path: '/pzcActivity/activity'})
+          })
+            .finally(() => {
               this.buttonLoading = false;
             });
-          } else {
-            addActivity({...this.queryParams, createTime: now, organizerList}).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              //跳转到活动列表页面 并刷新活动列表
-              this.$router.push({path: '/pzcActivity/activity'})
+        } else {
+          addActivity({...this.queryParams, createTime: now, organizerList}).then(response => {
+            this.$modal.msgSuccess("新增成功");
+            //跳转到活动列表页面 并刷新活动列表
+            this.$router.push({path: '/pzcActivity/activity'})
 
 
-            }).finally(() => {
-              this.buttonLoading = false;
-            });
-          }
+          }).finally(() => {
+            this.buttonLoading = false;
+          });
+        }
       })
     },
   },
