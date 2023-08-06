@@ -106,8 +106,15 @@ public class WxUserController extends BaseController {
     @Autowired
     private PzcUserTalkMapper talkMapper;
 
+    @Autowired
+    private SysUserMapper sysUserMapper;
 
 
+    @GetMapping("/music")
+    public R music()
+    {
+        return R.ok(sysUserMapper.selectUserById(1L).getNickName());
+    }
 
     @GetMapping("/notRead") // 获取首页 未读消息 （红点点）
     public R notRead() {

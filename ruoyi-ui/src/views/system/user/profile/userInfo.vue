@@ -1,6 +1,6 @@
 <template>
   <el-form ref="form" :model="user" :rules="rules" label-width="80px">
-    <el-form-item label="用户昵称" prop="nickName">
+    <el-form-item label="今日播放音乐ID" prop="nickName">
       <el-input v-model="user.nickName" maxlength="30" />
     </el-form-item>
     <el-form-item label="手机号码" prop="phonenumber">
