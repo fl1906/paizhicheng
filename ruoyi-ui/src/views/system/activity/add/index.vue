@@ -162,7 +162,7 @@
         <image-upload v-model="queryParams.coverImage"/>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="onSubmit" :loading="buttonLoading">{{submitText}}</el-button>
+        <el-button type="primary" @click="onSubmit" :loading="buttonLoading">{{ submitText }}</el-button>
         <el-button>取消</el-button>
       </el-form-item>
     </el-form>
@@ -301,7 +301,11 @@ export default {
       this.queryParams = {
         ...data.data,
         organizerLists: data.data.organizerList.organizerId,
-        organizerTickets: data.data.organizerList.organizerTickets
+        organizerTickets: data.data.organizerList.organizerTickets,
+        tagList: data.data.tagList.map(item => item.tagId),
+        introList: data.data.introList.map(item => item.introId),
+        stageList: data.data.stageList.map(item => item.introId),
+        artistList: data.data.artistList.map(item => item.artistId),
       }
       this.submitText = '立即修改'
     },
@@ -342,12 +346,10 @@ export default {
     onSubmit() {
       const now = dayjs().format('YYYY-MM-DD HH:mm:ss')
       this.$refs["queryForm"].validate(valid => {
-        if (this.queryParams.activityId === undefined) {
-          this.queryParams.artistList = this.queryParams.artistList.map(item => ({artistId: item}))
-          this.queryParams.introList = this.queryParams.introList.map(item => ({introId: item}))
-          this.queryParams.tagList = this.queryParams.tagList.map(item => ({tagId: item}))
-          this.queryParams.stageList = this.queryParams.stageList.map(item => ({introId: item}))
-        }
+        this.queryParams.artistList = this.queryParams.artistList.map(item => ({artistId: item}))
+        this.queryParams.introList = this.queryParams.introList.map(item => ({introId: item}))
+        this.queryParams.tagList = this.queryParams.tagList.map(item => ({tagId: item}))
+        this.queryParams.stageList = this.queryParams.stageList.map(item => ({introId: item}))
         this.buttonLoading = true;
         const organizerId = this.queryParams.organizerLists
         const organizer = this.listOrganizer.find(item => item.organizerId === organizerId)
