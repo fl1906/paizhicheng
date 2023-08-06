@@ -252,6 +252,7 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
                     PzcOrganizerTicket pzcOrganizerTicket = pzcOrganizerTicketMapper.selectById(o.getOrganizerTicketId());
                     if(!Objects.equals(bo.getOrganizerList().getOrganizerId(),pzcOrganizerTicket.getOrganizerId()))
                     {
+                        log.info("bo.getOrganizerList().getOrganizerId() is {} , pzcOrganizerTicket.getOrganizerId() is {}",bo.getOrganizerList().getOrganizerId(),pzcOrganizerTicket.getOrganizerId());
                         throw new RuntimeException("票务组织者id不是当前组织者id");
                     }
                 });

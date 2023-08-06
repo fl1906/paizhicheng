@@ -356,6 +356,7 @@ export default {
         delete organizer.organizerId
         const organizerList = {
           ...organizer,
+          organizerId: organizerId,
           organizerTickets: this.queryParams.organizerTickets
         }
 
