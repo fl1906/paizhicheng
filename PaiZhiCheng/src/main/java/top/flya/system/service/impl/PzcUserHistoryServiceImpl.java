@@ -68,11 +68,15 @@ public class PzcUserHistoryServiceImpl implements IPzcUserHistoryService {
         lqw.in(bo.getType() != null, PzcUserHistory::getType, bo.getType());
         lqw.eq(StringUtils.isNotBlank(bo.getMessage()), PzcUserHistory::getMessage, bo.getMessage());
         //获取本月开始时间和结束时间
-        try {
-            lqw.between(bo.getNowTime()!=null, PzcUserHistory::getCreateTime,DateUtils.getMonthStartAndEnd(bo.getNowTime())[0], DateUtils.getMonthStartAndEnd(bo.getNowTime())[1]);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
+        if(StringUtils.isNotBlank(bo.getNowTime())&&bo.getNowTime().length()>0)
+        {
+            try {
+                lqw.between(true, PzcUserHistory::getCreateTime,DateUtils.getMonthStartAndEnd(bo.getNowTime())[0], DateUtils.getMonthStartAndEnd(bo.getNowTime())[1]);
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
         }
+
         return lqw;
     }
 

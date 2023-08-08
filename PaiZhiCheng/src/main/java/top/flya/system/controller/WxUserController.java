@@ -170,7 +170,7 @@ public class WxUserController extends BaseController {
                 user.setNickname(pzcUserBo.getNickname());
                 userMapper.updateById(user);
                 //存入用户历史记录
-                wxUtils.insertUserHistory(user.getUserId(),0L,0L,"昵称修改为"+pzcUserBo.getNickname());
+                wxUtils.insertUserHistory(user.getUserId(),0L,0L,"昵称修改为"+pzcUserBo.getNickname(),null);
                 return R.ok(userMapper.selectById(user.getUserId()));
             }
         }
@@ -185,7 +185,7 @@ public class WxUserController extends BaseController {
             Map<String, Object> map = BeanUtil.beanToMap(pzcUserBo);
 
             //存入用户历史记录
-            wxUtils.insertUserHistory(user.getUserId(),0L,0L,"更新用户其他信息");
+            wxUtils.insertUserHistory(user.getUserId(),0L,0L,"更新用户其他信息",null);
            return R.ok(updateUser(map, user));
         }
 
@@ -321,7 +321,7 @@ public class WxUserController extends BaseController {
             PzcUser user = userMapper.selectById(userId);
             user.setMoney(user.getMoney().add(pzcOrder.getMoney()));
             userMapper.updateById(user);
-            wxUtils.insertUserHistory(user.getUserId(),0L,2L,"派币充值【"+pzcOrder.getMoney()+"】");
+            wxUtils.insertUserHistory(user.getUserId(),0L,2L,"派币充值【"+pzcOrder.getMoney()+"】",pzcOrder.getMoney());
 
 
         } catch (GeneralSecurityException e) {

@@ -39,4 +39,5 @@ public class PzcUserCollectVo {
 
     private PzcActivity activity;
 
+
 }
