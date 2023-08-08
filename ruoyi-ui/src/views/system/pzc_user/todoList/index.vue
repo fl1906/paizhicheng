@@ -3,6 +3,7 @@
   <div class="app-container">
     <div>
       <h1>待办事项</h1>
+      <el-result icon="success" title="代办事件条数为" :subTitle="tableData.length.toString()"/>
     </div>
     <el-input v-model="input" placeholder="请输入需要填入的代办事项" @change="handleAdd(input)"></el-input>
     <hr>
@@ -46,7 +47,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-result icon="success" title="代办事件条数为" :subTitle="tableData.length.toString()"/>
+
     <el-button type="danger" @click="deleteData">批量删除代办事项</el-button>
   </div>
 
