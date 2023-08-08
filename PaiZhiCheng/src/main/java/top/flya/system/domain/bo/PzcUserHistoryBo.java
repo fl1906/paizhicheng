@@ -6,7 +6,8 @@ import top.flya.common.core.domain.BaseEntity;
 import top.flya.common.core.validate.AddGroup;
 import top.flya.common.core.validate.EditGroup;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 
 /**
@@ -50,5 +51,7 @@ public class PzcUserHistoryBo extends BaseEntity {
     @NotBlank(message = "信息不能为空", groups = { AddGroup.class, EditGroup.class })
     private String message;
 
+
+    private String nowTime;
 
 }
