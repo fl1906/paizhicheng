@@ -6,9 +6,13 @@
     </div>
     <el-input v-model="input" placeholder="请输入需要填入的代办事项" @change="handleAdd(input)"></el-input>
     <hr>
+
     <el-table
       :data="tableData"
+      ref="multipleTable"
+      @selection-change="handleSelectionChange"
       style="width: 100%">
+      <el-table-column type="selection" width="50" align="center" />
       <el-table-column
         label="编号"
         width="180">
@@ -42,6 +46,8 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-result icon="success" title="代办事件条数为" :subTitle="tableData.length.toString()"/>
+    <el-button type="danger" @click="deleteData">批量删除代办事项</el-button>
   </div>
 
 
@@ -56,13 +62,29 @@ export default {
       tableData: [{
         id: 1,
         name: '完成代办列表',
-      }
-      ]
+      },
+      ],
+      multipleSelection: []
     }
   },
   methods: {
     handleEdit(index, row) {
       console.log(index, row);
+      this.$prompt('请输入新的代办事项', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+      }).then(({ value }) => {
+        row.name=value
+        this.$message({
+          type: 'success',
+          message: '修改后的代办事项是: ' + value
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '取消输入'
+        });
+      });
     },
     handleDelete(index,row) {
       console.log(row);
@@ -85,7 +107,26 @@ export default {
       this.tableData.push(newItem);
       this.input=''
     }
+    ,
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+      console.log("多选",this.multipleSelection)
+    },
+    batchDelete(){
+      console.log("删除方法1 全局匹配")
+      // console.log("233",this.multipleSelection.includes(2))
+      this.tableData = this.tableData.filter(item => !this.multipleSelection.includes(item));
+    },
+    deleteData() {
+      console.log("删除方法2 只匹配Id")
+      this.tableData = this.tableData.filter(item => !this.multipleSelection.some(data => data.id === item.id));
+    }
+  },
+  created() {
+
   }
+
+
 }
 </script>
 
