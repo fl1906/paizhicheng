@@ -33,6 +33,13 @@
           </el-popover>
         </template>
       </el-table-column>
+      <el-table-column
+        label="完成状态"
+        width="100">
+        <template slot-scope="scope">
+          <el-checkbox id="checkbox" v-model="scope.row.complete"></el-checkbox>
+        </template>
+      </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button
@@ -48,7 +55,8 @@
       </el-table-column>
     </el-table>
 
-    <el-button type="danger" @click="deleteData">批量删除代办事项</el-button>
+    <el-button type="danger" @click="deleteData" v-show="tableData.length">批量删除代办事项</el-button>
+    <el-button type="danger" @click="deleteCompleteData" v-show="tableData.length">批量清除已完成代办事项</el-button>
   </div>
 
 
@@ -60,20 +68,24 @@ export default {
   data() {
     return {
       input: '',
-      tableData: [{
-        id: 1,
-        name: '完成代办列表',
-      },
-      ],
+      tableData: JSON.parse(localStorage.getItem("tableData")) || [],
       multipleSelection: []
+    }
+  },
+  watch:{
+    "tableData":{
+      deep:true,
+      handler(newData){
+        localStorage.setItem("tableData",JSON.stringify(newData))
+      }
     }
   },
   methods: {
     handleEdit(index, row) {
-      console.log(index, row);
       this.$prompt('请输入新的代办事项', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
+        inputValue: row.name
       }).then(({ value }) => {
         row.name=value
         this.$message({
@@ -100,7 +112,8 @@ export default {
       // Create a new item object with input as name and last item's ID + 1
       const newItem = {
         id: lastItemId + 1,
-        name: this.input
+        name: this.input,
+        complete: false
       };
       console.log("当前用户输入的代办事项为: ", this.input);
 
@@ -121,6 +134,13 @@ export default {
     deleteData() {
       console.log("删除方法2 只匹配Id")
       this.tableData = this.tableData.filter(item => !this.multipleSelection.some(data => data.id === item.id));
+    },
+    deleteCompleteData()
+    {
+      console.log("删除已完成的代办事项")
+      console.log("2333",JSON.parse(localStorage.getItem("tableData")).filter(item => !item.complete === true))
+      localStorage.setItem("tableData",JSON.stringify(JSON.parse(localStorage.getItem("tableData")).filter(item => !item.complete === true)));
+      this.tableData=JSON.parse(localStorage.getItem("tableData"))
     }
   },
   created() {
@@ -132,5 +152,9 @@ export default {
 </script>
 
 <style scoped>
+     #checkbox.el-checkbox__input.is-checked.el-checkbox__inner{
+       background-color: greenyellow;
+       border-color: greenyellow;
 
+     }
 </style>

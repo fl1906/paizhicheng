@@ -92,9 +92,7 @@ export default {
   filters: {
     handleArray(array) {
       if(array.length===0) return '';
-      return array.reduce((pre, cur) => {
-        return pre + ' ' + cur;
-      })
+      return array.reduce((pre, cur) => pre + ' ' + cur)
     },
   }
 };

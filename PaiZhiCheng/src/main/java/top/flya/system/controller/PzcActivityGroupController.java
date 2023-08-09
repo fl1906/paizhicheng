@@ -135,6 +135,7 @@ public class PzcActivityGroupController extends BaseController {
         } else { //我是发起人
             otherUser = pzcUserMapper.selectById(pzcActivityGroupApplyVo.getUserId());
         }
+        pzcOfficial.setFromUserId(userId);
         pzcOfficial.setToUserId(otherUser.getUserId());
         pzcOfficial.setTitle("来自" + otherUser.getNickname() + "与您的组队信息：");
         pzcOfficial.setContent("在【" + pzcActivityGroupVo.getTitle() + "】组队中途，对方已经取消本次组队。请重新选择队伍进行匹配~");
@@ -183,6 +184,7 @@ public class PzcActivityGroupController extends BaseController {
             startUser.setMoney(startUser.getMoney().add(money).add(pzcActivityGroup.getMoney())); //全额返回给发起方的保证金 + 对方扣除 0.2保证金 后的派币
             pzcUserMapper.updateById(startUser);
 
+            pzcOfficial.setFromUserId(userId);
             pzcOfficial.setTitle("来自" + my.getNickname() + "与您的组队信息：");
             pzcOfficial.setContent("在【" + pzcActivityGroup.getTitle() + "】组队中途，申请方已经取消本次组队。对方的违约金 【" + money + "派币】已纳入您的账户。请查收~");
             pzcOfficial.setToUserId(startUser.getUserId());
@@ -203,6 +205,7 @@ public class PzcActivityGroupController extends BaseController {
                 .add(pzcActivityGroupApplyVo.getMoney())); //全额返回给申请方的保证金
             pzcUserMapper.updateById(applyUser);
 
+            pzcOfficial.setFromUserId(userId);
             pzcOfficial.setTitle("来自" + my.getNickname() + "与您的组队信息：");
             pzcOfficial.setContent("在【" + pzcActivityGroup.getTitle() + "】组队中途，发起方已经取消本次组队。对方的违约金 【" + pzcActivityGroup.getMoney().subtract(new BigDecimal("0.2")) + "派币】已纳入您的账户。请查收~");
             pzcOfficial.setToUserId(applyUser.getUserId());
