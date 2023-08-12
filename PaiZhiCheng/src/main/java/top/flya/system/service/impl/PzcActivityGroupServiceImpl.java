@@ -79,7 +79,7 @@ public class PzcActivityGroupServiceImpl implements IPzcActivityGroupService {
             PzcRegion pzcRegion = pzcRegionMapper.selectById(region);
             if(pzcRegion!=null)
             {
-                pzcActivityGroupVo.setActivityTitle(pzcRegion.getName());
+                pzcActivityGroupVo.setActivityTitle("【"+pzcRegion.getName()+"】");
             }
 
         }
