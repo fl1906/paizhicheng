@@ -55,9 +55,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="base"/>
         from pzc_activity_group as g inner join pzc_user as u
         where 1=1
+        <if test="bo.userId !=null">
+            and g.user_id = #{bo.userId}
+        </if>
             and g.user_id = u.user_id
         <if test="bo.userSex != null">
-            and (g.user_id = u.user_id and u.sex = #{bo.userSex})
+            and u.sex = #{bo.userSex}
         </if>
         <if test="bo.userLevelMin != null">
             and u.user_level &gt;= #{bo.userLevelMin}
@@ -71,6 +74,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <if test="bo.region !=null">
            and g.region = #{bo.region}
         </if>
+
 
 
     </select>
