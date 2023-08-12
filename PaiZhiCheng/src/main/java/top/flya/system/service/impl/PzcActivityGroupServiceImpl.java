@@ -23,6 +23,8 @@ import top.flya.system.utils.gaode.GaoDeMapUtil;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 活动组队Service业务层处理
@@ -97,6 +99,7 @@ public class PzcActivityGroupServiceImpl implements IPzcActivityGroupService {
 
         Page<PzcActivityGroupVo> result = baseMapper.selectDetailsList(pageQuery.build(), bo);
         ArrayList<PzcActivityGroupVo> pzcActivityGroupVos = new ArrayList<>();
+        Pattern pattern = Pattern.compile("【(.*?),(.*?)】");
         result.getRecords().forEach(
                 pzcActivityGroupVo -> {
                     pzcActivityGroupVos.add(pzcActivityGroupVo);
@@ -113,9 +116,18 @@ public class PzcActivityGroupServiceImpl implements IPzcActivityGroupService {
                         log.info("当前组队正在进行中，不返回组队信息 groupId is {}",pzcActivityGroupVo.getGroupId());
                         pzcActivityGroupVos.remove(pzcActivityGroupVo);
                     }
-                    String jwd = gaoDeMapUtil.getLonLat(pzcActivityGroupVo.getAddress()).getData().toString(); //经纬度
-                    log.info("当前地址经纬度 is {}",jwd);
-                    String distance = gaoDeMapUtil.getDistance(bo.getLongitudeAndLatitude(), jwd).getData().toString();
+                    String jwdFromAddress = pzcActivityGroupVo.getAddress() ;
+
+                    Matcher matcher = pattern.matcher(jwdFromAddress);
+                    if (matcher.find()) {
+                        // 获取经纬度
+                        log.info("从数据库地址经纬度 is {}",jwdFromAddress);
+                        jwdFromAddress = matcher.group(1) + "," + matcher.group(2);
+                    }else{
+                        log.info("调用API获取经纬度 is {}",jwdFromAddress);
+                        jwdFromAddress =gaoDeMapUtil.getLonLat(pzcActivityGroupVo.getAddress()).getData().toString(); //经纬度
+                    }
+                    String distance = gaoDeMapUtil.getDistance(bo.getLongitudeAndLatitude(), jwdFromAddress).getData().toString();
                     log.info("离我【{}】米",distance);
                     //计算距离
                     String distanceStr = new BigDecimal(distance).divide(new BigDecimal(1000), 2, BigDecimal.ROUND_HALF_UP).toString(); //保留两位小数
