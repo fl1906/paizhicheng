@@ -77,11 +77,20 @@ public class PzcActivityGroupBo extends BaseEntity {
     @NotNull(message = "权限不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long auth;
 
-    private Integer userLevelMin;
-
-    private Integer userLevelMax;
+//    private Integer userLevelMin;
+//
+//    private Integer userLevelMax;
 
     private Integer userSex;
+
+    private Integer distance;// 1
+
+
+    private Integer userLevel;
+
+    private Integer activityTime1;
+
+    private String  longitudeAndLatitude; //经纬度
 
 
 }

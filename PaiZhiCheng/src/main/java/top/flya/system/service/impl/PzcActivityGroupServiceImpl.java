@@ -19,7 +19,9 @@ import top.flya.system.domain.bo.PzcActivityGroupBo;
 import top.flya.system.domain.vo.PzcActivityGroupVo;
 import top.flya.system.mapper.*;
 import top.flya.system.service.IPzcActivityGroupService;
+import top.flya.system.utils.gaode.GaoDeMapUtil;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -43,6 +45,8 @@ public class PzcActivityGroupServiceImpl implements IPzcActivityGroupService {
     private final PzcActivityGroupApplyMapper pzcActivityGroupApplyMapper;
 
     private final PzcRegionMapper pzcRegionMapper;
+
+    private final GaoDeMapUtil gaoDeMapUtil;
 
     /**
      * 查询活动组队
@@ -109,9 +113,20 @@ public class PzcActivityGroupServiceImpl implements IPzcActivityGroupService {
                         log.info("当前组队正在进行中，不返回组队信息 groupId is {}",pzcActivityGroupVo.getGroupId());
                         pzcActivityGroupVos.remove(pzcActivityGroupVo);
                     }
-
+                    String jwd = gaoDeMapUtil.getLonLat(pzcActivityGroupVo.getAddress()).getData().toString(); //经纬度
+                    log.info("当前地址经纬度 is {}",jwd);
+                    String distance = gaoDeMapUtil.getDistance(bo.getLongitudeAndLatitude(), jwd).getData().toString();
+                    log.info("离我【{}】米",distance);
+                    //计算距离
+                    String distanceStr = new BigDecimal(distance).divide(new BigDecimal(1000), 2, BigDecimal.ROUND_HALF_UP).toString(); //保留两位小数
+                    pzcActivityGroupVo.setDistance(distanceStr);
                 }
         );
+        if(bo.getDistance()!=null)
+        {
+            pzcActivityGroupVos.sort(Comparator.comparing(PzcActivityGroupVo::getDistance)); //按照距离排序
+        }
+
         //查询当前组队 是否正在进行中 如果是 则 不进入组队大厅
         return TableDataInfo.build(pzcActivityGroupVos);
     }

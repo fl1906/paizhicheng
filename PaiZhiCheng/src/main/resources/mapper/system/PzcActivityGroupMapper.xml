@@ -62,18 +62,19 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <if test="bo.userSex != null">
             and u.sex = #{bo.userSex}
         </if>
-        <if test="bo.userLevelMin != null">
-            and u.user_level &gt;= #{bo.userLevelMin}
-        </if>
-        <if test="bo.userLevelMax != null">
-            and u.user_level &lt;= #{bo.userLevelMax}
-        </if>
         <if test="bo.activityId !=null">
             and g.activity_id = #{bo.activityId}
         </if>
         <if test="bo.region !=null">
            and g.region = #{bo.region}
         </if>
+        <if test="bo.activityTime1 !=null">
+            order by g.activity_time desc
+        </if>
+        <if test="bo.userLevel !=null">
+            order by u.level desc
+        </if>
+
 
 
 

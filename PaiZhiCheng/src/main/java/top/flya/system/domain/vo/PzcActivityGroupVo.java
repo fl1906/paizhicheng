@@ -108,4 +108,7 @@ public class PzcActivityGroupVo {
 
 
     private Boolean ifShow =  true;
+
+
+    private String distance; //距离多少米
 }

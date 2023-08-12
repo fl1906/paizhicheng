@@ -51,13 +51,6 @@ public class PzcUserCollectController extends BaseController {
      */
     @GetMapping("/list")
     public R<List<PzcActivity>> list(PzcUserCollectBo bo, PageQuery pageQuery) {
-//        if(bo.getUserId() == null){
-//            bo.setUserId(getLoginUser().getUserId());
-//        }
-//
-//        pageQuery.setOrderByColumn("create_time");
-//        pageQuery.setIsAsc("desc");
-//        return iPzcUserCollectService.queryPageList(bo, pageQuery);
         Set<String> members = stringRedisTemplate.opsForSet().members("collect:" + getUserId());
         if(members==null||members.isEmpty())
         {
