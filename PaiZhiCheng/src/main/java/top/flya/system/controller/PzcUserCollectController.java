@@ -7,15 +7,14 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import top.flya.common.annotation.Log;
-import top.flya.common.annotation.RepeatSubmit;
 import top.flya.common.core.controller.BaseController;
 import top.flya.common.core.domain.PageQuery;
 import top.flya.common.core.domain.R;
-import top.flya.common.core.page.TableDataInfo;
 import top.flya.common.core.validate.AddGroup;
 import top.flya.common.enums.BusinessType;
 import top.flya.common.utils.JsonUtils;
 import top.flya.common.utils.poi.ExcelUtil;
+import top.flya.system.domain.PzcActivity;
 import top.flya.system.domain.bo.PzcUserCollectBo;
 import top.flya.system.domain.vo.PzcUserCollectVo;
 import top.flya.system.mapper.PzcActivityMapper;
@@ -23,9 +22,9 @@ import top.flya.system.service.IPzcUserCollectService;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * 用户收藏活动
@@ -51,7 +50,7 @@ public class PzcUserCollectController extends BaseController {
      * 查询用户收藏活动列表
      */
     @GetMapping("/list")
-    public TableDataInfo<PzcUserCollectVo> list(PzcUserCollectBo bo, PageQuery pageQuery) {
+    public R<List<PzcActivity>> list(PzcUserCollectBo bo, PageQuery pageQuery) {
 //        if(bo.getUserId() == null){
 //            bo.setUserId(getLoginUser().getUserId());
 //        }
@@ -60,11 +59,12 @@ public class PzcUserCollectController extends BaseController {
 //        pageQuery.setIsAsc("desc");
 //        return iPzcUserCollectService.queryPageList(bo, pageQuery);
         Set<String> members = stringRedisTemplate.opsForSet().members("collect:" + getUserId());
-        assert members != null;
-        List<String> collect = members.stream().collect(Collectors.toList());
-
-
-        return null;
+        if(members==null||members.isEmpty())
+        {
+            return R.ok();
+        }
+        List<String> collect = new ArrayList<>(members);
+        return R.ok(pzcActivityMapper.selectActivityByActivityIds(collect));
     }
 
     /**
@@ -97,7 +97,6 @@ public class PzcUserCollectController extends BaseController {
      * 新增用户收藏活动 这里改为存入Redis 加快响应速度
      */
     @Log(title = "用户收藏/取消活动", businessType = BusinessType.INSERT)
-    @RepeatSubmit()
     @PostMapping()
     public R<Void> add(@Validated(AddGroup.class) @RequestBody PzcUserCollectBo bo) {
         log.info("用户收藏/取消活动 {}", JsonUtils.toJsonString(bo));
