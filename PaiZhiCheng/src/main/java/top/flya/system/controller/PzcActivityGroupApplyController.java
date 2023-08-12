@@ -106,6 +106,60 @@ public class PzcActivityGroupApplyController extends BaseController {
         return R.ok();
     }
 
+    @GetMapping("/myHistory") //我的历史活动
+    public R<List<PzcActivityGroupApply>> myHistory() {
+        //我申请 并处于进行中的活动
+        Long userId = LoginHelper.getUserId();
+        List<PzcActivityGroupApply> step1 = pzcActivityGroupApplyMapper.selectList(
+            new QueryWrapper<PzcActivityGroupApply>()
+                .eq("user_id", userId).in("apply_status", 15));
+        step1.forEach(
+            p -> {
+                PzcActivityGroup pzcActivityGroup = pzcActivityGroupMapper.selectById(p.getGroupId());
+                PzcUser my = pzcUserMapper.selectById(p.getUserId());
+                PzcUser other = pzcUserMapper.selectById(pzcActivityGroup.getUserId());
+                p.setOtherMoney(pzcActivityGroup.getMoney());
+                p.setOtherName(other.getNickname());
+                p.setOtherAvatar(other.getAvatar());
+                p.setOtherUserId(String.valueOf(other.getUserId()));
+                p.setOtherLevel(Math.toIntExact(other.getUserLevel()));
+                p.setMyAvatar(my.getAvatar());
+                p.setTitle(pzcActivityGroup.getTitle());
+            }
+        );
+        List<PzcActivityGroupApply> result = new java.util.ArrayList<>();
+
+        //申请我的 并处于进行中的活动
+        //1 找出所有我创建的组
+        List<PzcActivityGroup> pzcActivityGroups = pzcActivityGroupMapper.selectList(new QueryWrapper<PzcActivityGroup>().eq("user_id", userId));
+        List<Long> groupIds = pzcActivityGroups.stream().map(PzcActivityGroup::getGroupId).collect(java.util.stream.Collectors.toList());
+        if(groupIds.size()!=0)
+        {
+            List<PzcActivityGroupApply> step2 = pzcActivityGroupApplyMapper.selectList(new QueryWrapper<>(new PzcActivityGroupApply()).in("group_id", groupIds).in("apply_status", 15));
+            step2.forEach(
+                p -> {
+                    PzcActivityGroup pzcActivityGroup = pzcActivityGroupMapper.selectById(p.getGroupId());
+                    PzcUser other = pzcUserMapper.selectById(p.getUserId());
+                    PzcUser my = pzcUserMapper.selectById(pzcActivityGroup.getUserId());
+                    p.setOtherMoney(pzcActivityGroup.getMoney());
+                    p.setOtherName(other.getNickname());
+                    p.setOtherAvatar(other.getAvatar());
+                    p.setOtherUserId(String.valueOf(other.getUserId()));
+                    p.setOtherLevel(Math.toIntExact(other.getUserLevel()));
+                    p.setMyAvatar(my.getAvatar());
+                    p.setTitle(pzcActivityGroup.getTitle());
+                }
+            );
+            result.addAll(step2);
+        }
+        result.addAll(step1);
+
+        //按照更新时间倒序排列
+        List<PzcActivityGroupApply> collect = result.stream().sorted((o1, o2) -> o2.getUpdateTime().compareTo(o1.getUpdateTime())).collect(Collectors.toList());
+
+        return R.ok(collect);
+    }
+
     /**
      * -1 已取消
      * 0 位于申请列表中

@@ -88,7 +88,7 @@ public class PzcActivityBo extends BaseEntity {
 
     private Integer classify; //属于哪个分类
 
-    private Integer region; // 0 国内 1 国外
+    private Integer region; // 0 国际 1 国内
 
 
     private List<PzcIntro> stageList;  // 场地舞台列表

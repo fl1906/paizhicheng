@@ -36,7 +36,7 @@ public class PzcIntroBo extends BaseEntity {
     /**
      * 内容
      */
-    @NotBlank(message = "内容不能为空", groups = { AddGroup.class, EditGroup.class })
+//    @NotBlank(message = "内容不能为空", groups = { AddGroup.class, EditGroup.class })
     private String content;
 
     /**

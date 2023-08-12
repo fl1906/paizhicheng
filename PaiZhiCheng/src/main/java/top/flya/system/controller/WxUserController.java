@@ -290,7 +290,7 @@ public class WxUserController extends BaseController {
         }
     }
 
-
+/**/
     @RequestMapping("/callback")
     @Transactional
     public R callback(HttpServletRequest request, @RequestBody SuccessCallBackObjBo obj) {
