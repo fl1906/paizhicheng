@@ -24,6 +24,8 @@ import top.flya.system.service.IPzcUserCollectService;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 用户收藏活动
@@ -50,15 +52,19 @@ public class PzcUserCollectController extends BaseController {
      */
     @GetMapping("/list")
     public TableDataInfo<PzcUserCollectVo> list(PzcUserCollectBo bo, PageQuery pageQuery) {
-        if(bo.getUserId() == null){
-            bo.setUserId(getLoginUser().getUserId());
-        }
+//        if(bo.getUserId() == null){
+//            bo.setUserId(getLoginUser().getUserId());
+//        }
+//
+//        pageQuery.setOrderByColumn("create_time");
+//        pageQuery.setIsAsc("desc");
+//        return iPzcUserCollectService.queryPageList(bo, pageQuery);
+        Set<String> members = stringRedisTemplate.opsForSet().members("collect:" + getUserId());
+        assert members != null;
+        List<String> collect = members.stream().collect(Collectors.toList());
 
 
-
-        pageQuery.setOrderByColumn("create_time");
-        pageQuery.setIsAsc("desc");
-        return iPzcUserCollectService.queryPageList(bo, pageQuery);
+        return null;
     }
 
     /**
@@ -84,14 +90,8 @@ public class PzcUserCollectController extends BaseController {
     }
 
     @GetMapping("/status")
-    public R<Void> status(@RequestParam("activityId") Long activityId) {
-        String s = stringRedisTemplate.opsForValue().get("collect:" + getUserId() + ":" + activityId);
-        if(s!=null)
-        {
-            return R.ok("1");
-        }else {
-            return R.ok("0");
-        }
+    public R<Boolean> status(@RequestParam("activityId") Long activityId) {
+        return R.ok(Boolean.TRUE.equals(stringRedisTemplate.opsForSet().isMember("collect:" + getUserId(), activityId.toString())));
     }
     /**
      * 新增用户收藏活动 这里改为存入Redis 加快响应速度
@@ -101,36 +101,14 @@ public class PzcUserCollectController extends BaseController {
     @PostMapping()
     public R<Void> add(@Validated(AddGroup.class) @RequestBody PzcUserCollectBo bo) {
         log.info("用户收藏/取消活动 {}", JsonUtils.toJsonString(bo));
-        //首先查询缓存是否存在
-        String s = stringRedisTemplate.opsForValue().get("collect:" + getUserId() + ":" + bo.getActivityId());
-        if(s!=null)
+        if(Boolean.TRUE.equals(stringRedisTemplate.opsForSet().isMember("collect:" + getUserId(), bo.getActivityId().toString())))
         {
             //取消收藏活动
-            stringRedisTemplate.opsForValue().getAndDelete("collect:" + getUserId() + ":" + bo.getActivityId());
+            stringRedisTemplate.opsForSet().remove("collect:" + getUserId(),bo.getActivityId().toString());
         }else {
-            stringRedisTemplate.opsForValue().set("collect:" + getUserId() + ":" + bo.getActivityId(),"1");
+            stringRedisTemplate.opsForSet().add("collect:" + getUserId(),bo.getActivityId().toString());
         }
         return R.ok("1");
-
-//        //校验活动Id是否存在
-//        Long activityId = bo.getActivityId();
-//        PzcActivityVo pzcActivityVo = pzcActivityMapper.selectVoById(activityId);
-//        if(pzcActivityVo==null)
-//        {
-//            return R.fail("活动不存在");
-//        }
-//
-//        bo.setUserId(getLoginUser().getUserId());
-//        //不存在新增 存在则删除
-//        List<PzcUserCollectVo> pzcUserCollectVos = iPzcUserCollectService.queryList(bo);
-//        if(pzcUserCollectVos.size()>0)
-//        {
-//            log.info("用户取消收藏活动 ");
-//            return toAjax(iPzcUserCollectService.deleteWithValidByIds(Collections.singletonList(pzcUserCollectVos.get(0).getCollectId()), true));
-//        }
-//
-//        log.info("用户收藏活动 ");
-//        return toAjax(iPzcUserCollectService.insertByBo(bo));
     }
 
 }
