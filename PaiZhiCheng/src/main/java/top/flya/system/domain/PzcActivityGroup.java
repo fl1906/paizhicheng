@@ -1,13 +1,15 @@
 package top.flya.system.domain;
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import top.flya.common.core.domain.BaseEntity;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import top.flya.common.core.domain.BaseEntity;
 
 /**
  * 活动组队对象 pzc_activity_group
@@ -32,6 +34,8 @@ public class PzcActivityGroup extends BaseEntity {
      * 活动ID
      */
     private Long activityId;
+
+    private Integer region;
     /**
      * 活动组队发起人ID
      */

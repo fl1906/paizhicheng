@@ -13,13 +13,11 @@ import top.flya.common.core.domain.PageQuery;
 import top.flya.common.core.page.TableDataInfo;
 import top.flya.system.domain.PzcActivityGroup;
 import top.flya.system.domain.PzcActivityGroupApply;
+import top.flya.system.domain.PzcRegion;
 import top.flya.system.domain.PzcUserPhoto;
 import top.flya.system.domain.bo.PzcActivityGroupBo;
 import top.flya.system.domain.vo.PzcActivityGroupVo;
-import top.flya.system.mapper.PzcActivityGroupApplyMapper;
-import top.flya.system.mapper.PzcActivityGroupMapper;
-import top.flya.system.mapper.PzcActivityMapper;
-import top.flya.system.mapper.PzcUserPhotoMapper;
+import top.flya.system.mapper.*;
 import top.flya.system.service.IPzcActivityGroupService;
 
 import java.util.*;
@@ -44,6 +42,8 @@ public class PzcActivityGroupServiceImpl implements IPzcActivityGroupService {
 
     private final PzcActivityGroupApplyMapper pzcActivityGroupApplyMapper;
 
+    private final PzcRegionMapper pzcRegionMapper;
+
     /**
      * 查询活动组队
      */
@@ -67,7 +67,20 @@ public class PzcActivityGroupServiceImpl implements IPzcActivityGroupService {
                 pzcActivityGroupVo.setPhoto(userPhotos.size()>=1? Collections.singletonList(userPhotos.get(0)):null);
             }
         }
-        pzcActivityGroupVo.setActivityTitle(pzcActivityMapper.selectVoById(pzcActivityGroupVo.getActivityId()).getTitle());
+        if(pzcActivityMapper.selectVoById(pzcActivityGroupVo.getActivityId())==null)
+        {
+            Integer region = pzcActivityGroupVo.getRegion();
+            PzcRegion pzcRegion = pzcRegionMapper.selectById(region);
+            if(pzcRegion!=null)
+            {
+                pzcActivityGroupVo.setActivityTitle(pzcRegion.getName());
+            }
+
+        }
+        else {
+            pzcActivityGroupVo.setActivityTitle(pzcActivityMapper.selectVoById(pzcActivityGroupVo.getActivityId()).getTitle());
+        }
+
 
         return pzcActivityGroupVo;
     }

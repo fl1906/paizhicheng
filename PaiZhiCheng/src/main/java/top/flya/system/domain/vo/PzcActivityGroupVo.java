@@ -37,6 +37,8 @@ public class PzcActivityGroupVo {
     @ExcelProperty(value = "活动ID")
     private Long activityId;
 
+
+    private Integer region;
     /**
      * 活动组队发起人ID
      */

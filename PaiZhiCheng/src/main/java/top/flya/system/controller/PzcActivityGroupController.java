@@ -4,6 +4,7 @@ import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -648,6 +649,9 @@ public class PzcActivityGroupController extends BaseController {
         return R.ok(iPzcActivityGroupService.queryById(groupId));
     }
 
+
+    @Autowired
+    private PzcRegionMapper pzcRegionMapper;
     /**
      * 发起活动组队
      */
@@ -657,14 +661,14 @@ public class PzcActivityGroupController extends BaseController {
     public R<Void> add(@Validated(AddGroup.class) @RequestBody PzcActivityGroupBo bo) {
         Long userId = LoginHelper.getUserId();
         bo.setUserId(userId);
+        if(pzcRegionMapper.selectById(bo.getRegion())==null)
+        {
+            return R.fail("当前城市不存在");
+        }
         //校验活动是否存在
-        if (!iPzcActivityGroupService.checkActivity(bo.getActivityId())) {
+        if (!iPzcActivityGroupService.checkActivity(bo.getActivityId())&&bo.getActivityId()!=0) { //如果不是城市活动 并且活动id不为0 则校验活动是否存在
             return R.fail("活动不存在");
         }
-        //是否已经发起过组队  这个可以重复发起
-//        if (iPzcActivityGroupService.checkGroup(userId, bo.getActivityId())) {
-//            return R.fail("已经发起过组队 不可重复发起");
-//        }
         // 校验保证金
         PzcUser pzcUser = pzcUserMapper.selectById(userId);
         if (pzcUser.getMoney().compareTo(bo.getMoney())<0||bo.getMoney().compareTo(new BigDecimal(1))<0) {

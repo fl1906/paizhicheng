@@ -34,6 +34,8 @@ public class PzcActivityGroupBo extends BaseEntity {
     @NotNull(message = "活动ID不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long activityId;
 
+
+    private Integer region;
     /**
      * 活动组队发起人ID
      */
