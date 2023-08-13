@@ -36,6 +36,10 @@ public class ActivityUtils {
      */
     public Boolean checkActivity(Integer activityId) {
         log.info("checkActivity: activityId = {}", activityId);
+        if(activityId==0)
+        {
+            return true;//城市活动 无需检查
+        }
         PzcActivityVo pzcActivityVo = iPzcActivityService.queryById(activityId);
         if (pzcActivityVo == null) {
             log.error("活动不存在");

@@ -35,6 +35,7 @@ import top.flya.system.utils.WxUtils;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -286,11 +287,11 @@ public class PzcActivityGroupApplyController extends BaseController {
 
         //======================================================
         PzcUser applyUser = pzcUserMapper.selectById(bo.getUserId()); //我有2个币  申请需要 两个币  我则需要 根据当前他的余额来判断
-        if(applyUser.getMoney().compareTo(bo.getMoney())<0)
+        log.info("申请参与组队 我目前的余额是： {} 申请需要的余额是：{}",applyUser.getMoney(),bo.getMoney());
+        if(applyUser.getMoney().compareTo(bo.getMoney())<0||applyUser.getMoney().compareTo(new BigDecimal(1))<0) //一块钱也没有就需要充值了
         {
             return R.fail("申请失败，您的余额不足");
         }
-
 
         return toAjax(iPzcActivityGroupApplyService.insertByBo(bo));
     }

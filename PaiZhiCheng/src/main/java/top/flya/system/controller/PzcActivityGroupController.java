@@ -247,7 +247,7 @@ public class PzcActivityGroupController extends BaseController {
                 PzcUser pzcUser = pzcUserMapper.selectById(s.getUserId());
                 s.setNickName(pzcUser.getNickname());
                 s.setAvatar(pzcUser.getAvatar());
-                s.setActivityTitle(pzcActivityMapper.selectVoById(s.getActivityId()).getTitle());
+                s.setActivityTitle(s.getActivityId()==0?"":pzcActivityMapper.selectVoById(s.getActivityId()).getTitle());
                 s.setGroupTitle(pzcActivityGroupVos.stream().filter(s1 -> s1.getGroupId().equals(s.getGroupId())).findFirst().get().getTitle());
             }
         );
@@ -265,12 +265,16 @@ public class PzcActivityGroupController extends BaseController {
                 return R.fail("无权查看该用户信息");
             }
             pzcActivityGroupApplyVo = iPzcActivityGroupApplyService.queryByUserIdAndGroupId(LoginHelper.getUserId(), groupId);
+
         }
         PzcUser pzcUser = pzcUserMapper.selectById(userId);
         pzcUser.setMoney(null);
         pzcUser.setUserPhoto(pzcUserPhotoMapper.selectList(new QueryWrapper<>(new PzcUserPhoto()).eq("user_id", userId)));
         pzcUser.setPzcActivityGroupApplyVo(pzcActivityGroupApplyVo);
-        pzcUser.setPzcActivityGroup(pzcActivityGroupMapper.selectById(groupId));
+
+        PzcActivityGroup pzcActivityGroup = pzcActivityGroupMapper.selectById(groupId);
+        pzcActivityGroup.setAddress(pzcActivityGroup.getAddress().substring(pzcActivityGroup.getAddress().indexOf("】") + 1));
+        pzcUser.setPzcActivityGroup(pzcActivityGroup);
         pzcUser.setLiveStatus(concurrentHashMap.get(userId) != null);
         pzcUser.setNotReadCount(pzcUserTalkMapper.selectNotReadCount(userId, LoginHelper.getUserId()));
         return R.ok(pzcUser);

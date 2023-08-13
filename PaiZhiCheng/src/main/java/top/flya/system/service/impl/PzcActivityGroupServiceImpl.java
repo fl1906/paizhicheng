@@ -39,7 +39,7 @@ public class PzcActivityGroupServiceImpl implements IPzcActivityGroupService {
 
     private final PzcActivityGroupMapper baseMapper;
 
-    private final PzcActivityMapper  pzcActivityMapper;
+    private final PzcActivityMapper pzcActivityMapper;
 
     private final PzcUserPhotoMapper pzcUserPhotoMapper;
 
@@ -54,38 +54,34 @@ public class PzcActivityGroupServiceImpl implements IPzcActivityGroupService {
      * 查询活动组队
      */
     @Override
-    public PzcActivityGroupVo queryById(Long groupId){
+    public PzcActivityGroupVo queryById(Long groupId) {
         PzcActivityGroupVo pzcActivityGroupVo = baseMapper.selectVoByIdDIY(groupId);
-        if(pzcActivityGroupVo==null)
-        {
+        if (pzcActivityGroupVo == null) {
             return null;
         }
-        if(pzcActivityGroupVo.getAuth()==2)
-        {
+        if (pzcActivityGroupVo.getAuth() == 2) {
             log.info("私密组队，不返回用户信息");
             pzcActivityGroupVo.setUser(null);
             pzcActivityGroupVo.setPhoto(null);
-        }else {
+        } else {
             List<PzcUserPhoto> userPhotos = pzcUserPhotoMapper.selectList(new QueryWrapper<PzcUserPhoto>().eq("user_id", pzcActivityGroupVo.getUserId()));
             pzcActivityGroupVo.setPhoto(userPhotos);
-            if(pzcActivityGroupVo.getAuth()==1) //权限 1只返回一张图片
+            if (pzcActivityGroupVo.getAuth() == 1) //权限 1只返回一张图片
             {
-                pzcActivityGroupVo.setPhoto(userPhotos.size()>=1? Collections.singletonList(userPhotos.get(0)):null);
+                pzcActivityGroupVo.setPhoto(userPhotos.size() >= 1 ? Collections.singletonList(userPhotos.get(0)) : null);
             }
         }
-        if(pzcActivityMapper.selectVoById(pzcActivityGroupVo.getActivityId())==null)
-        {
+        if (pzcActivityMapper.selectVoById(pzcActivityGroupVo.getActivityId()) == null) {
             Integer region = pzcActivityGroupVo.getRegion();
             PzcRegion pzcRegion = pzcRegionMapper.selectById(region);
-            if(pzcRegion!=null)
-            {
-                pzcActivityGroupVo.setActivityTitle("【"+pzcRegion.getName()+"】");
+            if (pzcRegion != null) {
+                pzcActivityGroupVo.setActivityTitle("【" + pzcRegion.getName() + "】");
             }
 
-        }
-        else {
+        } else {
             pzcActivityGroupVo.setActivityTitle(pzcActivityMapper.selectVoById(pzcActivityGroupVo.getActivityId()).getTitle());
         }
+        pzcActivityGroupVo.setAddress(pzcActivityGroupVo.getAddress().substring(pzcActivityGroupVo.getAddress().indexOf("】") + 1));
 
 
         return pzcActivityGroupVo;
@@ -99,43 +95,46 @@ public class PzcActivityGroupServiceImpl implements IPzcActivityGroupService {
 
         Page<PzcActivityGroupVo> result = baseMapper.selectDetailsList(pageQuery.build(), bo);
         ArrayList<PzcActivityGroupVo> pzcActivityGroupVos = new ArrayList<>();
-        Pattern pattern = Pattern.compile("【(.*?),(.*?)】");
+        Pattern pattern = Pattern.compile("【(.*?)】(.*?)");
         result.getRecords().forEach(
-                pzcActivityGroupVo -> {
-                    pzcActivityGroupVos.add(pzcActivityGroupVo);
-                    if (pzcActivityGroupVo.getAuth() == 2) {
-                        log.info("私密组队，不返回用户信息");
-                        pzcActivityGroupVo.setUser(null);
-                    }//如果是私密组队，不返回用户信息
-                    //查询当前组队 是否正在进行中 如果是 则 不进入组队大厅
-                    Long groupId = pzcActivityGroupVo.getGroupId();
-                    Long count = pzcActivityGroupApplyMapper.selectCount(new QueryWrapper<PzcActivityGroupApply>().eq("group_id", groupId).notIn("apply_status", -1,0,13,14,15));
-                    if(count>0)
-                    {
-                        //从列表中移除这个对象、
-                        log.info("当前组队正在进行中，不返回组队信息 groupId is {}",pzcActivityGroupVo.getGroupId());
-                        pzcActivityGroupVos.remove(pzcActivityGroupVo);
-                    }
-                    String jwdFromAddress = pzcActivityGroupVo.getAddress() ;
+            pzcActivityGroupVo -> {
+                pzcActivityGroupVos.add(pzcActivityGroupVo);
+                if (pzcActivityGroupVo.getAuth() == 2) {
+                    log.info("私密组队，不返回用户信息");
+                    pzcActivityGroupVo.setUser(null);
+                }//如果是私密组队，不返回用户信息
+                //查询当前组队 是否正在进行中 如果是 则 不进入组队大厅
+                Long groupId = pzcActivityGroupVo.getGroupId();
+                Long count = pzcActivityGroupApplyMapper.selectCount(new QueryWrapper<PzcActivityGroupApply>().eq("group_id", groupId).notIn("apply_status", -1, 0, 13, 14, 15));
+                if (count > 0) {
+                    //从列表中移除这个对象、
+                    log.info("当前组队正在进行中，不返回组队信息 groupId is {}", pzcActivityGroupVo.getGroupId());
+                    pzcActivityGroupVos.remove(pzcActivityGroupVo);
+                }
+                if (bo.getLongitudeAndLatitude() != null && bo.getLongitudeAndLatitude().length() > 0) {
+                    //计算距离
+
+                    String jwdFromAddress = pzcActivityGroupVo.getAddress();
 
                     Matcher matcher = pattern.matcher(jwdFromAddress);
                     if (matcher.find()) {
                         // 获取经纬度
-                        log.info("从数据库地址经纬度 is {}",jwdFromAddress);
-                        jwdFromAddress = matcher.group(1) + "," + matcher.group(2);
-                    }else{
-                        log.info("调用API获取经纬度 is {}",jwdFromAddress);
-                        jwdFromAddress =gaoDeMapUtil.getLonLat(pzcActivityGroupVo.getAddress()).getData().toString(); //经纬度
+                        log.info("从数据库地址经纬度 is {}", jwdFromAddress);
+                        jwdFromAddress = matcher.group(1);
+                        pzcActivityGroupVo.setAddress(pzcActivityGroupVo.getAddress().substring(pzcActivityGroupVo.getAddress().indexOf("】") + 1));
+                    } else {
+                        log.info("调用API获取经纬度 is {}", jwdFromAddress);
+                        jwdFromAddress = gaoDeMapUtil.getLonLat(pzcActivityGroupVo.getAddress()).getData().toString(); //经纬度
                     }
                     String distance = gaoDeMapUtil.getDistance(bo.getLongitudeAndLatitude(), jwdFromAddress).getData().toString();
-                    log.info("离我【{}】米",distance);
+                    log.info("离我【{}】米", distance);
                     //计算距离
                     String distanceStr = new BigDecimal(distance).divide(new BigDecimal(1000), 2, BigDecimal.ROUND_HALF_UP).toString(); //保留两位小数
                     pzcActivityGroupVo.setDistance(distanceStr);
                 }
+            }
         );
-        if(bo.getDistance()!=null)
-        {
+        if (bo.getDistance() != null) {
             pzcActivityGroupVos.sort(Comparator.comparing(PzcActivityGroupVo::getDistance)); //按照距离排序
         }
 
@@ -195,7 +194,7 @@ public class PzcActivityGroupServiceImpl implements IPzcActivityGroupService {
     /**
      * 保存前的数据校验
      */
-    private void validEntityBeforeSave(PzcActivityGroup entity){
+    private void validEntityBeforeSave(PzcActivityGroup entity) {
         //TODO 做一些数据校验,如唯一约束
     }
 
@@ -204,7 +203,7 @@ public class PzcActivityGroupServiceImpl implements IPzcActivityGroupService {
      */
     @Override
     public Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid) {
-        if(isValid){
+        if (isValid) {
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return baseMapper.deleteBatchIds(ids) > 0;

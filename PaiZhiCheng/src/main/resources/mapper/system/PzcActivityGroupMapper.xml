@@ -72,7 +72,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             order by g.activity_time desc
         </if>
         <if test="bo.userLevel !=null">
-            order by u.level desc
+            order by u.user_level desc
         </if>
 
 
