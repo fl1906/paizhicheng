@@ -65,6 +65,7 @@ public class PzcUserCollectServiceImpl implements IPzcUserCollectService {
                         {
                             log.info("vo.getActivity() is:"+vo.getActivity().getClassify());
                             vo.getActivity().setCoverImage(vo.getActivity().getCoverImage().contains("http")?vo.getActivity().getCoverImage(): batchUtils.getNewImageUrls(Collections.singletonList(vo.getActivity().getCoverImage())).get(Long.parseLong(vo.getActivity().getCoverImage())));
+                            vo.getActivity().setShareImage(vo.getActivity().getShareImage().contains("http")?vo.getActivity().getShareImage(): batchUtils.getNewImageUrls(Collections.singletonList(vo.getActivity().getShareImage())).get(Long.parseLong(vo.getActivity().getShareImage())));
                             records.add(vo);
                         }
 

@@ -68,4 +68,6 @@ public class PzcActivity extends BaseEntity {
 
     private Long organizerId; //主办方id
 
+    private String shareImage; //分享图片
+
 }

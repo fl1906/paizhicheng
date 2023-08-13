@@ -103,6 +103,9 @@ public class PzcActivityBo extends BaseEntity {
     private PzcOrganizer organizerList;  // 主办方列表
 
 
+    private String shareImage; //分享图片
+
+
 
 
 }
