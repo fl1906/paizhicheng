@@ -17,6 +17,7 @@ import top.flya.system.domain.bo.PzcActivityBo;
 import top.flya.system.domain.vo.PzcActivityVo;
 import top.flya.system.mapper.*;
 import top.flya.system.service.IPzcActivityService;
+import top.flya.system.utils.gaode.GaoDeMapUtil;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -51,6 +52,8 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
     private final BatchUtils batchUtils;
 
     private final PzcOrganizerTicketMapper pzcOrganizerTicketMapper;
+
+    private final GaoDeMapUtil gaoDeMapUtil;
 
     /**
      * 查询活动
@@ -125,6 +128,8 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
             );
             pzcOrganizer.setOrganizerTickets(pzcOrganizerTickets);
             r.setOrganizerList(pzcOrganizer);
+
+//            r.setDistance();
         });
         return pzcActivityVos.get(0);
     }

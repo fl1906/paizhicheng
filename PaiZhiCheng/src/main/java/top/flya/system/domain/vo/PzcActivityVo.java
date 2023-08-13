@@ -118,5 +118,8 @@ public class PzcActivityVo {
 
     private List<PzcIntro> stageList;  // 场地列表
 
+//    private String distance; //距我多少km
+
+
 
 }
