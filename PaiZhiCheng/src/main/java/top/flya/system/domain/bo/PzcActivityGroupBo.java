@@ -77,9 +77,6 @@ public class PzcActivityGroupBo extends BaseEntity {
     @NotNull(message = "权限不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long auth;
 
-//    private Integer userLevelMin;
-//
-//    private Integer userLevelMax;
 
     private Integer userSex;
 

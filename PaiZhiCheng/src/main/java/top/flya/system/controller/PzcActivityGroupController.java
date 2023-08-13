@@ -661,14 +661,16 @@ public class PzcActivityGroupController extends BaseController {
     public R<Void> add(@Validated(AddGroup.class) @RequestBody PzcActivityGroupBo bo) {
         Long userId = LoginHelper.getUserId();
         bo.setUserId(userId);
-        if(pzcRegionMapper.selectById(bo.getRegion())==null)
-        {
-            return R.fail("当前城市不存在");
-        }
         //校验活动是否存在
         if (!iPzcActivityGroupService.checkActivity(bo.getActivityId())&&bo.getActivityId()!=0) { //如果不是城市活动 并且活动id不为0 则校验活动是否存在
             return R.fail("活动不存在");
         }
+        //校验城市是否存在 只对派对生效
+        if(pzcRegionMapper.selectById(bo.getRegion())==null&&pzcActivityMapper.selectById(bo.getActivityId()).getClassify()!=0)
+        {
+            return R.fail("当前城市不存在");
+        }
+
         // 校验保证金
         PzcUser pzcUser = pzcUserMapper.selectById(userId);
         if (pzcUser.getMoney().compareTo(bo.getMoney())<0||bo.getMoney().compareTo(new BigDecimal(1))<0) {

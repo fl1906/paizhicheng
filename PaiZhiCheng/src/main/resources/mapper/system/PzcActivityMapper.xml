@@ -23,6 +23,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                                    <foreach collection="activityIds" item="activityId" open="(" separator="," close=")">
                                        #{activityId}
                                    </foreach>
+        and classify = #{classify}
     </select>
 
 

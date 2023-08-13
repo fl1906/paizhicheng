@@ -15,5 +15,5 @@ import java.util.List;
  */
 public interface PzcActivityMapper extends BaseMapperPlus<PzcActivityMapper, PzcActivity, PzcActivityVo> {
 
-    List<PzcActivity> selectActivityByActivityIds(@Param("activityIds") List<String> collect);
+    List<PzcActivity> selectActivityByActivityIds(@Param("activityIds") List<String> collect, @Param("classify") Integer type);
 }

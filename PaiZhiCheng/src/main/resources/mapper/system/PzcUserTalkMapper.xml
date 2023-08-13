@@ -19,7 +19,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 
     <select id="selectVoPageV1" resultMap="PzcUserTalkResult" >
-          select talk_id,from_user_id,to_user_id,message,message_status,message_type,create_time,update_time from pzc_user_talk where from_user_id = #{userId} group by to_user_id order by create_time desc
+          select talk_id,from_user_id,to_user_id,message,message_status,message_type,create_time,update_time from pzc_user_talk where from_user_id = #{userId} group by to_user_id order by update_time desc
     </select>
 
     <select id="selectNotReadCount" resultType="java.lang.Integer">

@@ -57,7 +57,7 @@ public class PzcUserCollectController extends BaseController {
             return R.ok();
         }
         List<String> collect = new ArrayList<>(members);
-        return R.ok(pzcActivityMapper.selectActivityByActivityIds(collect));
+        return R.ok(pzcActivityMapper.selectActivityByActivityIds(collect,bo.getType()));
     }
 
     /**
