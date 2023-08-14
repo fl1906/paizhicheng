@@ -50,9 +50,6 @@ public class PzcUserTalkServiceImpl implements IPzcUserTalkService {
      */
     @Override
     public TableDataInfo<PzcUserTalkVo> queryPageList(PzcUserTalkBo bo, PageQuery pageQuery) {
-//        LambdaQueryWrapper<PzcUserTalk> lqw = buildQueryWrapper(bo);
-//        Page<PzcUserTalkVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
-
         Page<PzcUserTalkVo> result = baseMapper.selectVoPageV2(pageQuery.build(), bo);
         return TableDataInfo.build(result);
     }

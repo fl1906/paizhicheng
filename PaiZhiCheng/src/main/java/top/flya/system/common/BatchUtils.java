@@ -286,7 +286,8 @@ public class BatchUtils {
                         null,
                         null,
                         null,
-                        null
+                        null,
+                        r.getShareImage()
                     );
                 }
             ).collect(Collectors.toList());
