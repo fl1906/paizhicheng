@@ -23,6 +23,10 @@ import top.flya.system.service.IPzcUserTalkService;
 import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -48,6 +52,9 @@ public class MessageEventHandler {
     @Resource
     private StringRedisTemplate stringRedisTemplate;
 
+    private final ExecutorService newSingleThreadExecutor = new ThreadPoolExecutor(10, 20, 200L,
+        TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(100));
+
     /**
      * 添加connect事件，当客户端发起连接时调用
      *
@@ -59,26 +66,23 @@ public class MessageEventHandler {
             log.info("client.getHandshakeData() is {}", JSONUtil.toJsonPrettyStr(client.getHandshakeData()));
             String userId = client.getHandshakeData().getSingleUrlParam("userId"); //我的userId
             UUID sessionId = client.getSessionId();
-            if(userId!=null)
-            {
-                cache.saveClient(userId,sessionId,client);
+            if (userId != null) {
+                cache.saveClient(userId, sessionId, client);
                 //查询当前用户是否存在 或者被封
                 PzcUser pzcUser = userMapper.selectById(userId);
-                if(pzcUser==null||pzcUser.getState()==0)
-                {
+                if (pzcUser == null || pzcUser.getState() == 0) {
                     log.error("无效连接 该用户不存在 或者被封禁");
                     client.disconnect();
                 }
                 log.info("与对方建立连接成功,【userId】= {},【sessionId】= {}", userId, sessionId);
                 String result = stringRedisTemplate.opsForValue().get("officialMessage:" + userId);
-                if(result!=null)
-                {
+                if (result != null) {
                     WxzApplyBo wxzApplyBo = JsonUtils.parseObject(result, WxzApplyBo.class);
-                    officialMessage(userId,wxzApplyBo);
+                    officialMessage(userId, wxzApplyBo);
                     log.info("与对方建立联系时 推送官方消息成功");
                 }
 
-            }else {
+            } else {
                 log.error("无效连接");
                 client.disconnect();
             }
@@ -97,8 +101,7 @@ public class MessageEventHandler {
         if (client != null) {
             String userId = client.getHandshakeData().getSingleUrlParam("userId");
             UUID sessionId = client.getSessionId();
-            if(userId!=null)
-            {
+            if (userId != null) {
                 log.info("客户端断开连接,【userId】= {},【sessionId】= {}", userId, sessionId);
                 cache.deleteSessionClient(userId, client.getSessionId());
             }
@@ -114,8 +117,7 @@ public class MessageEventHandler {
      */
     public boolean sendToSingle(String userId, PzcUserTalkBo message) {
         HashMap<UUID, SocketIOClient> userClient = cache.getUserClient(userId);
-        if(userClient!=null)
-        {
+        if (userClient != null) {
             userClient.forEach(((uuid, socketIOClient) ->
             {
                 socketIOClient.sendEvent(Event.CHAT, message);
@@ -128,12 +130,12 @@ public class MessageEventHandler {
 
     /**
      * 官方弹窗消息
+     *
      * @return
      */
     public boolean officialMessage(String toUserId, WxzApplyBo wxzApplyBo) {
         HashMap<UUID, SocketIOClient> userClient = cache.getUserClient(toUserId);
-        if(userClient!=null)
-        {
+        if (userClient != null) {
             userClient.forEach(((uuid, socketIOClient) ->
             {
                 socketIOClient.sendEvent(Event.OFFICIAL, wxzApplyBo);
@@ -145,40 +147,44 @@ public class MessageEventHandler {
 
     /**
      * 这里用户给对方发起 一条消息  请求无限制到达
+     *
      * @param client
      * @param request
      */
     @OnEvent(value = Event.OFFICIAL)
 //    @RepeatSubmit(interval =5 ,timeUnit = TimeUnit.MINUTES,message = "发送频繁，请过五分钟之后再试")
-    public void onOfficialEvent(SocketIOClient client, AckRequest request, WxzApplyBo wxzApplyBo)
-    {
+    public void onOfficialEvent(SocketIOClient client, AckRequest request, WxzApplyBo wxzApplyBo) {
         wxzApplyBo.setMessage("对方想要超限制确认\n已与本人见面");
         log.info("用户 {} 刚刚给用户 {} 发起了一条无限制确认到达弹窗", wxzApplyBo.getFromUserId(), wxzApplyBo.getToUserId());
         //这里分 用户是否在线
-        if(officialMessage(String.valueOf(wxzApplyBo.getToUserId()),wxzApplyBo)) { //测试时修改一下
+        if (officialMessage(String.valueOf(wxzApplyBo.getToUserId()), wxzApplyBo)) { //测试时修改一下
             log.info("弹窗消息发送成功");
-            stringRedisTemplate.opsForValue().set("officialMessage:"+wxzApplyBo.getToUserId(), JsonUtils.toJsonString(wxzApplyBo)); //这里也需要存储到redis
+            stringRedisTemplate.opsForValue().set("officialMessage:" + wxzApplyBo.getToUserId(), JsonUtils.toJsonString(wxzApplyBo)); //这里也需要存储到redis
             request.sendAckData(Dict.create().set("flag", true).set("message", "发送成功"));
-        }
-        else {
+        } else {
             log.info("弹窗消息发送到Redis 用户不在线");
             // 这里需要将消息存储到redis 等待用户上线后推送
-            stringRedisTemplate.opsForValue().set("officialMessage:"+wxzApplyBo.getToUserId(), JsonUtils.toJsonString(wxzApplyBo));
+            stringRedisTemplate.opsForValue().set("officialMessage:" + wxzApplyBo.getToUserId(), JsonUtils.toJsonString(wxzApplyBo));
             request.sendAckData(Dict.create().set("flag", false).set("message", "用户不在线~ 对方上线后可见 "));
         }
 
     }
 
 
-
     @OnEvent(value = Event.CHAT)
     public void onChatEvent(SocketIOClient client, AckRequest request, PzcUserTalkBo data) {
         log.info("用户 {} 刚刚私信了用户 {}：{}", data.getFromUserId(), data.getToUserId(), data.getMessage());
-        userTalkService.insertByBo(data);
-        if(sendToSingle(String.valueOf(data.getToUserId()), data))
-        {
+        //加异步
+        newSingleThreadExecutor.execute(() -> {
+            data.setUserId(data.getFromUserId());
+            userTalkService.insertByBo(data);
+            data.setUserId(data.getToUserId());
+            userTalkService.insertByBo(data);
+        });
+
+        if (sendToSingle(String.valueOf(data.getToUserId()), data)) {
             request.sendAckData(Dict.create().set("flag", true).set("message", "发送成功"));
-        }else {
+        } else {
             request.sendAckData(Dict.create().set("flag", false).set("message", "用户不在线~ 对方上线后可见 "));
         }
 
@@ -191,9 +197,6 @@ public class MessageEventHandler {
      * 如果接收者在线，则直接发送消息；
      * 否则将消息存储到redis，等用户上线后主动拉取未读消息。
      */
-
-
-
 
 
 //    /**
@@ -210,7 +213,6 @@ public class MessageEventHandler {
 //
 //        server.getRoomOperations(data.getGroupId()).sendEvent(Event.JOIN, data);
 //    }
-
 
 
 //    @OnEvent(value = Event.GROUP)
@@ -231,7 +233,6 @@ public class MessageEventHandler {
 //            request.sendAckData("请先加群！");
 //        }
 //    }
-
 
 
 //    /**

@@ -17,9 +17,9 @@ import java.util.List;
  */
 public interface PzcUserTalkMapper extends BaseMapperPlus<PzcUserTalkMapper, PzcUserTalk, PzcUserTalkVo> {
 
-    PzcUserTalkVo selectVoPageV1 (@Param("otherUser")Long otherUser, @Param("userId") Long userId);
+    PzcUserTalkVo selectVoPageV1 (@Param("otherUser")Long otherUser, @Param("userId") Long myUserId);
 
-    Integer selectNotReadCount(@Param("fromUserId") Long userId, @Param("toUserId") Long toUserId);
+    Integer selectNotReadCount(@Param("fromUserId") Long userId, @Param("toUserId") Long toUserId,@Param("userId")Long myUserId);
 
     Page<PzcUserTalkVo> selectVoPageV2(Page<Object> build, @Param("bo") PzcUserTalkBo bo);
 

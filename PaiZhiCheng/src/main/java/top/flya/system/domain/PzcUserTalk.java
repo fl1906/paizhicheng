@@ -32,6 +32,9 @@ public class PzcUserTalk extends BaseEntity {
      * 接受方
      */
     private Long toUserId;
+
+
+    private Long userId; //消息的归属者 单向删除
     /**
      * 消息
      */

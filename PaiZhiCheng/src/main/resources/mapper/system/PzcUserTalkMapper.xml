@@ -22,17 +22,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
         SELECT talk_id,from_user_id, to_user_id, message, message_status, message_type, create_time,update_time
         FROM pzc_user_talk
-        WHERE (from_user_id = #{userId} and to_user_id = #{otherUser})
-        OR (to_user_id = #{userId} and from_user_id = #{otherUser})
+        WHERE ((from_user_id = #{userId} and to_user_id = #{otherUser})
+        OR (to_user_id = #{userId} and from_user_id = #{otherUser})) and user_id = #{userId}
         ORDER BY create_time DESC LIMIT 1
     </select>
 
     <select id="selectNotReadCount" resultType="java.lang.Integer">
-        select count(1) from pzc_user_talk where (from_user_id = #{fromUserId} and to_user_id = #{toUserId}) and message_status = 0
+        select count(1) from pzc_user_talk where (from_user_id = #{fromUserId} and to_user_id = #{toUserId}) and user_id = #{userId} and message_status = 0
     </select>
     <select id="selectVoPageV2" resultType="top.flya.system.domain.vo.PzcUserTalkVo">
         select talk_id,from_user_id,to_user_id,message,message_status,message_type,create_time,update_time from pzc_user_talk where
-               (from_user_id = #{bo.fromUserId} and to_user_id = #{bo.toUserId}) or (from_user_id = #{bo.toUserId} and to_user_id = #{bo.fromUserId})
+               ((from_user_id = #{bo.fromUserId} and to_user_id = #{bo.toUserId}) or (from_user_id = #{bo.toUserId} and to_user_id = #{bo.fromUserId})) and user_id = #{bo.userId}
                order by update_time desc
     </select>
     <select id="selectMyTalkUserIds" resultType="java.lang.Long">

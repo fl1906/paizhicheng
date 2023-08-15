@@ -74,7 +74,7 @@ public class PzcUserTalkServiceImpl implements IPzcUserTalkService {
             userId -> {
                 PzcUserTalkVo item = baseMapper.selectVoPageV1(userId, LoginHelper.getUserId());
                 Long fromUserId = item.getFromUserId().equals(LoginHelper.getUserId()) ? item.getToUserId() : item.getFromUserId();
-                item.setNotReadCount(baseMapper.selectNotReadCount(fromUserId, LoginHelper.getUserId())); //
+                item.setNotReadCount(baseMapper.selectNotReadCount(fromUserId, LoginHelper.getUserId(),LoginHelper.getUserId())); //
                 PzcUser pzcUser = pzcUserMapper.selectById(Objects.equals(item.getToUserId(), LoginHelper.getUserId()) ? item.getFromUserId() : item.getToUserId());
                 item.setUsername(pzcUser.getNickname());
                 item.setAvatar(pzcUser.getAvatar());

@@ -328,7 +328,7 @@ public class PzcActivityGroupController extends BaseController {
         pzcActivityGroup.setAddress(pzcActivityGroup.getAddress().substring(pzcActivityGroup.getAddress().indexOf("】") + 1));
         pzcUser.setPzcActivityGroup(pzcActivityGroup);
         pzcUser.setLiveStatus(concurrentHashMap.get(userId) != null);
-        pzcUser.setNotReadCount(pzcUserTalkMapper.selectNotReadCount(userId, LoginHelper.getUserId()));
+        pzcUser.setNotReadCount(pzcUserTalkMapper.selectNotReadCount(userId, LoginHelper.getUserId(),LoginHelper.getUserId()));
         return R.ok(pzcUser);
     }
 

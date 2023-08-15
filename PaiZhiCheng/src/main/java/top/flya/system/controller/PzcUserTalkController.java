@@ -48,6 +48,14 @@ public class PzcUserTalkController extends BaseController {
     private final PzcUserPhotoMapper pzcUserPhotoMapper;
 
 
+
+    @PostMapping("/deleteByUserId") //删除聊天记录
+    public R deleteByUserId(@RequestParam("userId")String userId)
+    {
+        pzcUserTalkMapper.delete(new QueryWrapper<PzcUserTalk>().eq("user_id",userId));
+        return R.ok();
+    }
+
     /**
      * 用户在线状态
      * @param userId
@@ -118,6 +126,7 @@ public class PzcUserTalkController extends BaseController {
     @GetMapping("/list")
     public TableDataInfo<PzcUserTalkVo> list(PzcUserTalkBo bo, PageQuery pageQuery) {
         bo.setFromUserId(LoginHelper.getUserId());
+        bo.setUserId(LoginHelper.getUserId());
         pageQuery.setIsAsc("desc");
         pageQuery.setOrderByColumn("create_time");
         return iPzcUserTalkService.queryPageList(bo, pageQuery);
