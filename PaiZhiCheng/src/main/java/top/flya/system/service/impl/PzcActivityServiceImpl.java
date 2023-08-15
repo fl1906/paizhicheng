@@ -66,7 +66,8 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
         pzcActivityVos.forEach(r->{
             r.setInnerImage(pzcActivityVo.getInnerImage().contains("http")?pzcActivityVo.getInnerImage():batchUtils.getNewImageUrls(Collections.singletonList(pzcActivityVo.getInnerImage())).get(Long.parseLong(pzcActivityVo.getInnerImage())));
             r.setCoverImage(pzcActivityVo.getCoverImage().contains("http")?pzcActivityVo.getCoverImage():batchUtils.getNewImageUrls(Collections.singletonList(pzcActivityVo.getCoverImage())).get(Long.parseLong(pzcActivityVo.getCoverImage())));
-            r.setShareImage(pzcActivityVo.getShareImage().contains("http")?pzcActivityVo.getShareImage():batchUtils.getNewImageUrls(Collections.singletonList(pzcActivityVo.getShareImage())).get(Long.parseLong(pzcActivityVo.getShareImage())));
+            r.setShareImage(pzcActivityVo.getShareImage()==null?null:pzcActivityVo.getShareImage().contains("http")?pzcActivityVo.getShareImage():batchUtils.getNewImageUrls(Collections.singletonList(pzcActivityVo.getShareImage())).get(Long.parseLong(pzcActivityVo.getShareImage())));
+
             log.info("pzcActivityVo.getInnerImage() = {}",pzcActivityVo.getInnerImage());
             ArrayList<PzcIntro> introList = new ArrayList<>();
             ArrayList<PzcArtist> artistList = new ArrayList<>();
