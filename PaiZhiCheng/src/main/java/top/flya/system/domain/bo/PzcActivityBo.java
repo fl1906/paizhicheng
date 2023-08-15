@@ -88,7 +88,7 @@ public class PzcActivityBo extends BaseEntity {
 
     private Integer classify; //属于哪个分类
 
-    private Integer region; // 0 国内 1 国外
+    private Integer region; // 0 国际 1 国内
 
 
     private List<PzcIntro> stageList;  // 场地舞台列表
@@ -101,6 +101,9 @@ public class PzcActivityBo extends BaseEntity {
 
     @NotNull(message = "主办方不能为空", groups = { AddGroup.class, EditGroup.class })
     private PzcOrganizer organizerList;  // 主办方列表
+
+
+    private String shareImage; //分享图片
 
 
 

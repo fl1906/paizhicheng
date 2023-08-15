@@ -6,6 +6,9 @@ import top.flya.common.annotation.ExcelDictFormat;
 import top.flya.common.convert.ExcelDictConvert;
 import lombok.Data;
 
+import java.math.BigDecimal;
+import java.util.Date;
+
 
 /**
  * 用户操作历史记录视图对象 pzc_user_history
@@ -20,7 +23,7 @@ public class PzcUserHistoryVo {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 
+     *
      */
     @ExcelProperty(value = "")
     private Long historyId;
@@ -49,6 +52,10 @@ public class PzcUserHistoryVo {
      */
     @ExcelProperty(value = "信息")
     private String message;
+
+    private BigDecimal money;
+
+    private Date createTime;
 
 
 }

@@ -1,11 +1,9 @@
 package top.flya.system.common;
 
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import top.flya.common.core.domain.R;
 import top.flya.common.utils.StringUtils;
-import top.flya.entity.Activity;
 import top.flya.system.domain.PzcActivity;
 import top.flya.system.mapper.PzcActivityMapper;
 

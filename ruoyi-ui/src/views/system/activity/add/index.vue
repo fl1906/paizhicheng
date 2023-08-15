@@ -353,6 +353,7 @@ export default {
     /*创建活动*/
     onSubmit() {
       const now = dayjs().format('YYYY-MM-DD HH:mm:ss')
+
       this.$refs["queryForm"].validate(valid => {
         this.queryParams.artistList = this.queryParams.artistList.map(item => ({artistId: item}))
         this.queryParams.introList = this.queryParams.introList.map(item => ({introId: item}))

@@ -47,6 +47,7 @@ public class PzcOfficialServiceImpl implements IPzcOfficialService {
     @Override
     public TableDataInfo<PzcOfficialVo> queryPageList(PzcOfficialBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<PzcOfficial> lqw = buildQueryWrapper(bo);
+        lqw.eq(true,PzcOfficial::getIsRead,0L);
         Page<PzcOfficialVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
         return TableDataInfo.build(result);
     }

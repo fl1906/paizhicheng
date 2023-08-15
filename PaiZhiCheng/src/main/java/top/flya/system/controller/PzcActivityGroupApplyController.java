@@ -35,6 +35,7 @@ import top.flya.system.utils.WxUtils;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -104,6 +105,60 @@ public class PzcActivityGroupApplyController extends BaseController {
         pzcActivityGroupApply.setWxz(wxz);
         pzcActivityGroupApplyMapper.updateById(pzcActivityGroupApply);
         return R.ok();
+    }
+
+    @GetMapping("/myHistory") //我的历史活动
+    public R<List<PzcActivityGroupApply>> myHistory() {
+        //我申请 并处于进行中的活动
+        Long userId = LoginHelper.getUserId();
+        List<PzcActivityGroupApply> step1 = pzcActivityGroupApplyMapper.selectList(
+            new QueryWrapper<PzcActivityGroupApply>()
+                .eq("user_id", userId).in("apply_status", 15));
+        step1.forEach(
+            p -> {
+                PzcActivityGroup pzcActivityGroup = pzcActivityGroupMapper.selectById(p.getGroupId());
+                PzcUser my = pzcUserMapper.selectById(p.getUserId());
+                PzcUser other = pzcUserMapper.selectById(pzcActivityGroup.getUserId());
+                p.setOtherMoney(pzcActivityGroup.getMoney());
+                p.setOtherName(other.getNickname());
+                p.setOtherAvatar(other.getAvatar());
+                p.setOtherUserId(String.valueOf(other.getUserId()));
+                p.setOtherLevel(Math.toIntExact(other.getUserLevel()));
+                p.setMyAvatar(my.getAvatar());
+                p.setTitle(pzcActivityGroup.getTitle());
+            }
+        );
+        List<PzcActivityGroupApply> result = new java.util.ArrayList<>();
+
+        //申请我的 并处于进行中的活动
+        //1 找出所有我创建的组
+        List<PzcActivityGroup> pzcActivityGroups = pzcActivityGroupMapper.selectList(new QueryWrapper<PzcActivityGroup>().eq("user_id", userId));
+        List<Long> groupIds = pzcActivityGroups.stream().map(PzcActivityGroup::getGroupId).collect(java.util.stream.Collectors.toList());
+        if(groupIds.size()!=0)
+        {
+            List<PzcActivityGroupApply> step2 = pzcActivityGroupApplyMapper.selectList(new QueryWrapper<>(new PzcActivityGroupApply()).in("group_id", groupIds).in("apply_status", 15));
+            step2.forEach(
+                p -> {
+                    PzcActivityGroup pzcActivityGroup = pzcActivityGroupMapper.selectById(p.getGroupId());
+                    PzcUser other = pzcUserMapper.selectById(p.getUserId());
+                    PzcUser my = pzcUserMapper.selectById(pzcActivityGroup.getUserId());
+                    p.setOtherMoney(pzcActivityGroup.getMoney());
+                    p.setOtherName(other.getNickname());
+                    p.setOtherAvatar(other.getAvatar());
+                    p.setOtherUserId(String.valueOf(other.getUserId()));
+                    p.setOtherLevel(Math.toIntExact(other.getUserLevel()));
+                    p.setMyAvatar(my.getAvatar());
+                    p.setTitle(pzcActivityGroup.getTitle());
+                }
+            );
+            result.addAll(step2);
+        }
+        result.addAll(step1);
+
+        //按照更新时间倒序排列
+        List<PzcActivityGroupApply> collect = result.stream().sorted((o1, o2) -> o2.getUpdateTime().compareTo(o1.getUpdateTime())).collect(Collectors.toList());
+
+        return R.ok(collect);
     }
 
     /**
@@ -232,11 +287,11 @@ public class PzcActivityGroupApplyController extends BaseController {
 
         //======================================================
         PzcUser applyUser = pzcUserMapper.selectById(bo.getUserId()); //我有2个币  申请需要 两个币  我则需要 根据当前他的余额来判断
-        if(applyUser.getMoney().compareTo(bo.getMoney())<0)
+        log.info("申请参与组队 我目前的余额是： {} 申请需要的余额是：{}",applyUser.getMoney(),bo.getMoney());
+        if(applyUser.getMoney().compareTo(bo.getMoney())<0||applyUser.getMoney().compareTo(new BigDecimal(1))<0) //一块钱也没有就需要充值了
         {
             return R.fail("申请失败，您的余额不足");
         }
-
 
         return toAjax(iPzcActivityGroupApplyService.insertByBo(bo));
     }

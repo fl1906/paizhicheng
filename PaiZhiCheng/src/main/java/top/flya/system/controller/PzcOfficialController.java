@@ -40,7 +40,7 @@ public class PzcOfficialController extends BaseController {
     private final IPzcOfficialService iPzcOfficialService;
 
     /**
-     * 查询官方消息列表
+     * 查询官方 未读消息列表
      */
     @GetMapping("/list")
     public TableDataInfo<PzcOfficialVo> list(PzcOfficialBo bo, PageQuery pageQuery) {

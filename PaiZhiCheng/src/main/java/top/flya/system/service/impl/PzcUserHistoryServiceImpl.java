@@ -9,12 +9,14 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import top.flya.common.utils.DateUtils;
 import top.flya.system.domain.bo.PzcUserHistoryBo;
 import top.flya.system.domain.vo.PzcUserHistoryVo;
 import top.flya.system.domain.PzcUserHistory;
 import top.flya.system.mapper.PzcUserHistoryMapper;
 import top.flya.system.service.IPzcUserHistoryService;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 import java.util.Collection;
@@ -65,6 +67,16 @@ public class PzcUserHistoryServiceImpl implements IPzcUserHistoryService {
         lqw.eq(bo.getActivityId() != null, PzcUserHistory::getActivityId, bo.getActivityId());
         lqw.in(bo.getType() != null, PzcUserHistory::getType, bo.getType());
         lqw.eq(StringUtils.isNotBlank(bo.getMessage()), PzcUserHistory::getMessage, bo.getMessage());
+        //获取本月开始时间和结束时间
+        if(StringUtils.isNotBlank(bo.getNowTime())&&bo.getNowTime().length()>0)
+        {
+            try {
+                lqw.between(true, PzcUserHistory::getCreateTime,DateUtils.getMonthStartAndEnd(bo.getNowTime())[0], DateUtils.getMonthStartAndEnd(bo.getNowTime())[1]);
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         return lqw;
     }
 

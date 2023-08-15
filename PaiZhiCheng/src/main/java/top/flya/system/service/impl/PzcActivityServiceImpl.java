@@ -17,6 +17,7 @@ import top.flya.system.domain.bo.PzcActivityBo;
 import top.flya.system.domain.vo.PzcActivityVo;
 import top.flya.system.mapper.*;
 import top.flya.system.service.IPzcActivityService;
+import top.flya.system.utils.gaode.GaoDeMapUtil;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -52,6 +53,8 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
 
     private final PzcOrganizerTicketMapper pzcOrganizerTicketMapper;
 
+    private final GaoDeMapUtil gaoDeMapUtil;
+
     /**
      * 查询活动
      */
@@ -63,6 +66,8 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
         pzcActivityVos.forEach(r->{
             r.setInnerImage(pzcActivityVo.getInnerImage().contains("http")?pzcActivityVo.getInnerImage():batchUtils.getNewImageUrls(Collections.singletonList(pzcActivityVo.getInnerImage())).get(Long.parseLong(pzcActivityVo.getInnerImage())));
             r.setCoverImage(pzcActivityVo.getCoverImage().contains("http")?pzcActivityVo.getCoverImage():batchUtils.getNewImageUrls(Collections.singletonList(pzcActivityVo.getCoverImage())).get(Long.parseLong(pzcActivityVo.getCoverImage())));
+            r.setShareImage(pzcActivityVo.getShareImage()==null?null:pzcActivityVo.getShareImage().contains("http")?pzcActivityVo.getShareImage():batchUtils.getNewImageUrls(Collections.singletonList(pzcActivityVo.getShareImage())).get(Long.parseLong(pzcActivityVo.getShareImage())));
+
             log.info("pzcActivityVo.getInnerImage() = {}",pzcActivityVo.getInnerImage());
             ArrayList<PzcIntro> introList = new ArrayList<>();
             ArrayList<PzcArtist> artistList = new ArrayList<>();
@@ -125,6 +130,8 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
             );
             pzcOrganizer.setOrganizerTickets(pzcOrganizerTickets);
             r.setOrganizerList(pzcOrganizer);
+
+//            r.setDistance();
         });
         return pzcActivityVos.get(0);
     }

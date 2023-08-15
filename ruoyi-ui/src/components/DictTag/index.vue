@@ -60,13 +60,27 @@ export default {
       if (this.value !== null && typeof this.value !== 'undefined') {
         // 传入值为非数组
         if(!Array.isArray(this.value)){
-          if(this.options.some(v=> v.value == this.value )) return false;
-          this.unmatchArray.push(this.value);
-          return true;
+          if (this.options !== null && typeof this.options !== 'undefined' && this.options.length > 0) {
+            // 进行'some'函数的操作
+            if(this.options.some(v=> v.value == this.value )) return false;
+            this.unmatchArray.push(this.value);
+            return true;
+          } else {
+            // 选项数组为空或null时的处理逻辑
+            return false
+          }
+
         }
         // 传入值为Array
         this.value.forEach(item => {
-          if (!this.options.some(v=> v.value == item )) this.unmatchArray.push(item)
+          if (this.options !== null && typeof this.options !== 'undefined' && this.options.length > 0) {
+            // 进行'some'函数的操作
+            if (!this.options.some(v=> v.value == item )) this.unmatchArray.push(item)
+          } else {
+            // 选项数组为空或null时的处理逻辑
+            return false
+          }
+
         });
         return true;
       }
@@ -78,9 +92,7 @@ export default {
   filters: {
     handleArray(array) {
       if(array.length===0) return '';
-      return array.reduce((pre, cur) => {
-        return pre + ' ' + cur;
-      })
+      return array.reduce((pre, cur) => pre + ' ' + cur)
     },
   }
 };

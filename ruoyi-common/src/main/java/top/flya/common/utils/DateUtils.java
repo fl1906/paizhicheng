@@ -7,11 +7,8 @@ import org.apache.commons.lang3.time.DateFormatUtils;
 import java.lang.management.ManagementFactory;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -164,5 +161,26 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         LocalDateTime localDateTime = LocalDateTime.of(temporalAccessor, LocalTime.of(0, 0, 0));
         ZonedDateTime zdt = localDateTime.atZone(ZoneId.systemDefault());
         return Date.from(zdt.toInstant());
+    }
+
+    public static String[] getMonthStartAndEnd(String timeStr) throws ParseException {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = format.parse(timeStr);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+
+        // 获取本月开始时间
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        String monthStart = format.format(calendar.getTime());
+
+        // 获取本月结束时间
+        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        String monthEnd = format.format(calendar.getTime());
+
+        return new String[] { monthStart, monthEnd };
     }
 }

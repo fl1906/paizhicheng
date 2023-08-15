@@ -2,6 +2,7 @@ package top.flya.system.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import top.flya.common.annotation.Log;
@@ -13,6 +14,7 @@ import top.flya.common.core.page.TableDataInfo;
 import top.flya.common.core.validate.AddGroup;
 import top.flya.common.core.validate.EditGroup;
 import top.flya.common.enums.BusinessType;
+import top.flya.common.utils.JsonUtils;
 import top.flya.common.utils.poi.ExcelUtil;
 import top.flya.system.domain.bo.PzcIntroBo;
 import top.flya.system.domain.vo.PzcIntroVo;
@@ -33,6 +35,7 @@ import java.util.List;
 @Validated
 @RequiredArgsConstructor
 @RestController
+@Slf4j
 @RequestMapping("/system/intro")
 public class PzcIntroController extends BaseController {
 
@@ -89,6 +92,7 @@ public class PzcIntroController extends BaseController {
     @RepeatSubmit()
     @PutMapping()
     public R<Void> edit(@Validated(EditGroup.class) @RequestBody PzcIntroBo bo) {
+        log.info("bo:{}", JsonUtils.toJsonString(bo));
         return toAjax(iPzcIntroService.updateByBo(bo));
     }
 

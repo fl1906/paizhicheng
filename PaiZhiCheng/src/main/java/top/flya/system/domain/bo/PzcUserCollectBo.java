@@ -39,4 +39,7 @@ public class PzcUserCollectBo extends BaseEntity {
     private Long activityId;
 
 
+    private Integer type ; // 收藏类型 0电音节 1派对
+
+
 }

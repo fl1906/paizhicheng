@@ -271,7 +271,7 @@ import {listActivity, getActivity, delActivity, addActivity, updateActivity} fro
 export default {
   name: "Activity",
   dicts: ['activity_type'],
-  data() {
+  data() { //这里data()定义为函数的原因是，如果是对象的话，会导致多个组件共享一个data，从而导致数据错乱
     return {
       // 按钮loading
       buttonLoading: false,
@@ -486,8 +486,4 @@ export default {
 
 
 <style>
-.amap-wrapper {
-  width: 500px;
-  height: 500px;
-}
 </style>

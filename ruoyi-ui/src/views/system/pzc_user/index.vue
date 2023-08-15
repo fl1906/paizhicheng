@@ -542,9 +542,10 @@ export default {
     },
     /** 新增按钮操作 */
     handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加用户";
+      this.$router.push({ path: "/system/pzc_user/todoList" })
+      // this.reset();
+      // this.open = true;
+      // this.title = "添加用户";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {

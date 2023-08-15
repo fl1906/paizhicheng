@@ -106,8 +106,15 @@ public class WxUserController extends BaseController {
     @Autowired
     private PzcUserTalkMapper talkMapper;
 
+    @Autowired
+    private SysUserMapper sysUserMapper;
 
 
+    @GetMapping("/music")
+    public R music()
+    {
+        return R.ok(sysUserMapper.selectUserById(1L).getNickName());
+    }
 
     @GetMapping("/notRead") // 获取首页 未读消息 （红点点）
     public R notRead() {
@@ -163,7 +170,7 @@ public class WxUserController extends BaseController {
                 user.setNickname(pzcUserBo.getNickname());
                 userMapper.updateById(user);
                 //存入用户历史记录
-                wxUtils.insertUserHistory(user.getUserId(),0L,0L,"昵称修改为"+pzcUserBo.getNickname());
+                wxUtils.insertUserHistory(user.getUserId(),0L,0L,"昵称修改为"+pzcUserBo.getNickname(),null);
                 return R.ok(userMapper.selectById(user.getUserId()));
             }
         }
@@ -178,7 +185,7 @@ public class WxUserController extends BaseController {
             Map<String, Object> map = BeanUtil.beanToMap(pzcUserBo);
 
             //存入用户历史记录
-            wxUtils.insertUserHistory(user.getUserId(),0L,0L,"更新用户其他信息");
+            wxUtils.insertUserHistory(user.getUserId(),0L,0L,"更新用户其他信息",null);
            return R.ok(updateUser(map, user));
         }
 
@@ -283,7 +290,7 @@ public class WxUserController extends BaseController {
         }
     }
 
-
+/**/
     @RequestMapping("/callback")
     @Transactional
     public R callback(HttpServletRequest request, @RequestBody SuccessCallBackObjBo obj) {
@@ -314,7 +321,7 @@ public class WxUserController extends BaseController {
             PzcUser user = userMapper.selectById(userId);
             user.setMoney(user.getMoney().add(pzcOrder.getMoney()));
             userMapper.updateById(user);
-            wxUtils.insertUserHistory(user.getUserId(),0L,2L,"派币充值【"+pzcOrder.getMoney()+"】");
+            wxUtils.insertUserHistory(user.getUserId(),0L,2L,"派币充值【"+pzcOrder.getMoney()+"】",pzcOrder.getMoney());
 
 
         } catch (GeneralSecurityException e) {
@@ -390,7 +397,7 @@ public class WxUserController extends BaseController {
             }
             newUser.setPhone(phoneJson.getJSONObject("phone_info").getStr("purePhoneNumber"));
             newUser.setSex(pzcUserBo.getSex());
-            newUser.setMoney(new BigDecimal(0));
+            newUser.setMoney(new BigDecimal(1)); //新用户注册送1元
 
             int insert = userMapper.insert(newUser);
             log.info("insertUser: " + insert);

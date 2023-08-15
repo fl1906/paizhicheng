@@ -16,6 +16,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="auth" column="auth"/>
         <result property="createTime" column="create_time"/>
         <result property="updateTime" column="update_time"/>
+        <result property="region" column="region"/>
         <association property="user">
             <result column="user_id" property="userId"/>
             <result property="openid" column="openid"/>
@@ -47,26 +48,34 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <sql id="base">
         select group_id,activity_id,g.user_id as user_id,title,g.money as money,u.money as u_money,group_type,g.address as address,activity_time,auth,g.create_time as create_time,g.update_time as update_time,
-               openid,user_level,nickname,sex,avatar,u.address as u_address,intro,age,constellation,mbti,hobby,school,occupation,music_style
+               openid,user_level,nickname,sex,avatar,u.address as u_address,intro,age,constellation,mbti,hobby,school,occupation,music_style,region
     </sql>
 
     <select id="selectDetailsList" resultMap="PzcActivityGroupResult">
         <include refid="base"/>
         from pzc_activity_group as g inner join pzc_user as u
         where 1=1
+        <if test="bo.userId !=null">
+            and g.user_id = #{bo.userId}
+        </if>
             and g.user_id = u.user_id
         <if test="bo.userSex != null">
-            and (g.user_id = u.user_id and u.sex = #{bo.userSex})
-        </if>
-        <if test="bo.userLevelMin != null">
-            and u.user_level &gt;= #{bo.userLevelMin}
-        </if>
-        <if test="bo.userLevelMax != null">
-            and u.user_level &lt;= #{bo.userLevelMax}
+            and u.sex = #{bo.userSex}
         </if>
         <if test="bo.activityId !=null">
             and g.activity_id = #{bo.activityId}
         </if>
+        <if test="bo.region !=null">
+           and g.region = #{bo.region}
+        </if>
+        <if test="bo.activityTime1 !=null">
+            order by g.activity_time desc
+        </if>
+        <if test="bo.userLevel !=null">
+            order by u.user_level desc
+        </if>
+
+
 
 
     </select>

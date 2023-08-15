@@ -61,11 +61,13 @@ public class PzcActivity extends BaseEntity {
      */
     private Integer state;
 
-    private Integer classify; //属于哪个分类
+    private Integer classify; //属于哪个分类 0 电音节 1派对
 
     private Integer region; // 0 国内 1 国外
 
 
     private Long organizerId; //主办方id
+
+    private String shareImage; //分享图片
 
 }

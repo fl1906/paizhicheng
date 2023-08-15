@@ -37,6 +37,8 @@ public class PzcActivityGroupVo {
     @ExcelProperty(value = "活动ID")
     private Long activityId;
 
+
+    private Integer region;
     /**
      * 活动组队发起人ID
      */
@@ -106,4 +108,7 @@ public class PzcActivityGroupVo {
 
 
     private Boolean ifShow =  true;
+
+
+    private String distance; //距离多少米
 }

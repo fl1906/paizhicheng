@@ -1,6 +1,7 @@
 package top.flya.system.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import lombok.extern.slf4j.Slf4j;
 import top.flya.common.core.page.TableDataInfo;
 import top.flya.common.core.domain.PageQuery;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -8,6 +9,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import top.flya.system.common.BatchUtils;
 import top.flya.system.domain.bo.PzcUserCollectBo;
 import top.flya.system.domain.vo.PzcUserCollectVo;
 import top.flya.system.domain.PzcUserCollect;
@@ -15,9 +17,7 @@ import top.flya.system.mapper.PzcActivityMapper;
 import top.flya.system.mapper.PzcUserCollectMapper;
 import top.flya.system.service.IPzcUserCollectService;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Collection;
+import java.util.*;
 
 /**
  * 用户收藏活动Service业务层处理
@@ -27,12 +27,15 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class PzcUserCollectServiceImpl implements IPzcUserCollectService {
 
     private final PzcUserCollectMapper baseMapper;
 
     private final PzcActivityMapper pzcActivityMapper;
 
+
+    private final BatchUtils batchUtils;
     /**
      * 查询用户收藏活动
      */
@@ -48,14 +51,29 @@ public class PzcUserCollectServiceImpl implements IPzcUserCollectService {
     public TableDataInfo<PzcUserCollectVo> queryPageList(PzcUserCollectBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<PzcUserCollect> lqw = buildQueryWrapper(bo);
         Page<PzcUserCollectVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        List<PzcUserCollectVo> records = new ArrayList<>();
+
 
             result.getRecords().forEach(
                 vo -> {
                     vo.setActivity(pzcActivityMapper.selectById(vo.getActivityId()));
+
+                    if(vo.getActivity()!=null)
+                    {
+                        log.info("qaq: {} vo.getActivity().getClassify() is {} bo.getType() is {}",vo.getActivity().getClassify().equals(bo.getType()),vo.getActivity().getClassify(),bo.getType());
+                        if(vo.getActivity().getClassify().equals(bo.getType()))
+                        {
+                            log.info("vo.getActivity() is:"+vo.getActivity().getClassify());
+                            vo.getActivity().setCoverImage(vo.getActivity().getCoverImage().contains("http")?vo.getActivity().getCoverImage(): batchUtils.getNewImageUrls(Collections.singletonList(vo.getActivity().getCoverImage())).get(Long.parseLong(vo.getActivity().getCoverImage())));
+//                            vo.getActivity().setShareImage(vo.getActivity().getShareImage().contains("http")?vo.getActivity().getShareImage(): batchUtils.getNewImageUrls(Collections.singletonList(vo.getActivity().getShareImage())).get(Long.parseLong(vo.getActivity().getShareImage())));
+                            records.add(vo);
+                        }
+
+                    }
                 }
             );
 
-        return TableDataInfo.build(result);
+        return TableDataInfo.build(records);
     }
 
     /**

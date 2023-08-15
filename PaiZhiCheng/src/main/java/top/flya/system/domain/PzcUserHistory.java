@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import top.flya.common.core.domain.BaseEntity;
 
+import java.math.BigDecimal;
+
 
 /**
  * 用户操作历史记录对象 pzc_user_history
@@ -40,5 +42,7 @@ public class PzcUserHistory extends BaseEntity {
      * 信息
      */
     private String message;
+
+    private BigDecimal money;
 
 }

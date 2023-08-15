@@ -18,16 +18,32 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 
 
-    <select id="selectVoPageV1" resultMap="PzcUserTalkResult" >
-          select talk_id,from_user_id,to_user_id,message,message_status,message_type,create_time,update_time from pzc_user_talk where from_user_id = #{userId} group by to_user_id order by create_time desc
+    <select id="selectVoPageV1" resultMap="PzcUserTalkResult" > <!-- 思路： 这里先 再如一个 对方用户的参数-->
+
+        SELECT talk_id,from_user_id, to_user_id, message, message_status, message_type, create_time,update_time
+        FROM pzc_user_talk
+        WHERE (from_user_id = #{userId} and to_user_id = #{otherUser})
+        OR (to_user_id = #{userId} and from_user_id = #{otherUser})
+        ORDER BY create_time DESC LIMIT 1
     </select>
 
     <select id="selectNotReadCount" resultType="java.lang.Integer">
-        select count(1) from pzc_user_talk where from_user_id = #{fromUserId} and to_user_id = #{toUserId} and message_status = 0
+        select count(1) from pzc_user_talk where (from_user_id = #{fromUserId} and to_user_id = #{toUserId}) and message_status = 0
+    </select>
+    <select id="selectVoPageV2" resultType="top.flya.system.domain.vo.PzcUserTalkVo">
+        select talk_id,from_user_id,to_user_id,message,message_status,message_type,create_time,update_time from pzc_user_talk where
+               (from_user_id = #{bo.fromUserId} and to_user_id = #{bo.toUserId}) or (from_user_id = #{bo.toUserId} and to_user_id = #{bo.fromUserId})
+               order by update_time desc
+    </select>
+    <select id="selectMyTalkUserIds" resultType="java.lang.Long">
+        select distinct from_user_id from pzc_user_talk where to_user_id = #{my}
+    </select>
+    <select id="selectMyTalkUserIdsV2" resultType="java.lang.Long">
+        select distinct to_user_id from pzc_user_talk where from_user_id = #{my}
     </select>
 
 
-<!--    <select id="selectVoPageV1" resultMap="PzcUserTalkResult">-->
+    <!--    <select id="selectVoPageV1" resultMap="PzcUserTalkResult">-->
 <!--        SELECT t1.talk_id, t1.from_user_id, t1.to_user_id, t1.message, t1.message_status, t1.message_type, t1.create_time, t1.update_time,-->
 <!--               (SELECT COUNT(t2.talk_id) FROM pzc_user_talk t2 WHERE t2.from_user_id = #{userId} AND t2.message_status = 0 GROUP BY t2.to_user_id ) AS not_read_count-->
 <!--        FROM pzc_user_talk t1-->

@@ -15,6 +15,7 @@ import top.flya.system.mapper.PzcUserMapper;
 import top.flya.system.service.IPzcActivityGroupApplyService;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 
 @Component
 @Slf4j
@@ -151,13 +152,14 @@ public class WxUtils {
         return user;
     }
 
-    public void insertUserHistory(Long userId,Long activityId,Long type,String message)
+    public void insertUserHistory(Long userId, Long activityId, Long type, String message, BigDecimal money)
     {
         PzcUserHistory userHistory = new PzcUserHistory();
         userHistory.setUserId(userId);
         userHistory.setActivityId(activityId);
         userHistory.setType(type);
         userHistory.setMessage(message);
+        userHistory.setMoney(money);
         int insert = userHistoryMapper.insert(userHistory);
         log.info("插入用户历史记录 信息为： {} 条数为： {}",message,insert);
     }

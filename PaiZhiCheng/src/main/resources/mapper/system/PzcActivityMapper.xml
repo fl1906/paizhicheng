@@ -18,6 +18,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateTime" column="update_time"/>
         <result property="state" column="state"/>
     </resultMap>
+    <select id="selectActivityByActivityIds" resultType="top.flya.system.domain.PzcActivity">
+        select * from pzc_activity where activity_id in
+                                   <foreach collection="activityIds" item="activityId" open="(" separator="," close=")">
+                                       #{activityId}
+                                   </foreach>
+        and classify = #{classify}
+    </select>
 
 
 </mapper>
