@@ -171,6 +171,12 @@
         </template>
       </el-table-column>
 
+      <el-table-column label="海报图片" align="center" prop="shareImage" width="100">
+        <template slot-scope="scope">
+          <image-preview :src="scope.row.shareImage" :width="50" :height="50"/>
+        </template>
+      </el-table-column>
+
       <!--      <el-table-column label="展示时间" align="center" prop="showTime"/>-->
       <el-table-column label="创建时间" align="center" prop="createTime"/>
       <el-table-column label="更新时间" align="center" prop="updateTime"/>
