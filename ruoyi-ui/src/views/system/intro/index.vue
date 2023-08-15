@@ -81,7 +81,7 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="ID" align="center" prop="introId" v-if="true"/>
       <el-table-column label="标题" align="center" prop="title" />
-      <el-table-column label="内容" align="center" prop="content" />
+      <el-table-column label="内容" align="center" prop="content.slice(100)" />
       <el-table-column label="0 场地舞台介绍 1 更多介绍" align="center" prop="type" />
       <el-table-column label="图片" align="center" prop="imageFullUrl" width="100">
         <template slot-scope="scope">

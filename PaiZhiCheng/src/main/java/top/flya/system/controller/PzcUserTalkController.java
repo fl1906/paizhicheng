@@ -52,7 +52,9 @@ public class PzcUserTalkController extends BaseController {
     @PostMapping("/deleteByUserId") //删除聊天记录
     public R deleteByUserId(@RequestParam("userId")String userId)
     {
-        pzcUserTalkMapper.delete(new QueryWrapper<PzcUserTalk>().eq("user_id",userId));
+        Long my = LoginHelper.getUserId();
+        pzcUserTalkMapper.delete(new QueryWrapper<PzcUserTalk>()
+            .eq("user_id",my).eq("from_user_id",userId).or().eq("user_id",my).eq("to_user_id",userId));
         return R.ok();
     }
 
