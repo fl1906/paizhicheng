@@ -161,6 +161,9 @@
       <el-form-item label="活动封面" prop="coverImage">
         <image-upload v-model="queryParams.coverImage"/>
       </el-form-item>
+      <el-form-item label="活动海报" prop="shareImage">
+        <image-upload v-model="queryParams.shareImage"/>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="onSubmit" :loading="buttonLoading">{{ submitText }}</el-button>
         <el-button>取消</el-button>
@@ -225,6 +228,7 @@ export default {
         innerImage: undefined,
         showTime: '2023/8/4 12:00:00',
         coverImage: undefined,
+        shareImage: undefined,
         createTime: undefined,
         updateTime: undefined,
       },
@@ -277,6 +281,9 @@ export default {
         ],
         organizerTickets: [
           {required: true, message: "主办方票务不能为空", trigger: "blur"}
+        ],
+        shareImage: [
+          {required: true, message: "活动海报不能为空", trigger: "blur"}
         ],
       }
     }
