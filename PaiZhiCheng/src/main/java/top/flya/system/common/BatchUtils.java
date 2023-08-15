@@ -256,16 +256,22 @@ public class BatchUtils {
         List<String> innerImageUrls = records.stream()
             .map(PzcActivityVo::getInnerImage)
             .collect(Collectors.toList());
+
+        List<String> shareImageUrls = records.stream()
+            .filter(activity -> activity.getShareImage() != null)
+            .map(PzcActivityVo::getShareImage)
+            .collect(Collectors.toList());
         // 批量查询新的 imageUrl
         Map<Long, String> newImageUrls = getNewImageUrls(oldImageUrls);
         Map<Long, String> newInnerImageUrls = getNewImageUrls(innerImageUrls);
+        Map<Long, String> newShareImageUrls = getNewImageUrls(shareImageUrls);
         // 使用 Stream API 进行处理
         return records.stream()
             .map(
                 r->{
                     String newImageUrl = r.getCoverImage().contains("http")?r.getCoverImage():newImageUrls.get(Long.parseLong(r.getCoverImage()));
                     String innerImage = r.getInnerImage().contains("http")?r.getInnerImage():newInnerImageUrls.get(Long.parseLong(r.getInnerImage()));
-                    log.info("innerImage: {}", innerImage);
+                    String shareImage = r.getShareImage()==null?null:r.getShareImage().contains("http")?r.getShareImage():newShareImageUrls.get(Long.parseLong(r.getShareImage()));
                     return  new PzcActivityVo(
                         r.getActivityId(),
                         r.getAddress(),
@@ -287,7 +293,7 @@ public class BatchUtils {
                         null,
                         null,
                         null,
-                        r.getShareImage()
+                        shareImage
                     );
                 }
             ).collect(Collectors.toList());
