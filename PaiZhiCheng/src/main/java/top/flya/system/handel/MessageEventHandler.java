@@ -178,6 +178,7 @@ public class MessageEventHandler {
         newSingleThreadExecutor.execute(() -> {
             data.setUserId(data.getFromUserId());
             userTalkService.insertByBo(data);
+            data.setTalkId(null);
             data.setUserId(data.getToUserId());
             userTalkService.insertByBo(data);
         });
