@@ -75,6 +75,16 @@ public class PzcActivityGroupController extends BaseController {
     private final PzcUserTalkMapper pzcUserTalkMapper;
 
 
+    @PostMapping("/cancelIssueGroup") //取消组队的发布 TODO
+    public R cancelIssueGroup(@RequestParam("groupId")Long groupId)
+    {
+
+
+
+
+        return R.ok();
+    }
+
     @PostMapping("/refurbish") //刷新
     public R refurbish(@RequestBody RefurbishBo refurbishBo) {
         log.info("刷新: {}", JsonUtils.toJsonString(refurbishBo));

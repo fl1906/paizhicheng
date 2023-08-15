@@ -80,6 +80,8 @@ public class PzcActivityController extends BaseController {
      */
     @GetMapping("/listWx")
     public TableDataInfo<PzcActivityVo> Wx(PzcActivityBo bo, PageQuery pageQuery) {
+        pageQuery.setIsAsc("desc");
+        pageQuery.setOrderByColumn("start_time");
         return iPzcActivityService.queryPageListWx(bo, pageQuery);
     }
 
