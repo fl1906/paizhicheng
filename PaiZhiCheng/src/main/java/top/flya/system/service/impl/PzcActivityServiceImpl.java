@@ -155,6 +155,8 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
     @Override
     public TableDataInfo<PzcActivityVo> queryPageListWx(PzcActivityBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<PzcActivity> lqw = buildQueryWrapper(bo);
+        pageQuery.setIsAsc("asc");
+        pageQuery.setOrderByColumn("start_time");
         Page<PzcActivityVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
         result.setRecords(batchUtils.transformToPzcActivityVo(result.getRecords()));
         return TableDataInfo.build(result);
