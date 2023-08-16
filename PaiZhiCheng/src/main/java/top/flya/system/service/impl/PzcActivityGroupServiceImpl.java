@@ -1,7 +1,6 @@
 package top.flya.system.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
@@ -13,7 +12,10 @@ import org.springframework.stereotype.Service;
 import top.flya.common.core.domain.PageQuery;
 import top.flya.common.core.page.TableDataInfo;
 import top.flya.common.utils.JsonUtils;
-import top.flya.system.domain.*;
+import top.flya.system.domain.PzcActivityGroup;
+import top.flya.system.domain.PzcActivityGroupApply;
+import top.flya.system.domain.PzcRegion;
+import top.flya.system.domain.PzcUserPhoto;
 import top.flya.system.domain.bo.PzcActivityGroupBo;
 import top.flya.system.domain.vo.PzcActivityGroupVo;
 import top.flya.system.domain.vo.PzcUserVo;
@@ -171,9 +173,9 @@ public class PzcActivityGroupServiceImpl implements IPzcActivityGroupService {
             }
         );
         if (bo.getDistance() != null) {
-            log.info("按照距离排序前： {}",JSONUtil.toJsonPrettyStr(pzcActivityGroupVos));
+//            log.info("按照距离排序前： {}",JSONUtil.toJsonPrettyStr(pzcActivityGroupVos));
             pzcActivityGroupVos.sort(Comparator.comparing(PzcActivityGroupVo::getDistance)); //按照距离远到近排序
-            log.info("按照距离排序后： {}",JSONUtil.toJsonPrettyStr(pzcActivityGroupVos));
+//            log.info("按照距离排序后： {}",JSONUtil.toJsonPrettyStr(pzcActivityGroupVos));
         }
 
         //查询当前组队 是否正在进行中 如果是 则 不进入组队大厅
