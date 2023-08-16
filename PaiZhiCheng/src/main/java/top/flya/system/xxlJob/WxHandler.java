@@ -45,7 +45,6 @@ public class WxHandler {
         }
         log.info("定时同步微信用户 的 取消活动次数 完成");
         XxlJobHelper.log("定时同步微信用户 的 取消活动次数 完成 FL1906");
-
     }
 
     /**

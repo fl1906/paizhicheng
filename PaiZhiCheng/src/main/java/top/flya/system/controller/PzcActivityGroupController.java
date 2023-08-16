@@ -338,6 +338,7 @@ public class PzcActivityGroupController extends BaseController {
         pzcUser.setPzcActivityGroup(pzcActivityGroup);
         pzcUser.setLiveStatus(concurrentHashMap.get(userId) != null);
         pzcUser.setNotReadCount(pzcUserTalkMapper.selectNotReadCount(userId, LoginHelper.getUserId(),LoginHelper.getUserId()));
+        pzcUser.setExemptCancel(pzcUserMapper.selectById(LoginHelper.getUserId()).getExemptCancel()); //获取我的免责取消次数
         return R.ok(pzcUser);
     }
 
