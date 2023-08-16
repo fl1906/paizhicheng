@@ -1,6 +1,7 @@
 package top.flya.system.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
@@ -12,12 +13,10 @@ import org.springframework.stereotype.Service;
 import top.flya.common.core.domain.PageQuery;
 import top.flya.common.core.page.TableDataInfo;
 import top.flya.common.utils.JsonUtils;
-import top.flya.system.domain.PzcActivityGroup;
-import top.flya.system.domain.PzcActivityGroupApply;
-import top.flya.system.domain.PzcRegion;
-import top.flya.system.domain.PzcUserPhoto;
+import top.flya.system.domain.*;
 import top.flya.system.domain.bo.PzcActivityGroupBo;
 import top.flya.system.domain.vo.PzcActivityGroupVo;
+import top.flya.system.domain.vo.PzcUserVo;
 import top.flya.system.mapper.*;
 import top.flya.system.service.IPzcActivityGroupService;
 import top.flya.system.utils.gaode.GaoDeMapUtil;
@@ -88,6 +87,34 @@ public class PzcActivityGroupServiceImpl implements IPzcActivityGroupService {
         return pzcActivityGroupVo;
     }
 
+    public PzcUserVo getPrivateUser(PzcUserVo pzcUser)
+    {
+        PzcUserVo pzcUserVo = new PzcUserVo();
+        pzcUserVo.setUserId(pzcUser.getUserId());
+        pzcUserVo.setOpenid(pzcUser.getOpenid());
+        pzcUserVo.setMoney(null);
+        pzcUserVo.setUserLevel(pzcUser.getUserLevel());
+        pzcUserVo.setIntegration(null);
+        pzcUserVo.setIntegrationNow(null);
+        pzcUserVo.setRealname(null);
+        pzcUserVo.setNickname("匿名用户");
+        pzcUserVo.setSex(2);
+        pzcUserVo.setPhone(null);
+        pzcUserVo.setAvatar(null);
+        pzcUserVo.setAddress(null);
+        pzcUserVo.setIntro(null);
+        pzcUserVo.setAge(null);
+        pzcUserVo.setConstellation(null);
+        pzcUserVo.setMbti(null);
+        pzcUserVo.setHobby(null);
+        pzcUserVo.setSchool(null);
+        pzcUserVo.setOccupation(null);
+        pzcUserVo.setMusicStyle(null);
+        pzcUserVo.setState(null);
+        pzcUserVo.setExemptCancel(null);
+        return pzcUserVo;
+    }
+
     /**
      * 查询活动组队列表
      */
@@ -95,6 +122,13 @@ public class PzcActivityGroupServiceImpl implements IPzcActivityGroupService {
     public TableDataInfo<PzcActivityGroupVo> queryPageList(PzcActivityGroupBo bo, PageQuery pageQuery) {
 
         log.info("查询活动组队列表 bo is {}", JsonUtils.toJsonString(bo));
+        if(bo.getUserLevel()!=null)
+        {
+            pageQuery.setIsAsc("desc");
+            pageQuery.setOrderByColumn("u.user_level");
+        }
+
+
         Page<PzcActivityGroupVo> result = baseMapper.selectDetailsList(pageQuery.build(), bo);
         ArrayList<PzcActivityGroupVo> pzcActivityGroupVos = new ArrayList<>();
         Pattern pattern = Pattern.compile("【(.*?)】(.*?)");
@@ -102,8 +136,8 @@ public class PzcActivityGroupServiceImpl implements IPzcActivityGroupService {
             pzcActivityGroupVo -> {
                 pzcActivityGroupVos.add(pzcActivityGroupVo);
                 if (pzcActivityGroupVo.getAuth() == 2) {
-                    log.info("私密组队，不返回用户信息");
-                    pzcActivityGroupVo.setUser(null);
+                    log.info("私密组队，返回用户信息的部分信息");
+                    pzcActivityGroupVo.setUser(getPrivateUser(pzcActivityGroupVo.getUser()));
                 }//如果是私密组队，不返回用户信息
                 //查询当前组队 是否正在进行中 如果是 则 不进入组队大厅
                 Long groupId = pzcActivityGroupVo.getGroupId();
@@ -131,15 +165,15 @@ public class PzcActivityGroupServiceImpl implements IPzcActivityGroupService {
                     String distance = gaoDeMapUtil.getDistance(bo.getLongitudeAndLatitude(), jwdFromAddress).getData().toString();
                     log.info("离我【{}】米", distance);
                     //计算距离
-                    String distanceStr = new BigDecimal(distance).divide(new BigDecimal(1000), 2, BigDecimal.ROUND_HALF_UP).toString(); //保留两位小数
+                    BigDecimal distanceStr = new BigDecimal(distance).divide(new BigDecimal(1000), 2, BigDecimal.ROUND_HALF_UP); //保留两位小数
                     pzcActivityGroupVo.setDistance(distanceStr);
                 }
             }
         );
         if (bo.getDistance() != null) {
-            log.info("按照距离排序");
-            pzcActivityGroupVos.sort(Comparator.comparing(PzcActivityGroupVo::getDistance).reversed()); //按照距离远到近排序
-
+            log.info("按照距离排序前： {}",JSONUtil.toJsonPrettyStr(pzcActivityGroupVos));
+            pzcActivityGroupVos.sort(Comparator.comparing(PzcActivityGroupVo::getDistance)); //按照距离远到近排序
+            log.info("按照距离排序后： {}",JSONUtil.toJsonPrettyStr(pzcActivityGroupVos));
         }
 
         //查询当前组队 是否正在进行中 如果是 则 不进入组队大厅

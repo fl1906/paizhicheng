@@ -145,7 +145,6 @@ public class GaoDeMapUtil {
             JSONArray ja = job.getJSONArray("results");
             JSONObject jobO = JSONObject.parseObject(ja.getString(0));
             result = Long.parseLong(jobO.get("distance").toString());
-            log.info("距离：" + result);
             return R.ok("距离计算成功！",result);
         } catch (Exception e) {
             return R.fail(e.toString());

@@ -71,14 +71,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <if test="bo.region !=null">
            and g.region = #{bo.region}
         </if>
+
         <if test="bo.activityTime1 !=null">
-            order by g.activity_time desc
+            order by abs(DATEDIFF(now(), g.activity_time)) asc
         </if>
-        <if test="bo.userLevel !=null">
-            order by u.user_level desc
-        </if>
-
-
 
 
     </select>

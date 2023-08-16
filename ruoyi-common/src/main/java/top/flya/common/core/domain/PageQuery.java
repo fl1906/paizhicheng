@@ -80,9 +80,9 @@ public class PageQuery implements Serializable {
      */
     private List<OrderItem> buildOrderItem() {
         if (StringUtils.isBlank(orderByColumn) || StringUtils.isBlank(isAsc)) {
-            orderByColumn="create_time";
-            isAsc="desc";
-//            return null;
+//            orderByColumn="create_time";
+//            isAsc="desc";
+            return null;
         }
         String orderBy = SqlUtil.escapeOrderBySql(orderByColumn);
         orderBy = StringUtils.toUnderScoreCase(orderBy);

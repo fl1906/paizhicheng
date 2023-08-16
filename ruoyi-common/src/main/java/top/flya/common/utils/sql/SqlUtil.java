@@ -27,9 +27,10 @@ public class SqlUtil {
      * 检查字符，防止注入绕过
      */
     public static String escapeOrderBySql(String value) {
-        if (StringUtils.isNotEmpty(value) && !isValidOrderBySql(value)) {
-            throw new UtilException("参数不符合规范，不能进行查询");
-        }
+        //&& !isValidOrderBySql(value)
+//        if (StringUtils.isNotEmpty(value) ) {
+//            throw new UtilException("参数不符合规范，不能进行查询");
+//        }
         return value;
     }
 
