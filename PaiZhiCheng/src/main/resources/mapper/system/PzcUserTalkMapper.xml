@@ -13,6 +13,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="messageType" column="message_type"/>
         <result property="createTime" column="create_time"/>
         <result property="updateTime" column="update_time"/>
+        <result property="groupId" column="group_id"/>
 <!--        <result property="notReadCount" column="not_read_count"/>-->
     </resultMap>
 
@@ -20,7 +21,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectVoPageV1" resultMap="PzcUserTalkResult" > <!-- 思路： 这里先 再如一个 对方用户的参数-->
 
-        SELECT talk_id,from_user_id, to_user_id, message, message_status, message_type, create_time,update_time
+        SELECT talk_id,from_user_id, to_user_id, message, message_status, message_type, create_time,update_time,group_id
         FROM pzc_user_talk
         WHERE ((from_user_id = #{userId} and to_user_id = #{otherUser})
         OR (to_user_id = #{userId} and from_user_id = #{otherUser})) and user_id = #{userId}
@@ -31,7 +32,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         select count(1) from pzc_user_talk where (from_user_id = #{fromUserId} and to_user_id = #{toUserId}) and user_id = #{userId} and message_status = 0
     </select>
     <select id="selectVoPageV2" resultType="top.flya.system.domain.vo.PzcUserTalkVo">
-        select talk_id,from_user_id,to_user_id,message,message_status,message_type,create_time,update_time from pzc_user_talk where
+        select talk_id,from_user_id,to_user_id,message,message_status,message_type,create_time,update_time,group_id from pzc_user_talk where
                ((from_user_id = #{bo.fromUserId} and to_user_id = #{bo.toUserId}) or (from_user_id = #{bo.toUserId} and to_user_id = #{bo.fromUserId})) and user_id = #{bo.userId}
                order by update_time desc
     </select>

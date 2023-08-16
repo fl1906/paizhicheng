@@ -60,4 +60,7 @@ public class PzcUserTalkBo extends BaseEntity {
     private Long userId; //消息的归属者 单向删除
 
 
+    private Long groupId; //群组id
+
+
 }

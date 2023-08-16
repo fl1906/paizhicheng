@@ -84,6 +84,7 @@ public class PzcActivityGroupController extends BaseController {
 
     @PostMapping("/cancelIssueGroup") //取消组队的发布
     public R cancelIssueGroup(@RequestParam("groupId") Long groupId) {
+        log.info("取消组队的发布: {}", groupId);
         Long userId = LoginHelper.getUserId();
         //首先看看组队是否是我发布的 并且是否有人申请 如果有人申请则不能取消
         PzcActivityGroup pzcActivityGroup = pzcActivityGroupMapper.selectById(groupId);
@@ -299,7 +300,15 @@ public class PzcActivityGroupController extends BaseController {
                 PzcUser pzcUser = pzcUserMapper.selectById(s.getUserId());
                 s.setNickName(pzcUser.getNickname());
                 s.setAvatar(pzcUser.getAvatar());
-                s.setActivityTitle(s.getActivityId() == 0 ? "" : pzcActivityMapper.selectVoById(s.getActivityId()).getTitle());
+                Integer region = pzcActivityGroupVos.stream().filter(s1 -> s1.getGroupId().equals(s.getGroupId())).findFirst().get().getRegion();
+                PzcRegion pzcRegion = pzcRegionMapper.selectById(region);
+                String title = "";
+                if (pzcRegion != null) {
+                    title="【" + pzcRegion.getName() + "】";
+                }
+                log.info("申请活动列表 title:{}",title);
+
+                s.setActivityTitle(s.getActivityId() == 0 ?  title: pzcActivityMapper.selectVoById(s.getActivityId()).getTitle());
                 s.setGroupTitle(pzcActivityGroupVos.stream().filter(s1 -> s1.getGroupId().equals(s.getGroupId())).findFirst().get().getTitle());
             }
         );
@@ -535,7 +544,7 @@ public class PzcActivityGroupController extends BaseController {
         PzcUser startUser = pzcUserMapper.selectById(group.getUserId());
 
         //如果可以确认 判断 是那一方确认的
-        if (pzcActivityGroupApplyVo.getUserId().equals(userId)) {// 自己是申请方
+        if (pzcActivityGroupApplyVo.getUserId().equals(userId)) {// 自己是申请方 申请方还得等发起方最后确认时间地点
             if (applyStatus == 10) {
                 return R.fail("您已经确认过了 不可重复操作");
             }
@@ -563,10 +572,12 @@ public class PzcActivityGroupController extends BaseController {
                 wxUtils.insertUserHistory(group.getUserId(), pzcActivityGroupApplyVo.getActivityId(), 3L, "组队开始扣除保证金 【" + startMoney + "】 派币", startMoney.negate());
 
                 return R.ok(iPzcActivityGroupApplyService.updateStatus(applyId.longValue(), 2)); //双方都已确认
+            }else {
+                return R.fail("发起方还未确认最后时间地点,请继续保持沟通哦");
             }
 
 
-            return R.ok(iPzcActivityGroupApplyService.updateStatus(applyId.longValue(), 10));//申请方确认
+//            return R.ok(iPzcActivityGroupApplyService.updateStatus(applyId.longValue(), 10));//申请方确认
         } else { //自己是发起方
             //判断当前 用户是否为组队发起人 如果不是 直接报错‘
             PzcActivityGroupVo pzcActivityGroupVo = iPzcActivityGroupService.queryById(groupId);
@@ -743,6 +754,18 @@ public class PzcActivityGroupController extends BaseController {
     @PutMapping()
     public R<Void> edit(@Validated(EditGroup.class) @RequestBody PzcActivityGroupBo bo) {
         bo.setUserId(LoginHelper.getUserId());
+        //判断是否在组队进程中 判断组队状态
+        //获取我的申请列表
+        List<PzcActivityGroupApply> applies = pzcActivityGroupApplyMapper.selectList(new QueryWrapper<PzcActivityGroupApply>().eq("group_id", bo.getGroupId()));
+        //判断是否有正在进行中的订单
+        applies.forEach(
+            a->{
+                if(a.getApplyStatus()!=-1 && a.getApplyStatus()!=0 && a.getApplyStatus()!=1){
+                    throw new RuntimeException("当前活动处于"+wxUtils.applyStatus(a.getApplyStatus())+" 无法修改");
+                }
+            }
+        );
+
         return toAjax(iPzcActivityGroupService.updateByBo(bo));
     }
 

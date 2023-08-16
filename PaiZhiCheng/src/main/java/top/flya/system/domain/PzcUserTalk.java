@@ -51,4 +51,6 @@ public class PzcUserTalk extends BaseEntity {
     @TableField(exist = false)
     private Integer notReadCount;
 
+    private Long groupId; //群组id
+
 }

@@ -78,5 +78,7 @@ public class PzcUserTalkVo {
 
     private String avatar;
 
+    private Long groupId;
+
 
 }
