@@ -63,14 +63,14 @@ public class PzcActivityGroupServiceImpl implements IPzcActivityGroupService {
         }
         if (pzcActivityGroupVo.getAuth() == 2) {
             log.info("私密组队，不返回用户信息");
-            pzcActivityGroupVo.setUser(null);
+            pzcActivityGroupVo.setUser(getPrivateUser(pzcActivityGroupVo.getUser()));
             pzcActivityGroupVo.setPhoto(null);
         } else {
             List<PzcUserPhoto> userPhotos = pzcUserPhotoMapper.selectList(new QueryWrapper<PzcUserPhoto>().eq("user_id", pzcActivityGroupVo.getUserId()));
             pzcActivityGroupVo.setPhoto(userPhotos);
-            if (pzcActivityGroupVo.getAuth() == 1) //权限 1只返回一张图片
+            if (pzcActivityGroupVo.getAuth() == 1) //权限 1只返回一张图片 即头像
             {
-                pzcActivityGroupVo.setPhoto(userPhotos.size() >= 1 ? Collections.singletonList(userPhotos.get(0)) : null);
+                pzcActivityGroupVo.setPhoto(null); //
             }
         }
         if (pzcActivityMapper.selectVoById(pzcActivityGroupVo.getActivityId()) == null) {
@@ -100,9 +100,9 @@ public class PzcActivityGroupServiceImpl implements IPzcActivityGroupService {
         pzcUserVo.setIntegrationNow(null);
         pzcUserVo.setRealname(null);
         pzcUserVo.setNickname("匿名用户");
-        pzcUserVo.setSex(2);
+        pzcUserVo.setSex(null);
         pzcUserVo.setPhone(null);
-        pzcUserVo.setAvatar(null);
+        pzcUserVo.setAvatar("https://picx.zhimg.com/v2-abed1a8c04700ba7d72b45195223e0ff_xll.jpg?source=32738c0c");
         pzcUserVo.setAddress(null);
         pzcUserVo.setIntro(null);
         pzcUserVo.setAge(null);
