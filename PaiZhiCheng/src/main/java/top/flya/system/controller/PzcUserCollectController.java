@@ -14,6 +14,7 @@ import top.flya.common.core.validate.AddGroup;
 import top.flya.common.enums.BusinessType;
 import top.flya.common.utils.JsonUtils;
 import top.flya.common.utils.poi.ExcelUtil;
+import top.flya.system.common.BatchUtils;
 import top.flya.system.domain.PzcActivity;
 import top.flya.system.domain.bo.PzcUserCollectBo;
 import top.flya.system.domain.vo.PzcUserCollectVo;
@@ -22,9 +23,7 @@ import top.flya.system.service.IPzcUserCollectService;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 用户收藏活动
@@ -46,6 +45,8 @@ public class PzcUserCollectController extends BaseController {
 
     private final StringRedisTemplate stringRedisTemplate;
 
+    private final BatchUtils batchUtils;
+
     /**
      * 查询用户收藏活动列表
      */
@@ -57,7 +58,15 @@ public class PzcUserCollectController extends BaseController {
             return R.ok();
         }
         List<String> collect = new ArrayList<>(members);
-        return R.ok(pzcActivityMapper.selectActivityByActivityIds(collect,bo.getType()));
+        List<PzcActivity> pzcActivities = pzcActivityMapper.selectActivityByActivityIds(collect, bo.getType());
+        log.info("用户收藏活动列表 {}", JsonUtils.toJsonString(pzcActivities));
+        pzcActivities.stream().forEach(
+                pzcActivity -> {
+                    pzcActivity.setCoverImage(pzcActivity.getCoverImage().contains("http")?pzcActivity.getCoverImage():
+                        (batchUtils.getNewImageUrls(Collections.singletonList(pzcActivity.getCoverImage())).get(Long.parseLong((pzcActivity.getCoverImage())))));
+                }
+        );
+        return R.ok(pzcActivities);
     }
 
     /**

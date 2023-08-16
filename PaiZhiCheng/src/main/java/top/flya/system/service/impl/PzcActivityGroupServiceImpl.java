@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import top.flya.common.core.domain.PageQuery;
 import top.flya.common.core.page.TableDataInfo;
+import top.flya.common.utils.JsonUtils;
 import top.flya.system.domain.PzcActivityGroup;
 import top.flya.system.domain.PzcActivityGroupApply;
 import top.flya.system.domain.PzcRegion;
@@ -93,6 +94,7 @@ public class PzcActivityGroupServiceImpl implements IPzcActivityGroupService {
     @Override
     public TableDataInfo<PzcActivityGroupVo> queryPageList(PzcActivityGroupBo bo, PageQuery pageQuery) {
 
+        log.info("查询活动组队列表 bo is {}", JsonUtils.toJsonString(bo));
         Page<PzcActivityGroupVo> result = baseMapper.selectDetailsList(pageQuery.build(), bo);
         ArrayList<PzcActivityGroupVo> pzcActivityGroupVos = new ArrayList<>();
         Pattern pattern = Pattern.compile("【(.*?)】(.*?)");
@@ -135,7 +137,9 @@ public class PzcActivityGroupServiceImpl implements IPzcActivityGroupService {
             }
         );
         if (bo.getDistance() != null) {
-            pzcActivityGroupVos.sort(Comparator.comparing(PzcActivityGroupVo::getDistance)); //按照距离排序
+            log.info("按照距离排序");
+            pzcActivityGroupVos.sort(Comparator.comparing(PzcActivityGroupVo::getDistance).reversed()); //按照距离远到近排序
+
         }
 
         //查询当前组队 是否正在进行中 如果是 则 不进入组队大厅
