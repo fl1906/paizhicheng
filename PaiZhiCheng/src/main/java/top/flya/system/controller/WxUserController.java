@@ -111,8 +111,7 @@ public class WxUserController extends BaseController {
 
 
     @GetMapping("/music")
-    public R music()
-    {
+    public R music() {
         return R.ok(sysUserMapper.selectUserById(1L).getNickName());
     }
 
@@ -129,15 +128,14 @@ public class WxUserController extends BaseController {
     @PostMapping("/login") // 登录
     public R login(@RequestBody @Validated PzcUserBo loginUser) {
         String tokenValue = userLogin(loginUser);
-        return (tokenValue != null) ? R.ok(tokenPrefix+" "+tokenValue) : R.fail("登录失败");
+        return (tokenValue != null) ? R.ok(tokenPrefix + " " + tokenValue) : R.fail("登录失败");
     }
 
 
     @GetMapping("/getSchoolList")
-    public R getSchoolList(@RequestParam("schoolName")String schoolName)
-    {
-        String baseUrl  = schoolUrl +schoolName+"&"+apiKey;
-        log.info("baseUrl is {}",baseUrl);
+    public R getSchoolList(@RequestParam("schoolName") String schoolName) {
+        String baseUrl = schoolUrl + schoolName + "&" + apiKey;
+        log.info("baseUrl is {}", baseUrl);
         String result = HttpUtil.get(baseUrl);
         return R.ok(JSONObject.parseObject(result).get("data"));
     }
@@ -148,33 +146,29 @@ public class WxUserController extends BaseController {
     }
 
     @PostMapping("/updateUserInfo") // 更新用户信息
-    public R updateUserInfo(@RequestBody PzcUserBo pzcUserBo)
-    {
+    public R updateUserInfo(@RequestBody PzcUserBo pzcUserBo) {
         PzcUser user = wxUtils.checkUser();
         //获取现在时间和一年前的时间 并格式化
         String nowTime = DateUtils.format(new Date());
         String lastYearNow = LocalDateTime.of(LocalDate.now().minusYears(1), LocalDateTime.now().toLocalTime()).toString();
-        log.info("nowTime is {} , lastYearNow is {}",nowTime,lastYearNow);
+        log.info("nowTime is {} , lastYearNow is {}", nowTime, lastYearNow);
 
-        if(pzcUserBo.getNickname()!=null&&!user.getNickname().equals(pzcUserBo.getNickname()))
-        {
+        if (pzcUserBo.getNickname() != null && !user.getNickname().equals(pzcUserBo.getNickname())) {
             //判断用户是否之前一年内是否更新过昵称
             List<PzcUserHistoryVo> pzcUserHistoryVos = userHistoryMapper.
                 selectVoList(new QueryWrapper<PzcUserHistory>().eq("user_id", user.getUserId()).eq("type", 0).like("message", "%昵称%")
                     .between("create_time", lastYearNow, nowTime));
-            if(pzcUserHistoryVos.size()>0)
-            {
+            if (pzcUserHistoryVos.size() > 0) {
                 return R.fail("一年内只能修改一次昵称");
-            }else {
+            } else {
                 //更新用户信息
                 user.setNickname(pzcUserBo.getNickname());
                 userMapper.updateById(user);
                 //存入用户历史记录
-                wxUtils.insertUserHistory(user.getUserId(),0L,0L,"昵称修改为"+pzcUserBo.getNickname(),null);
+                wxUtils.insertUserHistory(user.getUserId(), 0L, 0L, "昵称修改为" + pzcUserBo.getNickname(), null);
                 return R.ok(userMapper.selectById(user.getUserId()));
             }
-        }
-        else {
+        } else {
             pzcUserBo.setMoney(user.getMoney());//余额不允许修改
             pzcUserBo.setUserId(user.getUserId());//用户id不允许修改
             pzcUserBo.setRealname(user.getRealname());//真实姓名不允许修改
@@ -185,8 +179,8 @@ public class WxUserController extends BaseController {
             Map<String, Object> map = BeanUtil.beanToMap(pzcUserBo);
 
             //存入用户历史记录
-            wxUtils.insertUserHistory(user.getUserId(),0L,0L,"更新用户其他信息",null);
-           return R.ok(updateUser(map, user));
+            wxUtils.insertUserHistory(user.getUserId(), 0L, 0L, "更新用户其他信息", null);
+            return R.ok(updateUser(map, user));
         }
 
     }
@@ -290,7 +284,7 @@ public class WxUserController extends BaseController {
         }
     }
 
-/**/
+    /**/
     @RequestMapping("/callback")
     @Transactional
     public R callback(HttpServletRequest request, @RequestBody SuccessCallBackObjBo obj) {
@@ -307,12 +301,10 @@ public class WxUserController extends BaseController {
             String orderNum = jsonObject.getString("out_trade_no");
             //更新订单状态和用户余额
             PzcOrder pzcOrder = orderMapper.selectOne(new QueryWrapper<PzcOrder>().eq("out_order_num", orderNum));
-            if(pzcOrder==null)
-            {
+            if (pzcOrder == null) {
                 return R.fail("订单不存在");
             }
-            if(pzcOrder.getOrderStatus()==1)
-            {
+            if (pzcOrder.getOrderStatus() == 1) {
                 return R.fail("订单已支付");
             }
             pzcOrder.setOrderStatus(1L);
@@ -321,7 +313,7 @@ public class WxUserController extends BaseController {
             PzcUser user = userMapper.selectById(userId);
             user.setMoney(user.getMoney().add(pzcOrder.getMoney()));
             userMapper.updateById(user);
-            wxUtils.insertUserHistory(user.getUserId(),0L,2L,"派币充值【"+pzcOrder.getMoney()+"】",pzcOrder.getMoney());
+            wxUtils.insertUserHistory(user.getUserId(), 0L, 2L, "派币充值【" + pzcOrder.getMoney() + "】", pzcOrder.getMoney());
 
 
         } catch (GeneralSecurityException e) {
@@ -332,7 +324,7 @@ public class WxUserController extends BaseController {
     }
 
     // 假设接收到的请求参数为Map<String, Object> userInfo
-    public PzcUser updateUser(Map<String, Object> userInfo,   PzcUser user) {
+    public PzcUser updateUser(Map<String, Object> userInfo, PzcUser user) {
 
         // 反射动态更新用户信息
         try {
@@ -340,15 +332,14 @@ public class WxUserController extends BaseController {
             for (Map.Entry<String, Object> entry : userInfo.entrySet()) {
                 String fieldName = entry.getKey();
                 Object fieldValue = entry.getValue();
-                log.info("fieldName is {} , fieldValue is {}",fieldName,fieldValue);
+                log.info("fieldName is {} , fieldValue is {}", fieldName, fieldValue);
 
-                if(fieldValue instanceof Map) //跳过map类型
+                if (fieldValue instanceof Map) //跳过map类型
                 {
                     continue;
                 }
 
-                if(fieldValue!=null)
-                {
+                if (fieldValue != null) {
                     Field field = clazz.getDeclaredField(fieldName);
                     field.setAccessible(true);
                     field.set(user, fieldValue);
@@ -386,12 +377,12 @@ public class WxUserController extends BaseController {
 
             //新注册时 根据 POST https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=ACCESS_TOKEN 获取手机号
             String getPhoneUrl = "https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=" + wxUtils.getAccessToken();
-            Map<String,String> codeMap =new HashMap<>();
-            codeMap.put("code",pzcUserBo.getPhoneCode());
+            Map<String, String> codeMap = new HashMap<>();
+            codeMap.put("code", pzcUserBo.getPhoneCode());
             String phoneResponse = HttpUtil.post(getPhoneUrl, JSONUtil.toJsonStr(codeMap));
             log.info("微信小程序获取用户手机号信息 url : {}，response is {}", getPhoneUrl, phoneResponse);
             cn.hutool.json.JSONObject phoneJson = JSONUtil.parseObj(phoneResponse);
-            if(phoneJson.getInt("errcode") != 0){
+            if (phoneJson.getInt("errcode") != 0) {
                 log.info("微信小程序获取用户手机号信息失败");
                 throw new RuntimeException("微信小程序获取用户手机号信息失败");
             }
@@ -404,8 +395,7 @@ public class WxUserController extends BaseController {
             user = userMapper.selectOne(new QueryWrapper<PzcUser>().eq("openid", openId));
         }
 
-        if(user.getState()==0)
-        {
+        if (user.getState() == 0) {
             throw new RuntimeException("用户已被禁用");
         }
 
@@ -429,6 +419,34 @@ public class WxUserController extends BaseController {
         logininforEvent.setMessage(message);
         logininforEvent.setRequest(ServletUtils.getRequest());
         SpringUtils.context().publishEvent(logininforEvent);
+    }
+
+
+    @PostMapping("/sendArriveMsg") //推送微信小程序通知
+    public R sendArriveMsg(String toUserOpenId,String data) {
+        String getTokenUrl = "https://api.weixin.qq.com/cgi-bin/token?" + "grant_type=client_credential&appid=" + appId + "&secret=" + secret;
+        String response = HttpUtil.get(getTokenUrl);
+        log.info("微信小程序获取token url : {}，response is {}", getTokenUrl, response);
+        JSONObject wxUser = JSONObject.parseObject(response);
+        if (com.baomidou.mybatisplus.core.toolkit.StringUtils.checkValNull(wxUser) || wxUser.get("errcode") != null) {
+            throw new RuntimeException("微信登录失败 可能是code过期了");
+        }
+        String accessToken = wxUser.get("access_token").toString();
+        String msgUrl= "https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token="+accessToken;
+        Map<String, Object> map = new HashMap<>();
+        map.put("template_id","MMHCiz9Z5faTwbDI9ywE0ScIvGMeDduTxXm00wdLxmw");
+        map.put("touser",toUserOpenId);
+        map.put("data",data);
+        map.put("miniprogram_state","trial");//developer为开发版；trial为体验版；formal为正式版；默认为正式版
+        map.put("lang","zh_CN");
+        String msgResponse = HttpUtil.post(msgUrl, JSONUtil.toJsonStr(map));
+        log.info("微信小程序推送消息 url : {}，response is {}", msgUrl, msgResponse);
+        JSONObject msgJson = JSONObject.parseObject(msgResponse);
+        if (msgJson.getInteger("errcode") != 0) {
+            throw new RuntimeException("微信小程序推送消息失败");
+        }
+
+        return R.ok(msgJson.get("errcode").toString());
     }
 
 

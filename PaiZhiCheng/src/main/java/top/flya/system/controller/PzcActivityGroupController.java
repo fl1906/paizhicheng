@@ -1,6 +1,8 @@
 package top.flya.system.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.hutool.core.map.MapBuilder;
+import com.alibaba.excel.util.DateUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,9 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -192,7 +192,7 @@ public class PzcActivityGroupController extends BaseController {
         pzcOfficial.setFromUserId(userId);
         pzcOfficial.setToUserId(otherUser.getUserId());
         pzcOfficial.setTitle("来自" + otherUser.getNickname() + "与您的组队信息：");
-        pzcOfficial.setContent("在【" + pzcActivityGroupVo.getTitle() + "】组队中途，对方已经取消本次组队。请重新选择队伍进行匹配~");
+        pzcOfficial.setContent("在【" + pzcActivityGroupVo.getTitle() + "】组队中途，对方已经取消本次组队。您可以再次同意或者申请其他用户");
         pzcOfficial.setGroupId(groupId);
         pzcOfficial.setActivityId(pzcActivityGroupVo.getActivityId());
         pzcOfficialMapper.insert(pzcOfficial);
@@ -240,7 +240,7 @@ public class PzcActivityGroupController extends BaseController {
 
             pzcOfficial.setFromUserId(userId);
             pzcOfficial.setTitle("来自" + my.getNickname() + "与您的组队信息：");
-            pzcOfficial.setContent("在【" + pzcActivityGroup.getTitle() + "】组队中途，申请方已经取消本次组队。对方的违约金 【" + money + "派币】已纳入您的账户。请查收~");
+            pzcOfficial.setContent("很遗憾地通知您：您在【" + pzcActivityGroup.getTitle() + "】组队活动中，申请方已经取消本次组队活动。对方的违约金 【" + money + "派币】已纳入您的账户。您可以再次同意或者申请其他用户。");
             pzcOfficial.setToUserId(startUser.getUserId());
             pzcOfficial.setGroupId(pzcActivityGroup.getGroupId());
             pzcOfficial.setActivityId(pzcActivityGroup.getActivityId());
@@ -261,7 +261,7 @@ public class PzcActivityGroupController extends BaseController {
 
             pzcOfficial.setFromUserId(userId);
             pzcOfficial.setTitle("来自" + my.getNickname() + "与您的组队信息：");
-            pzcOfficial.setContent("在【" + pzcActivityGroup.getTitle() + "】组队中途，发起方已经取消本次组队。对方的违约金 【" + pzcActivityGroup.getMoney().subtract(new BigDecimal("0.2")) + "派币】已纳入您的账户。请查收~");
+            pzcOfficial.setContent("很遗憾地通知您：您在在【" + pzcActivityGroup.getTitle() + "】组队活动中，发起方已经取消本次组队活动。对方的违约金 【" + pzcActivityGroup.getMoney().subtract(new BigDecimal("0.2")) + "派币】已纳入您的账户。您可以再次同意或者申请其他用户。");
             pzcOfficial.setToUserId(applyUser.getUserId());
             pzcOfficial.setGroupId(pzcActivityGroup.getGroupId());
             pzcOfficial.setActivityId(pzcActivityGroup.getActivityId());
@@ -422,6 +422,7 @@ public class PzcActivityGroupController extends BaseController {
     public R confirmReach(@RequestParam("applyId") Integer applyId) {
         PzcActivityGroupApplyVo pzcActivityGroupApplyVo = wxUtils.checkApplyConfirm(applyId.longValue());
         Long userId = LoginHelper.getUserId();
+        PzcUser my = pzcUserMapper.selectById(userId);
         Long groupId = pzcActivityGroupApplyVo.getGroupId();
         Integer applyStatus = pzcActivityGroupApplyVo.getApplyStatus();
         if (applyStatus != 2 && applyStatus != 11 && applyStatus != 12) {
@@ -465,6 +466,15 @@ public class PzcActivityGroupController extends BaseController {
             if (applyStatus == 12) {
                 return R.fail("您已经确认过了 不可重复操作");
             }
+            //申请方确认了 给发起方推送微信消息
+            PzcUser pzcUser = pzcUserMapper.selectById(pzcActivityGroupVo.getUserId());
+            Map<String, Map> dataMap = new HashMap<>();
+            dataMap.put("thing4", MapBuilder.create().put("value",my.getNickname()).build());
+            dataMap.put("thing5", MapBuilder.create().put("value","对方已到达，您需在活动时间内到达").build());
+            dataMap.put("time6", MapBuilder.create().put("value", DateUtils.format(new Date(),"yyyy-MM-dd HH:mm:ss")).build());
+            log.info("发起方确认到达目的地，给申请方推送微信消息：{}",JsonUtils.toJsonString(dataMap));
+            wxUtils.sendArriveMsg(pzcUser.getOpenid(),dataMap);
+
             return R.ok(iPzcActivityGroupApplyService.updateStatus(applyId.longValue(), 12));//申请方确认
         }
         //判断当前 用户是否为组队发起人 如果不是 直接报错
@@ -509,6 +519,15 @@ public class PzcActivityGroupController extends BaseController {
         if (applyStatus == 11) {
             return R.fail("您已经确认过了 不可重复操作");
         }
+        //发起方确认了 给申请方推送微信消息
+        PzcUser pzcUser = pzcUserMapper.selectById(pzcActivityGroupApplyVo.getUserId());
+        Map<String, Map<Object,Object>> dataMap = new HashMap<>();
+        dataMap.put("thing4", MapBuilder.create().put("value",my.getNickname()).build());
+        dataMap.put("thing5", MapBuilder.create().put("value","对方已到达，您需在活动时间内到达").build()); //对方已到达约定的见面地点，您需在【"+pzcActivityGroupVo.getActivityTime()+"】前到达目的地，否则，按照违约处理。或您也可以与对方沟通，申请无限制确认到达，以保证组队的正常。
+        dataMap.put("time6", MapBuilder.create().put("value", DateUtils.format(new Date(),"yyyy-MM-dd HH:mm:ss")).build());
+        log.info("申请方确认到达目的地，给发起方推送微信消息：{}",JsonUtils.toJsonString(dataMap));
+        wxUtils.sendArriveMsg(pzcUser.getOpenid(),dataMap);
+
         return R.ok(iPzcActivityGroupApplyService.updateStatus(applyId.longValue(), 11));//发起方确认
     }
 
