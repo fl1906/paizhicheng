@@ -154,7 +154,7 @@ public class MessageEventHandler {
     @OnEvent(value = Event.OFFICIAL)
 //    @RepeatSubmit(interval =5 ,timeUnit = TimeUnit.MINUTES,message = "发送频繁，请过五分钟之后再试")
     public void onOfficialEvent(SocketIOClient client, AckRequest request, WxzApplyBo wxzApplyBo) {
-        wxzApplyBo.setMessage("对方想要超限制确认\n已与本人见面");
+//        wxzApplyBo.setMessage("对方想要超限制确认\n已与本人见面");
         log.info("用户 {} 刚刚给用户 {} 发起了一条无限制确认到达弹窗", wxzApplyBo.getFromUserId(), wxzApplyBo.getToUserId());
         //这里分 用户是否在线
         if (officialMessage(String.valueOf(wxzApplyBo.getToUserId()), wxzApplyBo)) { //测试时修改一下
