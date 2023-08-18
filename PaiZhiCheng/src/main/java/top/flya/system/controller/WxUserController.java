@@ -255,7 +255,7 @@ public class WxUserController extends BaseController {
             //创建未支付的充值订单
             PzcOrder pzcRechargeOrder = new PzcOrder();
             pzcRechargeOrder.setActivityId(null);
-            pzcRechargeOrder.setMoney(BigDecimal.valueOf(payOrder.getCount()).divide(BigDecimal.valueOf(100)));
+            pzcRechargeOrder.setMoney(BigDecimal.valueOf(payOrder.getCount()).divide(BigDecimal.valueOf(1000)));
             pzcRechargeOrder.setOrderStatus(0L);
             pzcRechargeOrder.setType(0L);
             pzcRechargeOrder.setOutOrderNum(orderNum);
