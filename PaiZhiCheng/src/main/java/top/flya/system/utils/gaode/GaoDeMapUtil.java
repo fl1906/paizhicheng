@@ -132,7 +132,7 @@ public class GaoDeMapUtil {
      * @author isymikasan
      * @date 2022-01-26 09:47:42
      */
-    public R getDistance(String startLonLat, String endLonLat) {
+    public R<Long> getDistance(String startLonLat, String endLonLat) {
         try {
             // 返回起始地startAddr与目的地endAddr之间的距离，单位：米
             Long result = new Long(0);
@@ -141,6 +141,7 @@ public class GaoDeMapUtil {
                     + "&destination="
                     + endLonLat;
             String queryResult = getResponse(queryUrl);
+            log.info("请求url is {} \n高德接口返回的是JSON格式的字符串：{}" ,queryUrl,queryResult);
             JSONObject job = JSONObject.parseObject(queryResult);
             JSONArray ja = job.getJSONArray("results");
             JSONObject jobO = JSONObject.parseObject(ja.getString(0));

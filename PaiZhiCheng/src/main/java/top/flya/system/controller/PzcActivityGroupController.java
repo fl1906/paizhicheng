@@ -32,6 +32,7 @@ import top.flya.system.mapper.*;
 import top.flya.system.service.IPzcActivityGroupApplyService;
 import top.flya.system.service.IPzcActivityGroupService;
 import top.flya.system.utils.WxUtils;
+import top.flya.system.utils.gaode.GaoDeMapUtil;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotEmpty;
@@ -42,6 +43,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static top.flya.system.config.ClientCache.concurrentHashMap;
@@ -79,6 +82,7 @@ public class PzcActivityGroupController extends BaseController {
 
     private final PzcUserTalkMapper pzcUserTalkMapper;
 
+    private final GaoDeMapUtil gaoDeMapUtil;
     private final ExecutorService newSingleThreadExecutor = new ThreadPoolExecutor(10, 20, 200L,
         TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(100));
 
@@ -101,16 +105,15 @@ public class PzcActivityGroupController extends BaseController {
                 if (pzcActivityGroupApply.getApplyStatus() != -1 && pzcActivityGroupApply.getApplyStatus() != 0 && pzcActivityGroupApply.getApplyStatus() != 15) {
                     throw new RuntimeException("有组队正在进行中，不能取消");
                 }
-                if(pzcActivityGroupApply.getApplyStatus()==0)
-                {
+                if (pzcActivityGroupApply.getApplyStatus() == 0) {
                     delApplyIds.add(pzcActivityGroupApply.getActivityId());
                     //异步给对方发消息 通知对方已拒绝 修改为异步请求
                     newSingleThreadExecutor.execute(() -> {
                         PzcOfficial pzcOfficial = new PzcOfficial();
                         pzcOfficial.setFromUserId(userId);
                         pzcOfficial.setToUserId(pzcActivityGroupApply.getUserId());
-                        pzcOfficial.setTitle("来自您的申请组队【"+pzcActivityGroup.getTitle()+"】信息：");
-                        pzcOfficial.setContent("您的申请组队【"+pzcActivityGroup.getTitle()+"】已被发布者取消");
+                        pzcOfficial.setTitle("来自您的申请组队【" + pzcActivityGroup.getTitle() + "】信息：");
+                        pzcOfficial.setContent("您的申请组队【" + pzcActivityGroup.getTitle() + "】已被发布者取消");
                         pzcOfficialMapper.insert(pzcOfficial);
                     });
 
@@ -119,8 +122,7 @@ public class PzcActivityGroupController extends BaseController {
             }
         );
         //删除申请
-        if(delApplyIds.size()>0)
-        {
+        if (delApplyIds.size() > 0) {
             pzcActivityGroupApplyMapper.deleteBatchIds(delApplyIds);
         }
         //删除组队
@@ -128,23 +130,49 @@ public class PzcActivityGroupController extends BaseController {
         return R.ok();
     }
 
+
+    public static void main(String[] args) {
+        Pattern pattern = Pattern.compile("【(.*?)】(.*?)");
+
+        String end = pattern.matcher("【118.8102724750227,31.958113136326144】江苏省南京市江宁区左邻右里(映淮街北)").group(1);
+        System.out.println(end);
+    }
+
     @PostMapping("/refurbish") //刷新
-    public R refurbish(@RequestBody RefurbishBo refurbishBo) {
+    public R refurbish(@RequestBody RefurbishBo refurbishBo) throws Exception {
         log.info("刷新: {}", JsonUtils.toJsonString(refurbishBo));
         //首先查询这个组队是否是我发起的
         PzcActivityGroupApply pzcActivityGroupApply = pzcActivityGroupApplyMapper.selectById(refurbishBo.getApplyId());
         if (pzcActivityGroupApply == null) {
             return R.fail("申请不存在");
         }
+
+        PzcActivityGroup pzcActivityGroup = pzcActivityGroupMapper.selectById(pzcActivityGroupApply.getGroupId());
+        Pattern pattern = Pattern.compile("【(.*?)】(.*?)");
+        Matcher matcher = pattern.matcher(pzcActivityGroup.getAddress());
+
+        String end = "";
+        if (matcher.find()) {
+            end = matcher.group(1);
+        }else {
+            return R.fail("地址解析失败,请联系管理员");
+        }
+
+        String[] startJwd = refurbishBo.getAddress().split(",");
+        Long data =gaoDeMapUtil.getDistance(refurbishBo.getAddress(), end).getData();
+        refurbishBo.setAddress(gaoDeMapUtil.getAddress(startJwd[0], startJwd[1]).getData().toString());
+        log.info("调用高德API获取到的用户目前地址为: {}", refurbishBo.getAddress());
+        log.info("调用高德API获取到的用户距离目标地址距离为: {}", data);
         if (refurbishBo.getRole() == 0) //申请方
         {
-
+            //判断申请方现在是否可以打卡
             pzcActivityGroupApply.setApplyAddress(refurbishBo.getAddress());
             pzcActivityGroupApplyMapper.updateById(pzcActivityGroupApply);
             RefurbishVO refurbishVO = new RefurbishVO();
             refurbishVO.setApplyAddress(refurbishBo.getAddress());
             refurbishVO.setApplyId(refurbishBo.getApplyId());
             refurbishVO.setStartAddress(pzcActivityGroupApply.getStartAddress());
+            refurbishVO.setDistance(data);
 
             return R.ok(refurbishVO);
 
@@ -155,6 +183,8 @@ public class PzcActivityGroupController extends BaseController {
             refurbishVO.setApplyAddress(pzcActivityGroupApply.getApplyAddress());
             refurbishVO.setApplyId(refurbishBo.getApplyId());
             refurbishVO.setStartAddress(refurbishBo.getAddress());
+            refurbishVO.setDistance(data);
+
             return R.ok(refurbishVO);
         }
     }
@@ -304,11 +334,11 @@ public class PzcActivityGroupController extends BaseController {
                 PzcRegion pzcRegion = pzcRegionMapper.selectById(region);
                 String title = "";
                 if (pzcRegion != null) {
-                    title="【" + pzcRegion.getName() + "】";
+                    title = "【" + pzcRegion.getName() + "】";
                 }
-                log.info("申请活动列表 title:{}",title);
+                log.info("申请活动列表 title:{}", title);
 
-                s.setActivityTitle(s.getActivityId() == 0 ?  title: pzcActivityMapper.selectVoById(s.getActivityId()).getTitle());
+                s.setActivityTitle(s.getActivityId() == 0 ? title : pzcActivityMapper.selectVoById(s.getActivityId()).getTitle());
                 s.setGroupTitle(pzcActivityGroupVos.stream().filter(s1 -> s1.getGroupId().equals(s.getGroupId())).findFirst().get().getTitle());
             }
         );
@@ -337,7 +367,7 @@ public class PzcActivityGroupController extends BaseController {
         pzcActivityGroup.setAddress(pzcActivityGroup.getAddress().substring(pzcActivityGroup.getAddress().indexOf("】") + 1));
         pzcUser.setPzcActivityGroup(pzcActivityGroup);
         pzcUser.setLiveStatus(concurrentHashMap.get(userId) != null);
-        pzcUser.setNotReadCount(pzcUserTalkMapper.selectNotReadCount(userId, LoginHelper.getUserId(),LoginHelper.getUserId()));
+        pzcUser.setNotReadCount(pzcUserTalkMapper.selectNotReadCount(userId, LoginHelper.getUserId(), LoginHelper.getUserId()));
         pzcUser.setExemptCancel(pzcUserMapper.selectById(LoginHelper.getUserId()).getExemptCancel()); //获取我的免责取消次数
         return R.ok(pzcUser);
     }
@@ -469,11 +499,11 @@ public class PzcActivityGroupController extends BaseController {
             //申请方确认了 给发起方推送微信消息
             PzcUser pzcUser = pzcUserMapper.selectById(pzcActivityGroupVo.getUserId());
             Map<String, Map> dataMap = new HashMap<>();
-            dataMap.put("thing4", MapBuilder.create().put("value",my.getNickname()).build());
-            dataMap.put("thing5", MapBuilder.create().put("value","对方已到达，您需在活动时间内到达").build());
-            dataMap.put("time6", MapBuilder.create().put("value", DateUtils.format(new Date(),"yyyy-MM-dd HH:mm:ss")).build());
-            log.info("发起方确认到达目的地，给申请方推送微信消息：{}",JsonUtils.toJsonString(dataMap));
-            wxUtils.sendArriveMsg(pzcUser.getOpenid(),dataMap);
+            dataMap.put("thing4", MapBuilder.create().put("value", my.getNickname()).build());
+            dataMap.put("thing5", MapBuilder.create().put("value", "对方已到达，您需在活动时间内到达").build());
+            dataMap.put("time6", MapBuilder.create().put("value", DateUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss")).build());
+            log.info("发起方确认到达目的地，给申请方推送微信消息：{}", JsonUtils.toJsonString(dataMap));
+            wxUtils.sendArriveMsg(pzcUser.getOpenid(), dataMap);
 
             return R.ok(iPzcActivityGroupApplyService.updateStatus(applyId.longValue(), 12));//申请方确认
         }
@@ -521,12 +551,12 @@ public class PzcActivityGroupController extends BaseController {
         }
         //发起方确认了 给申请方推送微信消息
         PzcUser pzcUser = pzcUserMapper.selectById(pzcActivityGroupApplyVo.getUserId());
-        Map<String, Map<Object,Object>> dataMap = new HashMap<>();
-        dataMap.put("thing4", MapBuilder.create().put("value",my.getNickname()).build());
-        dataMap.put("thing5", MapBuilder.create().put("value","对方已到达，您需在活动时间内到达").build()); //对方已到达约定的见面地点，您需在【"+pzcActivityGroupVo.getActivityTime()+"】前到达目的地，否则，按照违约处理。或您也可以与对方沟通，申请无限制确认到达，以保证组队的正常。
-        dataMap.put("time6", MapBuilder.create().put("value", DateUtils.format(new Date(),"yyyy-MM-dd HH:mm:ss")).build());
-        log.info("申请方确认到达目的地，给发起方推送微信消息：{}",JsonUtils.toJsonString(dataMap));
-        wxUtils.sendArriveMsg(pzcUser.getOpenid(),dataMap);
+        Map<String, Map<Object, Object>> dataMap = new HashMap<>();
+        dataMap.put("thing4", MapBuilder.create().put("value", my.getNickname()).build());
+        dataMap.put("thing5", MapBuilder.create().put("value", "对方已到达，您需在活动时间内到达").build()); //对方已到达约定的见面地点，您需在【"+pzcActivityGroupVo.getActivityTime()+"】前到达目的地，否则，按照违约处理。或您也可以与对方沟通，申请无限制确认到达，以保证组队的正常。
+        dataMap.put("time6", MapBuilder.create().put("value", DateUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss")).build());
+        log.info("申请方确认到达目的地，给发起方推送微信消息：{}", JsonUtils.toJsonString(dataMap));
+        wxUtils.sendArriveMsg(pzcUser.getOpenid(), dataMap);
 
         return R.ok(iPzcActivityGroupApplyService.updateStatus(applyId.longValue(), 11));//发起方确认
     }
@@ -592,7 +622,7 @@ public class PzcActivityGroupController extends BaseController {
                 wxUtils.insertUserHistory(group.getUserId(), pzcActivityGroupApplyVo.getActivityId(), 3L, "组队开始扣除保证金 【" + startMoney + "】 派币", startMoney.negate());
 
                 return R.ok(iPzcActivityGroupApplyService.updateStatus(applyId.longValue(), 2)); //双方都已确认
-            }else {
+            } else {
                 return R.fail("发起方还未确认最后时间地点,请继续保持沟通哦");
             }
 
@@ -757,11 +787,30 @@ public class PzcActivityGroupController extends BaseController {
             return R.fail("当前城市不存在");
         }
 
+        //检验自己是否已经在此城市里发起过组队
+        if (bo.getActivityId() == 0) {
+            //如果是城市活动 则校验是否已经发起过组队
+            List<PzcActivityGroup> groups = pzcActivityGroupMapper.selectList(new QueryWrapper<PzcActivityGroup>().
+                eq("user_id", userId).eq("activity_id", 0).eq("region", bo.getRegion()));
+            if (groups.size() != 0) {
+                log.info("用户id为：{} 在城市id为：{} 发起过组队 {}", userId, bo.getRegion(), JsonUtils.toJsonString(groups));
+                return R.fail("您已经在此城市发起过组队了");
+            }
+        } else {
+            //如果是活动 则校验是否已经发起过组队
+            List<PzcActivityGroup> groups = pzcActivityGroupMapper.selectList(new QueryWrapper<PzcActivityGroup>().eq("user_id", userId).eq("activity_id", bo.getActivityId()));
+            if (groups.size() != 0) {
+                log.info("用户id为：{} 在活动id为：{} 发起过组队 {}", userId, bo.getActivityId(), JsonUtils.toJsonString(groups));
+                return R.fail("您已经在此活动发起过组队了");
+            }
+        }
+
         // 校验保证金
         PzcUser pzcUser = pzcUserMapper.selectById(userId);
         if (pzcUser.getMoney().compareTo(bo.getMoney()) < 0 || bo.getMoney().compareTo(new BigDecimal(1)) < 0) {
             return R.fail("保证金不足 至少拥有1个派币");
         }
+
 
         return toAjax(iPzcActivityGroupService.insertByBo(bo));
     }
@@ -779,9 +828,9 @@ public class PzcActivityGroupController extends BaseController {
         List<PzcActivityGroupApply> applies = pzcActivityGroupApplyMapper.selectList(new QueryWrapper<PzcActivityGroupApply>().eq("group_id", bo.getGroupId()));
         //判断是否有正在进行中的订单
         applies.forEach(
-            a->{
-                if(a.getApplyStatus()!=-1 && a.getApplyStatus()!=0 && a.getApplyStatus()!=1){
-                    throw new RuntimeException("当前活动处于"+wxUtils.applyStatus(a.getApplyStatus())+" 无法修改");
+            a -> {
+                if (a.getApplyStatus() != -1 && a.getApplyStatus() != 0 && a.getApplyStatus() != 1) {
+                    throw new RuntimeException("当前活动处于" + wxUtils.applyStatus(a.getApplyStatus()) + " 无法修改");
                 }
             }
         );

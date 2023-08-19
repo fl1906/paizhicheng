@@ -37,10 +37,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                order by update_time desc
     </select>
     <select id="selectMyTalkUserIds" resultType="java.lang.Long">
-        select distinct from_user_id from pzc_user_talk where to_user_id = #{my}
+        select distinct from_user_id from pzc_user_talk where to_user_id = #{my} and user_id = #{my}
     </select>
     <select id="selectMyTalkUserIdsV2" resultType="java.lang.Long">
-        select distinct to_user_id from pzc_user_talk where from_user_id = #{my}
+        select distinct to_user_id from pzc_user_talk where from_user_id = #{my} and user_id = #{my}
     </select>
 
 

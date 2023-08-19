@@ -145,9 +145,13 @@ public class PzcActivityGroupServiceImpl implements IPzcActivityGroupService {
                 Long groupId = pzcActivityGroupVo.getGroupId();
                 Long count = pzcActivityGroupApplyMapper.selectCount(new QueryWrapper<PzcActivityGroupApply>().eq("group_id", groupId).notIn("apply_status", -1, 0, 13, 14, 15));
                 if (count > 0) {
-                    //从列表中移除这个对象、
-                    log.info("当前组队正在进行中，不返回组队信息 groupId is {}", pzcActivityGroupVo.getGroupId());
-                    pzcActivityGroupVos.remove(pzcActivityGroupVo);
+                    if(bo.getUserId()==null) //只是不对大厅展示
+                    {
+                        //从列表中移除这个对象、
+                        log.info("当前组队正在进行中，不返回组队信息 groupId is {}", pzcActivityGroupVo.getGroupId());
+                        pzcActivityGroupVos.remove(pzcActivityGroupVo);
+                    }
+
                 }
                 if (bo.getLongitudeAndLatitude() != null && bo.getLongitudeAndLatitude().length() > 0) {
                     //计算距离

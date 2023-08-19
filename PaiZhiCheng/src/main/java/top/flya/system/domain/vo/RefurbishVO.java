@@ -12,4 +12,6 @@ public class RefurbishVO {
     private String applyAddress;
 
     private Long applyId;
+
+    private Long distance;
 }
