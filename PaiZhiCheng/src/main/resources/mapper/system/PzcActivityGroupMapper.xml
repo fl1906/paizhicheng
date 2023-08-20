@@ -61,6 +61,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </if>
         <if test="bo.userId !=null">
             and g.user_id = #{bo.userId}
+            and g.status = 0
         </if>
             and g.user_id = u.user_id
         <if test="bo.userSex != null">
