@@ -38,6 +38,10 @@ import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -68,13 +72,15 @@ public class PzcActivityGroupApplyController extends BaseController {
 
     private final WxUtils wxUtils;
 
+    private final ExecutorService newSingleThreadExecutor = new ThreadPoolExecutor(10, 20, 200L,
+        TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(100));
 
 
     @PostMapping("/wxzApply")
     @Transactional
-    public R wxzApply(@RequestParam("applyId") Integer applyId,@RequestParam("wxz")Integer wxz) {  //wxz 0 未选择 1 选择
-        log.info("applyId:{},wxz:{}",applyId,wxz);
-        if(wxz!=0&&wxz!=1){
+    public R wxzApply(@RequestParam("applyId") Integer applyId, @RequestParam("wxz") Integer wxz) {  //wxz 0 未选择 1 选择
+        log.info("applyId:{},wxz:{}", applyId, wxz);
+        if (wxz != 0 && wxz != 1) {
             return R.fail("参数错误");
         }
         PzcActivityGroupApply pzcActivityGroupApply = pzcActivityGroupApplyMapper.selectById(applyId);
@@ -82,28 +88,36 @@ public class PzcActivityGroupApplyController extends BaseController {
             return R.fail("申请不存在");
         }
 
-         if(pzcActivityGroupApply.getApplyStatus()!=2&&pzcActivityGroupApply.getApplyStatus()!=9&&pzcActivityGroupApply.getApplyStatus()!=10&&pzcActivityGroupApply.getApplyStatus()!=11&&pzcActivityGroupApply.getApplyStatus()!=12) {
-             return R.fail("当前状态为【"+wxUtils.applyStatus(pzcActivityGroupApply.getApplyStatus())+"】，不能进行此操作");
-         }
+        if (pzcActivityGroupApply.getApplyStatus() != 2 && pzcActivityGroupApply.getApplyStatus() != 9 && pzcActivityGroupApply.getApplyStatus() != 10 && pzcActivityGroupApply.getApplyStatus() != 11 && pzcActivityGroupApply.getApplyStatus() != 12) {
+            return R.fail("当前状态为【" + wxUtils.applyStatus(pzcActivityGroupApply.getApplyStatus()) + "】，不能进行此操作");
+        }
         //这里取消redis缓存
         Long userId = LoginHelper.getUserId();
         String result = stringRedisTemplate.opsForValue().get("officialMessage:" + userId);
-        log.info("result:{}",result);
-        if(result!=null){
+        log.info("result:{}", result);
+        if (result != null) {
             WxzApplyBo wxzApplyBo = JsonUtils.parseObject(result, WxzApplyBo.class);
-            if(wxzApplyBo==null)
-            {
+            if (wxzApplyBo == null) {
                 return R.fail("转换JSON异常");
             }
-            if(!wxzApplyBo.getApplyId().equals(applyId)){
+            if (!wxzApplyBo.getApplyId().equals(applyId)) {
                 return R.fail("申请方请求不存在");
             }
             stringRedisTemplate.delete("officialMessage:" + userId);
-        }else {
+        } else {
             return R.fail("申请方请求不存在");
         }
         pzcActivityGroupApply.setWxz(wxz);
+        pzcActivityGroupApply.setApplyStatus(3); //直接是组队结束状态
         pzcActivityGroupApplyMapper.updateById(pzcActivityGroupApply);
+        newSingleThreadExecutor.execute(() -> {
+            // 更新 组队状态为已结束
+            PzcActivityGroup pzcActivityGroup = pzcActivityGroupMapper.selectById(pzcActivityGroupApply.getGroupId());
+            pzcActivityGroup.setStatus(1); //已结束
+            pzcActivityGroupMapper.updateById(pzcActivityGroup);
+        });
+
+
         return R.ok();
     }
 
@@ -134,8 +148,7 @@ public class PzcActivityGroupApplyController extends BaseController {
         //1 找出所有我创建的组
         List<PzcActivityGroup> pzcActivityGroups = pzcActivityGroupMapper.selectList(new QueryWrapper<PzcActivityGroup>().eq("user_id", userId));
         List<Long> groupIds = pzcActivityGroups.stream().map(PzcActivityGroup::getGroupId).collect(java.util.stream.Collectors.toList());
-        if(groupIds.size()!=0)
-        {
+        if (groupIds.size() != 0) {
             List<PzcActivityGroupApply> step2 = pzcActivityGroupApplyMapper.selectList(new QueryWrapper<>(new PzcActivityGroupApply()).in("group_id", groupIds).in("apply_status", 15));
             step2.forEach(
                 p -> {
@@ -183,7 +196,7 @@ public class PzcActivityGroupApplyController extends BaseController {
         Long userId = LoginHelper.getUserId();
         List<PzcActivityGroupApply> step1 = pzcActivityGroupApplyMapper.selectList(
             new QueryWrapper<PzcActivityGroupApply>()
-                .eq("user_id", userId).in("apply_status", 1, 2, 9, 10, 11, 12, 13, 14));
+                .eq("user_id", userId).in("apply_status", 1, 2, 3, 9, 10, 11, 12, 13, 14));
         step1.forEach(
             p -> {
                 PzcActivityGroup pzcActivityGroup = pzcActivityGroupMapper.selectById(p.getGroupId());
@@ -204,9 +217,8 @@ public class PzcActivityGroupApplyController extends BaseController {
         //1 找出所有我创建的组
         List<PzcActivityGroup> pzcActivityGroups = pzcActivityGroupMapper.selectList(new QueryWrapper<PzcActivityGroup>().eq("user_id", userId));
         List<Long> groupIds = pzcActivityGroups.stream().map(PzcActivityGroup::getGroupId).collect(java.util.stream.Collectors.toList());
-        if(groupIds.size()!=0)
-        {
-            List<PzcActivityGroupApply> step2 = pzcActivityGroupApplyMapper.selectList(new QueryWrapper<>(new PzcActivityGroupApply()).in("group_id", groupIds).in("apply_status", 1, 2, 9, 10, 11, 12, 13, 14));
+        if (groupIds.size() != 0) {
+            List<PzcActivityGroupApply> step2 = pzcActivityGroupApplyMapper.selectList(new QueryWrapper<>(new PzcActivityGroupApply()).in("group_id", groupIds).in("apply_status", 1, 2, 3, 9, 10, 11, 12, 13, 14));
             step2.forEach(
                 p -> {
                     PzcActivityGroup pzcActivityGroup = pzcActivityGroupMapper.selectById(p.getGroupId());
@@ -267,8 +279,8 @@ public class PzcActivityGroupApplyController extends BaseController {
      * 1 做校验
      * 1.1 活动是否存在 1.2 活动是否已经开始 1.3 活动是否已经结束 1.4 活动是否已经满员
      * 2 组是否还存在
-     *
-     *
+     * <p>
+     * <p>
      * ====================
      * 用户申请活动的时候 判断 是否足够缴纳保证金
      */
@@ -281,14 +293,14 @@ public class PzcActivityGroupApplyController extends BaseController {
             return R.fail("申请失败，活动不存在或者已经结束或者组不存在");
         }
         bo.setUserId(LoginHelper.getUserId());
-        if (iPzcActivityGroupApplyService.queryByUserIdAndGroupId(bo.getUserId(), bo.getGroupId())!=null) {
+        if (iPzcActivityGroupApplyService.queryByUserIdAndGroupId(bo.getUserId(), bo.getGroupId()) != null) {
             return R.fail("申请失败，您已经申请过了");
         }
 
         //======================================================
         PzcUser applyUser = pzcUserMapper.selectById(bo.getUserId()); //我有2个币  申请需要 两个币  我则需要 根据当前他的余额来判断
-        log.info("申请参与组队 我目前的余额是： {} 申请需要的余额是：{}",applyUser.getMoney(),bo.getMoney());
-        if(applyUser.getMoney().compareTo(bo.getMoney())<0||applyUser.getMoney().compareTo(new BigDecimal(1))<0) //一块钱也没有就需要充值了
+        log.info("申请参与组队 我目前的余额是： {} 申请需要的余额是：{}", applyUser.getMoney(), bo.getMoney());
+        if (applyUser.getMoney().compareTo(bo.getMoney()) < 0 || applyUser.getMoney().compareTo(new BigDecimal(1)) < 0) //一块钱也没有就需要充值了
         {
             return R.fail("申请失败，您的余额不足");
         }

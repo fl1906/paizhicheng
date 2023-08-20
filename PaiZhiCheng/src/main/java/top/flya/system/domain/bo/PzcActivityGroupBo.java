@@ -41,6 +41,9 @@ public class PzcActivityGroupBo extends BaseEntity {
      */
     private Long userId;
 
+
+    private String activityName;
+
     /**
      * 活动主题
      */

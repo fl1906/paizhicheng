@@ -68,4 +68,9 @@ public class PzcActivityGroup extends BaseEntity {
     @TableField(exist = false)
     private PzcUser user;
 
+
+    private Integer status;
+
+
+    private String activityName;
 }

@@ -55,6 +55,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="base"/>
         from pzc_activity_group as g inner join pzc_user as u
         where 1=1
+
         <if test="bo.userId ==null">
             AND g.activity_time > NOW()
         </if>
