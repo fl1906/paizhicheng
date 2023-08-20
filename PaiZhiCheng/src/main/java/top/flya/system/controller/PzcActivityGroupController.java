@@ -1044,6 +1044,7 @@ public class PzcActivityGroupController extends BaseController {
         PzcRegion pzcRegion = pzcRegionMapper.selectById(bo.getRegion());
         //校验城市是否存在 只对派对生效
         if (pzcRegion == null && pzcActivityMapper.selectById(bo.getActivityId()).getClassify() != 0) {
+            log.info("传入的城市Id is {} ",bo.getRegion());
             return R.fail("当前城市不存在");
         }
 
