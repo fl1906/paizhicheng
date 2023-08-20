@@ -909,11 +909,7 @@ public class PzcActivityGroupController extends BaseController {
                     pzcActivityGroupMapper.updateById(pzcActivityGroup);
                     if(pzcActivityGroupApply.getApplyStatus()==11) //发起方打卡了 申请方 全责
                     {
-
-                        PzcUser pzcUser = pzcUserMapper.selectById(pzcActivityGroupApply.getUserId());
                         BigDecimal money = pzcActivityGroupApply.getMoney();
-                        pzcUser.setMoney(pzcUser.getMoney().subtract(money));
-                        pzcUserMapper.updateById(pzcUser); //申请方扣除全部保证金
 
                         PzcOfficial pzcOfficial1 = new PzcOfficial();
                         pzcOfficial1.setIsRead(0L);
@@ -926,7 +922,7 @@ public class PzcActivityGroupController extends BaseController {
                         pzcOfficialMapper.insert(pzcOfficial1);
 
                         PzcUser pzcUser1 = pzcUserMapper.selectById(pzcActivityGroupVo.getUserId());
-                        pzcUser1.setMoney(pzcUser1.getMoney().add(money.subtract(new BigDecimal("0.2"))));
+                        pzcUser1.setMoney(pzcUser1.getMoney().add(pzcActivityGroup.getMoney()).add(money.subtract(new BigDecimal("0.2"))));
                         pzcUserMapper.updateById(pzcUser1); //发起方获得申请方 扣除0.2派币 后的保证金
 
                         PzcOfficial pzcOfficial2 = new PzcOfficial();
@@ -945,10 +941,9 @@ public class PzcActivityGroupController extends BaseController {
                     }
                     if(pzcActivityGroupApply.getApplyStatus()==12) //申请方打卡了 发起方 全责
                     {
-                        PzcUser pzcUser = pzcUserMapper.selectById(pzcActivityGroupVo.getUserId()); //TODO
+
                         BigDecimal money = pzcActivityGroupVo.getMoney();
-                        pzcUser.setMoney(pzcUser.getMoney().subtract(money));
-                        pzcUserMapper.updateById(pzcUser); //发起方扣除全部保证金
+
 
                         PzcOfficial pzcOfficial1 = new PzcOfficial();
                         pzcOfficial1.setIsRead(0L);
@@ -963,7 +958,7 @@ public class PzcActivityGroupController extends BaseController {
 
 
                         PzcUser pzcUser1 = pzcUserMapper.selectById(pzcActivityGroupApply.getUserId());
-                        pzcUser1.setMoney(pzcUser1.getMoney().add(money.subtract(new BigDecimal("0.2"))));
+                        pzcUser1.setMoney(pzcUser1.getMoney().add(pzcActivityGroupApply.getMoney()).add(money.subtract(new BigDecimal("0.2"))));
                         pzcUserMapper.updateById(pzcUser1); //申请方获得发起方 扣除0.2派币 后的保证金
 
                         PzcOfficial pzcOfficial2 = new PzcOfficial();
