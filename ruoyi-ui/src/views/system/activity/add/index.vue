@@ -20,7 +20,7 @@
       <!--form-item 放在一列-->
       <div class="flex">
         <el-form-item label="所在城市" prop="regionId">
-          <el-select v-model="queryParams.regionId" placeholder="请选择">
+          <el-select filterable  v-model="queryParams.regionId" placeholder="请选择">
             <el-option
               v-for="item in addressList"
               :key="item.regionId"
