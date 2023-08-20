@@ -40,11 +40,30 @@ public class WxHandler {
         log.info("定时同步微信用户 的 取消活动次数");
         List<PzcUser> pzcUsers = pzcUserMapper.selectList();
         for (PzcUser pzcUser : pzcUsers) {
+            pzcUser.setUserLevel(Long.valueOf(getLevel(Math.toIntExact(pzcUser.getIntegration()))));
             pzcUser.setExemptCancel(Math.toIntExact(pzcUser.getUserLevel()));
             pzcUserMapper.updateById(pzcUser);
         }
         log.info("定时同步微信用户 的 取消活动次数 完成");
         XxlJobHelper.log("定时同步微信用户 的 取消活动次数 完成 FL1906");
+    }
+
+
+    public Integer getLevel(Integer jf) {
+        if (jf <= 30) {
+            return 1;
+        }
+        if (jf <= 70) {
+            return 2;
+        }
+        if (jf <= 120) {
+            return 3;
+        }
+        if (jf <= 180) {
+            return 4;
+        } else {
+            return 5;
+        }
     }
 
     /**

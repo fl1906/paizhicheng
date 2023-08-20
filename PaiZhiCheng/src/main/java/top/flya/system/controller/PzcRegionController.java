@@ -50,8 +50,10 @@ public class PzcRegionController extends BaseController {
 
 
     @GetMapping("/list")
-    public R list() {
-        List<PzcRegionVo> pzcRegionVos = iPzcRegionService.queryList(new PzcRegionBo());
+    public R list(@RequestParam(required = false) String regionName) {
+        PzcRegionBo bo = new PzcRegionBo();
+        bo.setName(regionName);
+        List<PzcRegionVo> pzcRegionVos = iPzcRegionService.queryList(bo);
         //根据 pzcRegionVos 生成树形结构 base 字段相同的为同一级
         return R.ok(regionTreeMapper.buildTree(pzcRegionVos));
     }

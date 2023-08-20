@@ -84,13 +84,13 @@ public class GaoDeMapUtil {
      * @return 地址名称
      * @throws Exception
      */
-    public R getAddress(String longitude, String latitude) throws Exception {
+    public static R getAddress(String longitude, String latitude) throws Exception {
         String url;
         try {
             url = "http://restapi.amap.com/v3/geocode/regeo?output=JSON&location=" + longitude + "," + latitude
                 + "&key=" + GAO_DE_KEY + "&radius=0&extensions=base";
 
-            log.info("经度" + longitude);
+            log.info("经度 " + longitude);
             log.info("纬度：" + latitude);
             log.info("url:" + url);
 
@@ -106,6 +106,7 @@ public class GaoDeMapUtil {
                 // 如果没有返回-1
                 JSONObject reGeoCode = obj.getJSONObject(GaoDeEnum.RE_GEO_CODE.getCode());
                 if (reGeoCode.size() > 0) {
+                    log.info("reGeoCode:" + reGeoCode);
                     // 在regeocode中拿到 formatted_address 具体位置
                     String formatted = reGeoCode.get("formatted_address").toString();
                     return R.ok( "地址获取成功！",formatted);
@@ -180,6 +181,10 @@ public class GaoDeMapUtil {
             e.printStackTrace();
         }
         return result.toString();
+    }
+
+    public static void main(String[] args) throws Exception {
+        System.out.println(getAddress( "118.73145","32.00335"));
     }
 
 }
