@@ -158,7 +158,7 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
         LambdaQueryWrapper<PzcActivity> lqw = buildQueryWrapper(bo);
         pageQuery.setIsAsc("asc");
         pageQuery.setOrderByColumn("start_time");
-        lqw.ge(PzcActivity::getEndDate, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+        lqw.ge(PzcActivity::getShowTime, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         Page<PzcActivityVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
         result.setRecords(batchUtils.transformToPzcActivityVo(result.getRecords()));
         return TableDataInfo.build(result);

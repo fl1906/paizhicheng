@@ -20,7 +20,7 @@
       <!--form-item 放在一列-->
       <div class="flex">
         <el-form-item label="所在城市" prop="regionId">
-          <el-select filterable  v-model="queryParams.regionId" placeholder="请选择">
+          <el-select filterable v-model="queryParams.regionId" placeholder="请选择">
             <el-option
               v-for="item in addressList"
               :key="item.regionId"
@@ -87,15 +87,15 @@
         <!--          >-->
         <!--          </el-date-picker>-->
         <!--        </el-form-item>-->
-        <!--        <el-form-item label="展示时间" prop="showTime">-->
-        <!--          <el-date-picker-->
-        <!--            v-model="queryParams.showTime"-->
-        <!--            type="datetime"-->
-        <!--            placeholder="选择日期"-->
-        <!--            value-format="yyyy-MM-dd HH:mm:ss"-->
-        <!--          >-->
-        <!--          </el-date-picker>-->
-        <!--        </el-form-item>-->
+        <el-form-item label="展示时间" prop="showTime">
+          <el-date-picker
+            v-model="queryParams.showTime"
+            type="datetime"
+            placeholder="选择日期"
+            value-format="yyyy-MM-dd HH:mm:ss"
+          >
+          </el-date-picker>
+        </el-form-item>
       </div>
       <el-form-item label="活动主办方" prop="organizerLists">
         <el-select v-model="queryParams.organizerLists" placeholder="请选择">
@@ -226,7 +226,7 @@ export default {
         startTime: undefined,
         endDate: undefined,
         innerImage: undefined,
-        showTime: '2023/8/4 12:00:00',
+        showTime: undefined,
         coverImage: undefined,
         shareImage: undefined,
         createTime: undefined,
@@ -264,9 +264,9 @@ export default {
         innerImage: [
           {required: true, message: "活动详情主图不能为空", trigger: "blur"}
         ],
-        // showTime: [
-        //   {required: true, message: "展示时间不能为空", trigger: "blur"}
-        // ],
+        showTime: [
+          {required: true, message: "展示时间不能为空", trigger: "blur"}
+        ],
         coverImage: [
           {required: true, message: "封面图片不能为空", trigger: "blur"}
         ],

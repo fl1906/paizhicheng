@@ -177,20 +177,20 @@
         </template>
       </el-table-column>
 
-      <!--      <el-table-column label="展示时间" align="center" prop="showTime"/>-->
+      <el-table-column label="展示时间" align="center" prop="showTime"/>
       <el-table-column label="创建时间" align="center" prop="createTime"/>
       <el-table-column label="更新时间" align="center" prop="updateTime"/>
 
-<!--      <el-table-column label="创建时间" align="center" prop="createTime" width="180">-->
-<!--        <template slot-scope="scope">-->
-<!--          <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
-<!--      <el-table-column label="更新时间" align="center" prop="updateTime" width="180">-->
-<!--        <template slot-scope="scope">-->
-<!--          <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d}') }}</span>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
+      <!--      <el-table-column label="创建时间" align="center" prop="createTime" width="180">-->
+      <!--        <template slot-scope="scope">-->
+      <!--          <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>-->
+      <!--        </template>-->
+      <!--      </el-table-column>-->
+      <!--      <el-table-column label="更新时间" align="center" prop="updateTime" width="180">-->
+      <!--        <template slot-scope="scope">-->
+      <!--          <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d}') }}</span>-->
+      <!--        </template>-->
+      <!--      </el-table-column>-->
       <!--      <el-table-column label="删除状态，默认为1表示正常状态" align="center" prop="state"/>-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -253,9 +253,9 @@
         <el-form-item label="活动详情主图" prop="innerImage">
           <el-input v-model="form.innerImage" placeholder="请输入活动详情主图"/>
         </el-form-item>
-        <!--        <el-form-item label="展示时间" prop="showTime">-->
-        <!--          <el-input v-model="form.showTime" placeholder="请输入展示时间"/>-->
-        <!--        </el-form-item>-->
+        <el-form-item label="展示时间" prop="showTime">
+          <el-input v-model="form.showTime" placeholder="请输入展示时间"/>
+        </el-form-item>
         <el-form-item label="封面图片" prop="coverImage">
           <image-upload v-model="form.coverImage"/>
         </el-form-item>
