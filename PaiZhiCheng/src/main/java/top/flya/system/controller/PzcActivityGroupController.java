@@ -135,12 +135,6 @@ public class PzcActivityGroupController extends BaseController {
     }
 
 
-    public static void main(String[] args) {
-        Pattern pattern = Pattern.compile("【(.*?)】(.*?)");
-
-        String end = pattern.matcher("【118.8102724750227,31.958113136326144】江苏省南京市江宁区左邻右里(映淮街北)").group(1);
-        System.out.println(end);
-    }
 
     @PostMapping("/refurbish") //刷新
     public R refurbish(@RequestBody RefurbishBo refurbishBo) throws Exception {
@@ -350,14 +344,28 @@ public class PzcActivityGroupController extends BaseController {
                 s.setNickName(pzcUser.getNickname());
                 s.setAvatar(pzcUser.getAvatar());
                 Integer region = pzcActivityGroupVos.stream().filter(s1 -> s1.getGroupId().equals(s.getGroupId())).findFirst().get().getRegion();
-                PzcRegion pzcRegion = pzcRegionMapper.selectById(region);
-                String title = "";
-                if (pzcRegion != null) {
-                    title = "【" + pzcRegion.getName() + "】";
-                }
-                log.info("申请活动列表 title:{}", title);
 
-                s.setActivityTitle(s.getActivityId() == 0 ? title : pzcActivityMapper.selectVoById(s.getActivityId()).getTitle());
+                String title = "";
+                PzcActivity pzcActivity = pzcActivityMapper.selectById(s.getActivityId());
+                if(s.getActivityId() == 0)
+                {
+                    PzcRegion pzcRegion = pzcRegionMapper.selectById(region);
+                    if (pzcRegion != null) {
+                        title = "【" + pzcRegion.getName() + "】";
+                    }
+                    log.info("申请活动列表 title:{}", title);
+
+                }else {
+                   if(pzcActivity != null)
+                   {
+                       title =  pzcActivity.getTitle() ;
+                   }else {
+                       title = "【活动已结束】";
+                   }
+
+                }
+
+                s.setActivityTitle(title);
                 s.setGroupTitle(pzcActivityGroupVos.stream().filter(s1 -> s1.getGroupId().equals(s.getGroupId())).findFirst().get().getTitle());
             }
         );

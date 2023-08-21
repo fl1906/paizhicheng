@@ -110,9 +110,23 @@ public class PzcActivityGroupApplyController extends BaseController {
         pzcActivityGroupApply.setWxz(wxz);
         pzcActivityGroupApply.setApplyStatus(3); //直接是组队结束状态
         pzcActivityGroupApplyMapper.updateById(pzcActivityGroupApply);
+
+        //退还双方保证金
+
         newSingleThreadExecutor.execute(() -> {
             // 更新 组队状态为已结束
             PzcActivityGroup pzcActivityGroup = pzcActivityGroupMapper.selectById(pzcActivityGroupApply.getGroupId());
+
+            PzcUser applyUser = pzcUserMapper.selectById(pzcActivityGroupApply.getUserId());
+            PzcUser groupUser = pzcUserMapper.selectById(pzcActivityGroup.getUserId());
+            applyUser.setMoney(applyUser.getMoney().add(pzcActivityGroupApply.getMoney().subtract(new BigDecimal("0.1"))));
+            groupUser.setMoney(groupUser.getMoney().add(pzcActivityGroupApply.getMoney().subtract(new BigDecimal("0.1"))));
+            pzcUserMapper.updateById(applyUser);
+            pzcUserMapper.updateById(groupUser);
+            //更新余额变动
+            wxUtils.insertUserHistory(applyUser.getUserId(), pzcActivityGroup.getActivityId(),2L, "组队结束，退还保证金 并收取活动费用 0.1派币", pzcActivityGroupApply.getMoney().subtract(new BigDecimal("0.1")));
+            wxUtils.insertUserHistory(groupUser.getUserId(), pzcActivityGroup.getActivityId(),2L, "组队结束，退还保证金 并收取活动费用 0.1派币", pzcActivityGroupApply.getMoney().subtract(new BigDecimal("0.1")));
+
             pzcActivityGroup.setStatus(1); //已结束
             pzcActivityGroupMapper.updateById(pzcActivityGroup);
         });
