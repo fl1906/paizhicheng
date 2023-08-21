@@ -107,6 +107,12 @@ public class PzcActivityGroupApplyController extends BaseController {
         } else {
             return R.fail("申请方请求不存在");
         }
+
+        if(wxz==0)
+        {
+            return R.ok();
+        }
+
         pzcActivityGroupApply.setWxz(wxz);
         pzcActivityGroupApply.setApplyStatus(3); //直接是组队结束状态
         pzcActivityGroupApplyMapper.updateById(pzcActivityGroupApply);
