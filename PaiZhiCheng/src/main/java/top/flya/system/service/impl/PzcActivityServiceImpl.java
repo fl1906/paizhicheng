@@ -19,6 +19,7 @@ import top.flya.system.mapper.*;
 import top.flya.system.service.IPzcActivityService;
 import top.flya.system.utils.gaode.GaoDeMapUtil;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -157,6 +158,7 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
         LambdaQueryWrapper<PzcActivity> lqw = buildQueryWrapper(bo);
         pageQuery.setIsAsc("asc");
         pageQuery.setOrderByColumn("start_time");
+        lqw.ge(PzcActivity::getEndDate, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         Page<PzcActivityVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
         result.setRecords(batchUtils.transformToPzcActivityVo(result.getRecords()));
         return TableDataInfo.build(result);
