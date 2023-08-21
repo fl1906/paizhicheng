@@ -158,7 +158,7 @@ public class WxUserController extends BaseController {
             List<PzcUserHistoryVo> pzcUserHistoryVos = userHistoryMapper.
                 selectVoList(new QueryWrapper<PzcUserHistory>().eq("user_id", user.getUserId()).eq("type", 0).like("message", "%昵称%")
                     .between("create_time", lastYearNow, nowTime));
-            if (pzcUserHistoryVos.size() > 0) {
+            if (!pzcUserHistoryVos.isEmpty()) {
                 return R.fail("一年内只能修改一次昵称");
             } else {
                 //更新用户信息
