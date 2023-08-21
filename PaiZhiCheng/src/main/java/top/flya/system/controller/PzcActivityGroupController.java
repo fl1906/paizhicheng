@@ -216,12 +216,12 @@ public class PzcActivityGroupController extends BaseController {
 
 
         PzcUser otherUser = null;
-        if (pzcActivityGroupVo.getUserId().equals(userId)) //我是申请人 取消
+        if (pzcActivityGroupVo.getUserId().equals(userId)) //我是发起人 取消
         {
-            otherUser = pzcUserMapper.selectById(pzcActivityGroupMapper.selectById(groupId).getUserId());
-
-        } else { //我是发起人
             otherUser = pzcUserMapper.selectById(pzcActivityGroupApplyVo.getUserId());
+
+        } else { //我是申请人
+            otherUser = pzcUserMapper.selectById(pzcActivityGroupMapper.selectById(groupId).getUserId());
         }
         pzcOfficial.setFromUserId(userId);
         pzcOfficial.setToUserId(otherUser.getUserId());
