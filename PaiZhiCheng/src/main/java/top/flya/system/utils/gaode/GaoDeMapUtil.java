@@ -145,6 +145,9 @@ public class GaoDeMapUtil {
             log.info("请求url is {} \n高德接口返回的是JSON格式的字符串：{}" ,queryUrl,queryResult);
             JSONObject job = JSONObject.parseObject(queryResult);
             JSONArray ja = job.getJSONArray("results");
+            if(ja.size() == 0){
+                return R.ok(0L); //距离计算失败
+            }
             JSONObject jobO = JSONObject.parseObject(ja.getString(0));
             result = Long.parseLong(jobO.get("distance").toString());
             return R.ok("距离计算成功！",result);

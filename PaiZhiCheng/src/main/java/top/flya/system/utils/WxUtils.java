@@ -56,7 +56,7 @@ public class WxUtils {
         map.put("template_id","MMHCiz9Z5faTwbDI9ywE0ScIvGMeDduTxXm00wdLxmw");
         map.put("touser",toUserOpenId);
         map.put("data",data);
-        map.put("miniprogram_state","trial");//developer为开发版；trial为体验版；formal为正式版；默认为正式版
+        map.put("miniprogram_state","formal");//developer为开发版；trial为体验版；formal为正式版；默认为正式版
         map.put("lang","zh_CN");
         log.info("request is {}",JSONUtil.toJsonStr(map));
         String msgResponse = HttpUtil.post(msgUrl, JSONUtil.toJsonStr(map));
