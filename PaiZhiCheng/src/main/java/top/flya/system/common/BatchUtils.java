@@ -217,7 +217,7 @@ public class BatchUtils {
 
     public List<PzcViewPagerVo> transformToPzcViewPagerVo(List<PzcViewPagerVo> viewPagerList)
     {
-        log.info("transform viewPagerList start: {}", JSONUtil.toJsonPrettyStr(viewPagerList));
+//        log.info("transform viewPagerList start: {}", JSONUtil.toJsonPrettyStr(viewPagerList));
         // 获取所有旧的 imageUrl
         List<String> oldImageUrls = viewPagerList.stream()
             .map(PzcViewPagerVo::getImageUrl)

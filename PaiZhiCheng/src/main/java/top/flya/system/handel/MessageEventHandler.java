@@ -63,7 +63,6 @@ public class MessageEventHandler {
     @OnConnect
     public void onConnect(SocketIOClient client) {
         if (client != null) {
-            log.info("client.getHandshakeData() is {}", JSONUtil.toJsonPrettyStr(client.getHandshakeData()));
             String userId = client.getHandshakeData().getSingleUrlParam("userId"); //我的userId
             UUID sessionId = client.getSessionId();
             if (userId != null) {
@@ -74,7 +73,7 @@ public class MessageEventHandler {
                     log.error("无效连接 该用户不存在 或者被封禁");
                     client.disconnect();
                 }
-                log.info("与对方建立连接成功,【userId】= {},【sessionId】= {}", userId, sessionId);
+                log.info("用户上线,【userId】= {},【sessionId】= {}", userId, sessionId);
                 String result = stringRedisTemplate.opsForValue().get("officialMessage:" + userId);
                 if (result != null) {
                     WxzApplyBo wxzApplyBo = JsonUtils.parseObject(result, WxzApplyBo.class);
@@ -152,9 +151,7 @@ public class MessageEventHandler {
      * @param request
      */
     @OnEvent(value = Event.OFFICIAL)
-//    @RepeatSubmit(interval =5 ,timeUnit = TimeUnit.MINUTES,message = "发送频繁，请过五分钟之后再试")
     public void onOfficialEvent(SocketIOClient client, AckRequest request, WxzApplyBo wxzApplyBo) {
-//        wxzApplyBo.setMessage("对方想要超限制确认\n已与本人见面");
         log.info("用户 {} 刚刚给用户 {} 发起了一条无限制确认到达弹窗", wxzApplyBo.getFromUserId(), wxzApplyBo.getToUserId());
         //这里分 用户是否在线
         if (officialMessage(String.valueOf(wxzApplyBo.getToUserId()), wxzApplyBo)) { //测试时修改一下

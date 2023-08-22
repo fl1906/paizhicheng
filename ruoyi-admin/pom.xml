@@ -16,6 +16,11 @@
     </description>
 
     <dependencies>
+        <dependency> <!-- 表达式计算 选项3 -->
+            <groupId>com.googlecode.aviator</groupId>
+            <artifactId>aviator</artifactId>
+            <version>5.2.6</version>
+        </dependency>
 
         <!-- spring-boot-devtools -->
         <dependency>
