@@ -62,6 +62,10 @@ public class PzcActivityServiceImpl implements IPzcActivityService {
     @Override
     public PzcActivityVo queryById(Integer activityId) {
         PzcActivityVo pzcActivityVo = baseMapper.selectVoById(activityId);
+        if(pzcActivityVo==null)
+        {
+            throw new RuntimeException("当前活动不存在或者已过期,请重新选择活动哦~");
+        }
         List<PzcActivityVo> pzcActivityVos = new ArrayList<>();
         pzcActivityVos.add(pzcActivityVo);
         pzcActivityVos.forEach(r->{
