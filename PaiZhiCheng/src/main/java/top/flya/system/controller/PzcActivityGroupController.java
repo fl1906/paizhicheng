@@ -135,7 +135,6 @@ public class PzcActivityGroupController extends BaseController {
     }
 
 
-
     @PostMapping("/refurbish") //刷新
     public R refurbish(@RequestBody RefurbishBo refurbishBo) throws Exception {
         log.info("刷新: {}", JsonUtils.toJsonString(refurbishBo));
@@ -272,15 +271,21 @@ public class PzcActivityGroupController extends BaseController {
             startUser.setMoney(startUser.getMoney().add(money).add(pzcActivityGroup.getMoney())); //全额返回给发起方的保证金 + 对方扣除 0.2保证金 后的派币
             pzcUserMapper.updateById(startUser);
 
-            //官方推送消息
-            wxUtils.insertPzcOfficialMsg(userId,startUser.getUserId(),
-                "来自" + my.getNickname() + "与您的组队信息：",
-                "很遗憾地通知您：您在【" + pzcActivityGroup.getTitle() + "】组队活动中，申请方已经取消本次组队活动。对方的违约金 【" + money + "派币】已纳入您的账户。您可以再次同意或者申请其他用户。",
-                pzcActivityGroup.getGroupId(),pzcActivityGroup.getActivityId());
 
-            //历史记录
-            wxUtils.insertUserHistory(userId, pzcActivityGroup.getActivityId(), 4L, "在【" + pzcActivityGroup.getTitle() + "】活动中途取消组队，扣除违约金 【" + pzcActivityGroup.getMoney() + "】派币", pzcActivityGroup.getMoney().negate());
-            wxUtils.insertUserHistory(startUser.getUserId(), pzcActivityGroup.getActivityId(), 2L, "在【" + pzcActivityGroup.getTitle() + "】活动中途取消组队，违约金所得 【" + pzcActivityGroup.getMoney().subtract(new BigDecimal("0.2")) + "】派币", pzcActivityGroup.getMoney().subtract(new BigDecimal("0.2")));
+            BigDecimal finalMoney = money;
+            newSingleThreadExecutor.execute(() -> {
+
+                //官方推送消息
+                wxUtils.insertPzcOfficialMsg(userId, startUser.getUserId(),
+                    "来自" + my.getNickname() + "与您的组队信息：",
+                    "很遗憾地通知您：您在【" + pzcActivityGroup.getTitle() + "】组队活动中，申请方已经取消本次组队活动。对方的违约金 【" + finalMoney + "派币】已纳入您的账户。您可以再次同意或者申请其他用户。",
+                    pzcActivityGroup.getGroupId(), pzcActivityGroup.getActivityId());
+
+                //历史记录
+                wxUtils.insertUserHistory(userId, pzcActivityGroup.getActivityId(), 4L, "在【" + pzcActivityGroup.getTitle() + "】活动中途取消组队，扣除违约金 【" + pzcActivityGroup.getMoney() + "】派币", pzcActivityGroup.getMoney().negate());
+                wxUtils.insertUserHistory(startUser.getUserId(), pzcActivityGroup.getActivityId(), 2L, "在【" + pzcActivityGroup.getTitle() + "】活动中途取消组队，违约金所得 【" + pzcActivityGroup.getMoney().subtract(new BigDecimal("0.2")) + "】派币", pzcActivityGroup.getMoney().subtract(new BigDecimal("0.2")));
+
+            });
 
 
         } else {
@@ -292,15 +297,18 @@ public class PzcActivityGroupController extends BaseController {
             pzcUserMapper.updateById(applyUser);
 
 
-          //官方推送消息
-            wxUtils.insertPzcOfficialMsg(userId,applyUser.getUserId(),
-                "来自" + my.getNickname() + "与您的组队信息：",
-                "很遗憾地通知您：您在在【" + pzcActivityGroup.getTitle() + "】组队活动中，发起方已经取消本次组队活动。对方的违约金 【" + pzcActivityGroup.getMoney().subtract(new BigDecimal("0.2")) + "派币】已纳入您的账户。您可以再次同意或者申请其他用户。",
-                pzcActivityGroup.getGroupId(),pzcActivityGroup.getActivityId());
+            newSingleThreadExecutor.execute(() -> {
+                //官方推送消息
+                wxUtils.insertPzcOfficialMsg(userId, applyUser.getUserId(),
+                    "来自" + my.getNickname() + "与您的组队信息：",
+                    "很遗憾地通知您：您在在【" + pzcActivityGroup.getTitle() + "】组队活动中，发起方已经取消本次组队活动。对方的违约金 【" + pzcActivityGroup.getMoney().subtract(new BigDecimal("0.2")) + "派币】已纳入您的账户。您可以再次同意或者申请其他用户。",
+                    pzcActivityGroup.getGroupId(), pzcActivityGroup.getActivityId());
 
-            //历史记录
-            wxUtils.insertUserHistory(userId, pzcActivityGroup.getActivityId(), 4L, "在【" + pzcActivityGroup.getTitle() + "】活动中途取消组队，违约金 【" + pzcActivityGroup.getMoney() + "】派币", pzcActivityGroup.getMoney().negate());
-            wxUtils.insertUserHistory(applyUser.getUserId(), pzcActivityGroup.getActivityId(), 2L, "在【" + pzcActivityGroup.getTitle() + "】活动中途取消组队，违约金所得 【" + pzcActivityGroup.getMoney().subtract(new BigDecimal("0.2")) + "】派币", pzcActivityGroup.getMoney().subtract(new BigDecimal("0.2")));
+                //历史记录
+                wxUtils.insertUserHistory(userId, pzcActivityGroup.getActivityId(), 4L, "在【" + pzcActivityGroup.getTitle() + "】活动中途取消组队，违约金 【" + pzcActivityGroup.getMoney() + "】派币", pzcActivityGroup.getMoney().negate());
+                wxUtils.insertUserHistory(applyUser.getUserId(), pzcActivityGroup.getActivityId(), 2L, "在【" + pzcActivityGroup.getTitle() + "】活动中途取消组队，违约金所得 【" + pzcActivityGroup.getMoney().subtract(new BigDecimal("0.2")) + "】派币", pzcActivityGroup.getMoney().subtract(new BigDecimal("0.2")));
+
+            });
 
         }
 
@@ -341,21 +349,19 @@ public class PzcActivityGroupController extends BaseController {
 
                 String title = "";
                 PzcActivity pzcActivity = pzcActivityMapper.selectById(s.getActivityId());
-                if(s.getActivityId() == 0)
-                {
+                if (s.getActivityId() == 0) {
                     PzcRegion pzcRegion = pzcRegionMapper.selectById(region);
                     if (pzcRegion != null) {
                         title = "【" + pzcRegion.getName() + "】";
                     }
                     log.info("申请活动列表 title:{}", title);
 
-                }else {
-                   if(pzcActivity != null)
-                   {
-                       title =  pzcActivity.getTitle() ;
-                   }else {
-                       title = "【活动已结束】";
-                   }
+                } else {
+                    if (pzcActivity != null) {
+                        title = pzcActivity.getTitle();
+                    } else {
+                        title = "【活动已结束】";
+                    }
 
                 }
 
@@ -529,7 +535,6 @@ public class PzcActivityGroupController extends BaseController {
                     wxUtils.updateUserMsg(pzcUser1);
                     wxUtils.updateUserMsg(pzcUser2);
                 });
-
 
 
                 return R.ok(iPzcActivityGroupApplyService.updateStatus(applyId.longValue(), 3)); //双方都已确认
@@ -731,11 +736,11 @@ public class PzcActivityGroupController extends BaseController {
     /**
      * 同意用户申请 进入下一阶段
      * 同意用户申请时 先判断对方是否  处于组队进程
-     *
-     *
+     * <p>
+     * <p>
      * -1 已取消 0 位于申请列表中 1 申请通过待确认时
      * 2 确认通过进行中 3 组队结束  9发起方已确认
-     *  10申请方已确认 11 发起方已打卡 12 申请方已打卡
+     * 10申请方已确认 11 发起方已打卡 12 申请方已打卡
      * 13 申请方已评价 14 发起方已评价 15 双方已评价
      *
      * @return
@@ -907,15 +912,14 @@ public class PzcActivityGroupController extends BaseController {
                 }
 
 
-                if(pzcActivityGroupApply.getApplyStatus()==11||pzcActivityGroupApply.getApplyStatus()==12)
-                {
+                if (pzcActivityGroupApply.getApplyStatus() == 11 || pzcActivityGroupApply.getApplyStatus() == 12) {
                     //如果对方还未确认 则修改状态为 已取消
                     iPzcActivityGroupApplyService.updateStatus((Long) params[1], -1);
                     //修改组队状态为已完成
                     PzcActivityGroup pzcActivityGroup = pzcActivityGroupMapper.selectById(pzcActivityGroupVo.getGroupId());
                     pzcActivityGroup.setStatus(1); //已结束
                     pzcActivityGroupMapper.updateById(pzcActivityGroup);
-                    if(pzcActivityGroupApply.getApplyStatus()==11) //发起方打卡了 申请方 全责
+                    if (pzcActivityGroupApply.getApplyStatus() == 11) //发起方打卡了 申请方 全责
                     {
                         BigDecimal money = pzcActivityGroupApply.getMoney();
 
@@ -938,16 +942,16 @@ public class PzcActivityGroupController extends BaseController {
                         pzcOfficial2.setFromUserId(null);
                         pzcOfficial2.setToUserId(pzcActivityGroupVo.getUserId());
                         pzcOfficial2.setTitle("派之城提醒您：");
-                        pzcOfficial2.setContent("您好，您在【"+pzcActivityGroupVo.getTitle()+"】组队活动中，由于对方未在活动结束前进行签到打卡，平台已对对方进行违约处理。对方的违约金【"+money.subtract(new BigDecimal("0.2"))+"】派币已纳入您的账户。您可以再次同意或申请其他用户。");
+                        pzcOfficial2.setContent("您好，您在【" + pzcActivityGroupVo.getTitle() + "】组队活动中，由于对方未在活动结束前进行签到打卡，平台已对对方进行违约处理。对方的违约金【" + money.subtract(new BigDecimal("0.2")) + "】派币已纳入您的账户。您可以再次同意或申请其他用户。");
                         pzcOfficial2.setGroupId(groupId);
                         pzcOfficial2.setActivityId(activityId);
                         pzcOfficialMapper.insert(pzcOfficial2);
 
-                        wxUtils.insertUserHistory(pzcActivityGroupApply.getUserId(), pzcActivityGroupApply.getActivityId(), 3L, "活动时间到 自动取消组队 扣除保证金 【"+money+"】 派币", money.negate());
+                        wxUtils.insertUserHistory(pzcActivityGroupApply.getUserId(), pzcActivityGroupApply.getActivityId(), 3L, "活动时间到 自动取消组队 扣除保证金 【" + money + "】 派币", money.negate());
 
 
                     }
-                    if(pzcActivityGroupApply.getApplyStatus()==12) //申请方打卡了 发起方 全责
+                    if (pzcActivityGroupApply.getApplyStatus() == 12) //申请方打卡了 发起方 全责
                     {
 
                         BigDecimal money = pzcActivityGroupVo.getMoney();
@@ -964,7 +968,6 @@ public class PzcActivityGroupController extends BaseController {
                         pzcOfficialMapper.insert(pzcOfficial1);
 
 
-
                         PzcUser pzcUser1 = pzcUserMapper.selectById(pzcActivityGroupApply.getUserId());
                         pzcUser1.setMoney(pzcUser1.getMoney().add(pzcActivityGroupApply.getMoney()).add(money.subtract(new BigDecimal("0.2"))));
                         pzcUserMapper.updateById(pzcUser1); //申请方获得发起方 扣除0.2派币 后的保证金
@@ -974,13 +977,13 @@ public class PzcActivityGroupController extends BaseController {
                         pzcOfficial2.setFromUserId(null);
                         pzcOfficial2.setToUserId(pzcActivityGroupApply.getUserId());
                         pzcOfficial2.setTitle("派之城提醒您：");
-                        pzcOfficial2.setContent("您好，您在【"+pzcActivityGroupVo.getTitle()+"】组队活动中，由于对方未在活动结束前进行签到打卡，平台已对对方进行违约处理。对方的违约金【"+money.subtract(new BigDecimal("0.2"))+"】派币已纳入您的账户。您可以再次同意或申请其他用户。");
+                        pzcOfficial2.setContent("您好，您在【" + pzcActivityGroupVo.getTitle() + "】组队活动中，由于对方未在活动结束前进行签到打卡，平台已对对方进行违约处理。对方的违约金【" + money.subtract(new BigDecimal("0.2")) + "】派币已纳入您的账户。您可以再次同意或申请其他用户。");
                         pzcOfficial2.setGroupId(groupId);
                         pzcOfficial2.setActivityId(activityId);
                         pzcOfficialMapper.insert(pzcOfficial2);
 
 
-                        wxUtils.insertUserHistory(pzcActivityGroupVo.getUserId(), pzcActivityGroupVo.getActivityId(), 3L, "活动时间到 自动取消组队 扣除保证金 【"+money+"】 派币", money.negate());
+                        wxUtils.insertUserHistory(pzcActivityGroupVo.getUserId(), pzcActivityGroupVo.getActivityId(), 3L, "活动时间到 自动取消组队 扣除保证金 【" + money + "】 派币", money.negate());
 
                     }
 
@@ -1047,7 +1050,7 @@ public class PzcActivityGroupController extends BaseController {
         PzcRegion pzcRegion = pzcRegionMapper.selectById(bo.getRegion());
         //校验城市是否存在 只对派对生效
         if (pzcRegion == null && pzcActivityMapper.selectById(bo.getActivityId()).getClassify() != 0) {
-            log.info("传入的城市Id is {} ",bo.getRegion());
+            log.info("传入的城市Id is {} ", bo.getRegion());
             return R.fail("当前城市不存在");
         }
 
@@ -1060,7 +1063,7 @@ public class PzcActivityGroupController extends BaseController {
                 log.info("用户id为：{} 在城市id为：{} 发起过组队 {}", userId, bo.getRegion(), JsonUtils.toJsonString(groups));
                 return R.fail("您已经在此城市发起过组队了");
             }
-            bo.setActivityName("【"+ pzcRegion.getName()+"】");
+            bo.setActivityName("【" + pzcRegion.getName() + "】");
         } else {
             //如果是活动 则校验是否已经发起过组队 //并且状态不为已结束
             List<PzcActivityGroup> groups = pzcActivityGroupMapper.selectList(new QueryWrapper<PzcActivityGroup>().eq("user_id", userId).eq("activity_id", bo.getActivityId()).eq("status", 0));
@@ -1076,7 +1079,6 @@ public class PzcActivityGroupController extends BaseController {
         if (pzcUser.getMoney().compareTo(bo.getMoney()) < 0 || bo.getMoney().compareTo(new BigDecimal(1)) < 0) {
             return R.fail("保证金不足 至少拥有1个派币");
         }
-
 
 
         return toAjax(iPzcActivityGroupService.insertByBo(bo));
