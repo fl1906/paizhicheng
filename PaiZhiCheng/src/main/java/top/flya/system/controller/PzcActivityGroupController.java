@@ -43,10 +43,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -88,7 +85,10 @@ public class PzcActivityGroupController extends BaseController {
 
     private final GaoDeMapUtil gaoDeMapUtil;
     private final ExecutorService newSingleThreadExecutor = new ThreadPoolExecutor(10, 20, 200L,
-        TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(100));
+        TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(100),
+        Executors.defaultThreadFactory(),
+        new ThreadPoolExecutor.CallerRunsPolicy() //指定拒绝策略 防止任务不执行
+    );
 
     @PostMapping("/cancelIssueGroup") //取消组队的发布
     public R cancelIssueGroup(@RequestParam("groupId") Long groupId) {
