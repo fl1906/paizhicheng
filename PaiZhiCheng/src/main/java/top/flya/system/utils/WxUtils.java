@@ -9,9 +9,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import top.flya.common.core.domain.R;
 import top.flya.common.helper.LoginHelper;
+import top.flya.system.domain.PzcOfficial;
 import top.flya.system.domain.PzcUser;
 import top.flya.system.domain.PzcUserHistory;
 import top.flya.system.domain.vo.PzcActivityGroupApplyVo;
+import top.flya.system.mapper.PzcOfficialMapper;
 import top.flya.system.mapper.PzcUserHistoryMapper;
 import top.flya.system.mapper.PzcUserMapper;
 import top.flya.system.service.IPzcActivityGroupApplyService;
@@ -39,6 +41,9 @@ public class WxUtils {
 
     @Resource
     private IPzcActivityGroupApplyService iPzcActivityGroupApplyService;
+
+    @Resource
+    private PzcOfficialMapper pzcOfficialMapper;
 
 
 
@@ -185,6 +190,22 @@ public class WxUtils {
         }
         return user;
     }
+
+    public void insertPzcOfficialMsg(Long fromUserId,Long toUserId,String title,String content,Long groupId,Long activityId)
+    {
+        PzcOfficial pzcOfficial = new PzcOfficial();
+        pzcOfficial.setIsRead(0L);
+
+        pzcOfficial.setFromUserId(fromUserId);
+        pzcOfficial.setTitle(title);
+        pzcOfficial.setContent(content);
+        pzcOfficial.setToUserId(toUserId);
+        pzcOfficial.setGroupId(groupId);
+        pzcOfficial.setActivityId(activityId);
+        int insert = pzcOfficialMapper.insert(pzcOfficial);
+        log.info("插入官方消息条数：{}\n内容为：{}", insert,JSONUtil.toJsonPrettyStr(pzcOfficial));
+    }
+
 
     public void insertUserHistory(Long userId, Long activityId, Long type, String message, BigDecimal money)
     {
