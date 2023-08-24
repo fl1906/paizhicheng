@@ -6,7 +6,7 @@
 wx:
   appId: wx154b16ff73dd046c
   appSecret: 60fd29555b883283b5b7a58425623dec
-  notifyUrl: https://flya.mynatapp.cc/wx/user/callback/
+  notifyUrl: https://www.xiaoyuan2.cn:567/wx/user/callback/  # 回调地址改为线上地址
   merchantId: 1648409673
   merchantSerialNumber: 5635276B66F0715D53B17D803FBCD1D7966575A0
   api3: pLd9hnp4p4nM2AnjonDwNlPvRmHIYO4x
@@ -196,7 +196,7 @@ mybatis-plus:
     dbConfig:
       # 主键类型
       # AUTO 自增 NONE 空 INPUT 用户输入 ASSIGN_ID 雪花 ASSIGN_UUID 唯一 UUID
-      idType: ASSIGN_ID
+      idType: AUTO
       # 逻辑已删除值
       logicDeleteValue: 2
       # 逻辑未删除值

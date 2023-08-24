@@ -79,7 +79,7 @@
           <image-preview :src="scope.row.logo" :width="50" :height="50"/>
         </template>
       </el-table-column>
-      <el-table-column label="主办方介绍" align="center" prop="content" />
+      <el-table-column label="需要链接的公众号或者文章地址（只能是派之城的，没有就不填，否则会白屏）" align="center" prop="content" />
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
