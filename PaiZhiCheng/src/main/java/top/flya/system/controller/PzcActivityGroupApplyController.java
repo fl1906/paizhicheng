@@ -216,7 +216,7 @@ public class PzcActivityGroupApplyController extends BaseController {
         Long userId = LoginHelper.getUserId();
         List<PzcActivityGroupApply> step1 = pzcActivityGroupApplyMapper.selectList(
             new QueryWrapper<PzcActivityGroupApply>()
-                .eq("user_id", userId).in("apply_status", 1, 2, 3, 9, 10, 11, 12, 13, 14));
+                .eq("user_id", userId).in("apply_status", 1, 2, 3, 9, 10, 11, 12, 13)); //, 14 我评价过了就从行程中移除
         step1.forEach(
             p -> {
                 PzcActivityGroup pzcActivityGroup = pzcActivityGroupMapper.selectById(p.getGroupId());
@@ -238,7 +238,7 @@ public class PzcActivityGroupApplyController extends BaseController {
         List<PzcActivityGroup> pzcActivityGroups = pzcActivityGroupMapper.selectList(new QueryWrapper<PzcActivityGroup>().eq("user_id", userId));
         List<Long> groupIds = pzcActivityGroups.stream().map(PzcActivityGroup::getGroupId).collect(java.util.stream.Collectors.toList());
         if (groupIds.size() != 0) {
-            List<PzcActivityGroupApply> step2 = pzcActivityGroupApplyMapper.selectList(new QueryWrapper<>(new PzcActivityGroupApply()).in("group_id", groupIds).in("apply_status", 1, 2, 3, 9, 10, 11, 12, 13, 14));
+            List<PzcActivityGroupApply> step2 = pzcActivityGroupApplyMapper.selectList(new QueryWrapper<>(new PzcActivityGroupApply()).in("group_id", groupIds).in("apply_status", 1, 2, 3, 9, 10, 11, 12,  14));//13, 评价了就移除
             step2.forEach(
                 p -> {
                     PzcActivityGroup pzcActivityGroup = pzcActivityGroupMapper.selectById(p.getGroupId());

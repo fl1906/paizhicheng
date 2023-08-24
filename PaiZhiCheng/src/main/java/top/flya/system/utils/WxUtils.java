@@ -48,12 +48,6 @@ public class WxUtils {
 
     public void checkMgc(String msg)
     {
-//        String checkNameUrl = "https://v.api.aa1.cn/api/api-mgc/index.php?msg="+msg;
-//        String result = HttpUtil.get(checkNameUrl);
-//        log.info("checkNameUrl is {} , result is {}", checkNameUrl, result);
-//        if (result.contains("存在")) {
-//           throw new RuntimeException("输入内容包含敏感词汇,请重新输入");
-//        }
 
        if(WorldsFilterUtils.checkBySystemWords(msg))
        {
@@ -119,12 +113,10 @@ public class WxUtils {
             throw new RuntimeException("申请不存在");
         }
         Integer applyStatus = pzcActivityGroupApplyVo.getApplyStatus();
-//        if(applyStatus==-1||applyStatus==0||applyStatus==1||applyStatus==2||
-//            applyStatus==9|applyStatus==10||applyStatus==11||applyStatus==12||applyStatus==15)
-//        {
-//            throw  new RuntimeException("该订单位于【"+applyStatus(applyStatus)+"】状态，不可评价");
-//        }
-//
+        //-1 已取消 0 位于申请列表中 1 申请通过待确认时
+        //2 确认通过进行中 3 组队结束  9发起方已确认
+        // 10申请方已确认 11 发起方已打卡 12 申请方已打卡
+        //13 申请方已评价 14 发起方已评价 15 双方已评价
         if(applyStatus==3||applyStatus==13||applyStatus==14)
         {
             return pzcActivityGroupApplyVo;

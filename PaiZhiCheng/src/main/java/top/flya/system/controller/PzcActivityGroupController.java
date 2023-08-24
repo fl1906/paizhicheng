@@ -792,18 +792,10 @@ public class PzcActivityGroupController extends BaseController {
         }
 
         //给对方发消息 已经同意了对方的申请 请尽快确认
-        PzcOfficial pzcOfficial = new PzcOfficial();
-        pzcOfficial.setIsRead(0L);
         PzcUser otherUser = pzcUserMapper.selectById(applyUserId);
-        pzcOfficial.setToUserId(otherUser.getUserId());
-        pzcOfficial.setTitle("来自" + my.getNickname() + "与您的组队信息：");
-        pzcOfficial.setContent("您的组队申请已经被对方同意，请尽快确认~");
-        pzcOfficial.setGroupId(groupId);
-        pzcOfficial.setActivityId(activityId);
-        pzcOfficialMapper.insert(pzcOfficial);
+        wxUtils.insertPzcOfficialMsg(my.getUserId(), otherUser.getUserId(),"来自" + my.getNickname() + "与您的组队信息：","您的组队申请已经被对方同意，请尽快确认~",groupId,activityId);
 
         try {
-
             // 创建一个任务逻辑，接受参数并在任务执行时使用
             ScheduledExecutorUtils.RunnableWithParams task = (params) -> {
                 System.out.println("Task executed at: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
@@ -990,7 +982,6 @@ public class PzcActivityGroupController extends BaseController {
 
                 }
             };
-
             ScheduledExecutorUtils.scheduleTask(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(pzcActivityGroupVo.getActivityTime()), task, groupId, applyId);
         } catch (ParseException e) {
             log.info("创建定时任务失败,活动信息为 {}", JsonUtils.toJsonString(pzcActivityGroupVo));
