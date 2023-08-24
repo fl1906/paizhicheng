@@ -42,6 +42,7 @@ import top.flya.system.mapper.*;
 import top.flya.system.utils.CreateSign;
 import top.flya.system.utils.WxUtils;
 
+import javax.annotation.security.PermitAll;
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -110,6 +111,12 @@ public class WxUserController extends BaseController {
     private SysUserMapper sysUserMapper;
 
 
+    @GetMapping("/filterKeyWords")
+    public R filterKeyWords(@RequestParam("msg") String msg) {
+        wxUtils.checkMgc(msg);
+        return R.ok();
+    }
+
     @GetMapping("/music")
     public R music() {
         return R.ok(sysUserMapper.selectUserById(1L).getNickName());
@@ -161,6 +168,8 @@ public class WxUserController extends BaseController {
             if (!pzcUserHistoryVos.isEmpty()) {
                 return R.fail("一年内只能修改一次昵称");
             } else {
+               wxUtils.checkMgc(pzcUserBo.getNickname());
+
                 //更新用户信息
                 user.setNickname(pzcUserBo.getNickname());
                 userMapper.updateById(user);
@@ -333,6 +342,7 @@ public class WxUserController extends BaseController {
                 String fieldName = entry.getKey();
                 Object fieldValue = entry.getValue();
                 log.info("fieldName is {} , fieldValue is {}", fieldName, fieldValue);
+                wxUtils.checkMgc(fieldValue.toString()); //敏感词检测
 
                 if (fieldValue instanceof Map) //跳过map类型
                 {

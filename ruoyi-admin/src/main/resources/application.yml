@@ -164,6 +164,7 @@ security:
     -  /wx/user/callback # 小程序端 回调
     -  /system/viewPager/list # 小程序端 轮播图
     -  /wx/user/music # 小程序端 音乐列表
+    -  /wx/user/filterKeyWords #敏感词过滤
 # MyBatisPlus配置
 # https://baomidou.com/config/
 mybatis-plus:

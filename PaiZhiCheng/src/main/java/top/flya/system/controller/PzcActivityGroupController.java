@@ -1044,6 +1044,8 @@ public class PzcActivityGroupController extends BaseController {
     public R<Void> add(@Validated(AddGroup.class) @RequestBody PzcActivityGroupBo bo) {
         Long userId = LoginHelper.getUserId();
         bo.setUserId(userId);
+
+        wxUtils.checkMgc(bo.getTitle());//校验敏感词
         //校验活动是否存在
         if (!iPzcActivityGroupService.checkActivity(bo.getActivityId()) && bo.getActivityId() != 0) { //如果不是城市活动 并且活动id不为0 则校验活动是否存在
             return R.fail("活动不存在");

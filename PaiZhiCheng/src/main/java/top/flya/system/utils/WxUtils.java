@@ -17,6 +17,7 @@ import top.flya.system.mapper.PzcOfficialMapper;
 import top.flya.system.mapper.PzcUserHistoryMapper;
 import top.flya.system.mapper.PzcUserMapper;
 import top.flya.system.service.IPzcActivityGroupApplyService;
+import top.flya.system.utils.sensitivewordsfiliter.WorldsFilterUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -44,6 +45,21 @@ public class WxUtils {
 
     @Resource
     private PzcOfficialMapper pzcOfficialMapper;
+
+    public void checkMgc(String msg)
+    {
+//        String checkNameUrl = "https://v.api.aa1.cn/api/api-mgc/index.php?msg="+msg;
+//        String result = HttpUtil.get(checkNameUrl);
+//        log.info("checkNameUrl is {} , result is {}", checkNameUrl, result);
+//        if (result.contains("存在")) {
+//           throw new RuntimeException("输入内容包含敏感词汇,请重新输入");
+//        }
+
+       if(WorldsFilterUtils.checkBySystemWords(msg))
+       {
+           throw new RuntimeException("输入内容包含敏感词汇,请重新输入");
+       }
+    }
 
 
 
