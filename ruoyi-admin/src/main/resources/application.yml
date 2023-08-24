@@ -165,6 +165,7 @@ security:
     -  /system/viewPager/list # 小程序端 轮播图
     -  /wx/user/music # 小程序端 音乐列表
     -  /wx/user/filterKeyWords #敏感词过滤
+    -  /test/** # 测试接口
 # MyBatisPlus配置
 # https://baomidou.com/config/
 mybatis-plus:
@@ -280,6 +281,17 @@ thread-pool:
   keepAliveSeconds: 300
 xxl:
   job:
+    admin:
+      url:
+        update: ${xxl.job.admin-addresses}/jobinfo/update
+        add: ${xxl.job.admin-addresses}/jobinfo/add
+        start: ${xxl.job.admin-addresses}/jobinfo/start
+        stop: ${xxl.job.admin-addresses}/jobinfo/stop
+        pageList: ${xxl.job.admin-addresses}/jobinfo/pageList
+
+      address: http://81.68.131.40:9100/xxl-job-admin
+      username: admin
+      password: admin
     enabled: true
     admin-addresses: http://81.68.131.40:9100/xxl-job-admin
     access-token: xxl-job
