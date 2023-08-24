@@ -44,7 +44,7 @@ public class JobLoginService {
 
     public String getCookie() {
         for (int i = 0; i < 3; i++) {
-            String cookieStr = loginCookie.get("XXL_JOB_LOGIN_IDENTITY");
+            String cookieStr = loginCookie.get("XXL_JOB_LOGIN_IDENTITY"); //redis
             if (cookieStr !=null) {
                 return "XXL_JOB_LOGIN_IDENTITY="+cookieStr;
             }
