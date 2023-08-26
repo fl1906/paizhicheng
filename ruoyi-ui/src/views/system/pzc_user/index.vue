@@ -210,6 +210,11 @@
       <el-table-column label="用户主键" align="center" prop="userId" v-if="true"/>
       <el-table-column label="用户在小程序端的 openId 唯一" align="center" prop="openid" />
       <el-table-column label="派币余额" align="center" prop="money" />
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+        <template slot-scope="scope">
+          <el-button type="success" @click="handlerUpdateMoney(scope.row)">修改</el-button>
+        </template>
+      </el-table-column>
       <el-table-column label="用户等级" align="center" prop="userLevel">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.user_level" :value="scope.row.userLevel"/>
@@ -265,24 +270,7 @@
           <dict-tag :options="dict.type.state" :value="scope.row.state"/>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-        <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:pzc_user:edit']"
-          >修改</el-button>
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:pzc_user:remove']"
-          >删除</el-button>
-        </template>
-      </el-table-column>
+
     </el-table>
 
     <pagination
@@ -400,7 +388,7 @@
 </template>
 
 <script>
-import { listPzc_user, getPzc_user, delPzc_user, addPzc_user, updatePzc_user } from "@/api/system/pzc_user";
+import {addPzc_user, delPzc_user, getPzc_user, listPzc_user, update_money, updatePzc_user} from "@/api/system/pzc_user";
 
 export default {
   name: "Pzc_user",
@@ -423,6 +411,11 @@ export default {
       total: 0,
       // 用户表格数据
       pzc_userList: [],
+
+      newMoney: {
+        userId: undefined,
+        money: undefined
+      },
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -559,6 +552,38 @@ export default {
         this.open = true;
         this.title = "修改用户";
       });
+    },
+
+    handlerUpdateMoney(row)
+    {
+      this.loading = true;
+      this.$prompt('请输入用户余额', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+      }).then(({ value }) => {
+        this.$message({
+          type: 'success',
+          message: '更新后的余额是: ' + value
+        });
+        this.newMoney.money = value;
+        this.newMoney.userId = row.userId || this.ids;
+
+        update_money(this.newMoney).then(response => {
+          this.$modal.msgSuccess("修改成功");
+          this.open = false;
+          this.getList();
+        }).finally(() => {
+          this.buttonLoading = false;
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '取消输入'
+        });
+      });
+
+
+
     },
     /** 提交按钮 */
     submitForm() {

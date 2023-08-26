@@ -31,4 +31,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
 
+    <update id="updateMoney">
+        update pzc_user set money = #{bo.money} where user_id = #{bo.userId}
+    </update>
+
+
 </mapper>

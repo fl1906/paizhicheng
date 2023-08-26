@@ -9,6 +9,15 @@ export function listPzc_user(query) {
   })
 }
 
+//更新用户余额
+export function update_money(data) {
+  return request({
+    url: '/system/pzc_user/updateMoney',
+    method: 'post',
+    data: data
+  })
+}
+
 // 查询用户详细
 export function getPzc_user(userId) {
   return request({

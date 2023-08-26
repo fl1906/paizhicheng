@@ -1,10 +1,10 @@
 package top.flya.system.service;
 
-import top.flya.system.domain.PzcUser;
-import top.flya.system.domain.vo.PzcUserVo;
-import top.flya.system.domain.bo.PzcUserBo;
-import top.flya.common.core.page.TableDataInfo;
 import top.flya.common.core.domain.PageQuery;
+import top.flya.common.core.page.TableDataInfo;
+import top.flya.system.domain.bo.PzcUserBo;
+import top.flya.system.domain.bo.UpdateMoneyBo;
+import top.flya.system.domain.vo.PzcUserVo;
 
 import java.util.Collection;
 import java.util.List;
@@ -46,4 +46,6 @@ public interface IPzcUserService {
      * 校验并批量删除用户信息
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+    int updateMoney(UpdateMoneyBo bo);
 }

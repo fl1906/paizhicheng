@@ -129,7 +129,7 @@
             <el-option
               v-for="item in wtIntro"
               :key="item.introId"
-              :label="item.content"
+              :label="item.title"
               :value="item.introId">
             </el-option>
           </el-select>
@@ -139,7 +139,7 @@
             <el-option
               v-for="item in listIntro"
               :key="item.introId"
-              :label="item.content"
+              :label="item.title"
               :value="item.introId">
             </el-option>
           </el-select>

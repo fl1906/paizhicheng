@@ -15,6 +15,7 @@ import top.flya.common.core.validate.EditGroup;
 import top.flya.common.enums.BusinessType;
 import top.flya.common.utils.poi.ExcelUtil;
 import top.flya.system.domain.bo.PzcUserBo;
+import top.flya.system.domain.bo.UpdateMoneyBo;
 import top.flya.system.domain.vo.PzcUserVo;
 import top.flya.system.service.IPzcUserService;
 
@@ -82,6 +83,12 @@ public class PzcUserController extends BaseController {
     @PostMapping()
     public R<Void> add(@Validated(AddGroup.class) @RequestBody PzcUserBo bo) {
         return toAjax(iPzcUserService.insertByBo(bo));
+    }
+
+
+    @PostMapping("/updateMoney")
+    public R<Void> updateMoney(@Validated(AddGroup.class) @RequestBody UpdateMoneyBo bo) {
+        return toAjax(iPzcUserService.updateMoney(bo));
     }
 
     /**

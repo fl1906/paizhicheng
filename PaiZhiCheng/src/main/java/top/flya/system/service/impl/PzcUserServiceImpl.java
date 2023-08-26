@@ -12,6 +12,7 @@ import top.flya.common.core.page.TableDataInfo;
 import top.flya.system.common.BatchUtils;
 import top.flya.system.domain.PzcUser;
 import top.flya.system.domain.bo.PzcUserBo;
+import top.flya.system.domain.bo.UpdateMoneyBo;
 import top.flya.system.domain.vo.PzcUserVo;
 import top.flya.system.mapper.PzcUserMapper;
 import top.flya.system.service.IPzcUserService;
@@ -128,5 +129,11 @@ public class PzcUserServiceImpl implements IPzcUserService {
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return baseMapper.deleteBatchIds(ids) > 0;
+    }
+
+    @Override
+    public int updateMoney(UpdateMoneyBo bo) {
+
+        return baseMapper.updateMoney(bo);
     }
 }

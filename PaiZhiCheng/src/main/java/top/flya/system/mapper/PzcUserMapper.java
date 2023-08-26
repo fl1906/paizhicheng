@@ -1,8 +1,10 @@
 package top.flya.system.mapper;
 
-import top.flya.system.domain.PzcUser;
-import top.flya.system.domain.vo.PzcUserVo;
+import org.apache.ibatis.annotations.Param;
 import top.flya.common.core.mapper.BaseMapperPlus;
+import top.flya.system.domain.PzcUser;
+import top.flya.system.domain.bo.UpdateMoneyBo;
+import top.flya.system.domain.vo.PzcUserVo;
 
 /**
  * 用户Mapper接口
@@ -12,4 +14,5 @@ import top.flya.common.core.mapper.BaseMapperPlus;
  */
 public interface PzcUserMapper extends BaseMapperPlus<PzcUserMapper, PzcUser, PzcUserVo> {
 
+    int updateMoney(@Param("bo") UpdateMoneyBo bo);
 }
