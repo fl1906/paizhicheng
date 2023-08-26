@@ -127,11 +127,18 @@ public class PzcActivityGroupApplyController extends BaseController {
             PzcUser groupUser = pzcUserMapper.selectById(pzcActivityGroup.getUserId());
             applyUser.setMoney(applyUser.getMoney().add(pzcActivityGroupApply.getMoney().subtract(new BigDecimal("0.1"))));
             groupUser.setMoney(groupUser.getMoney().add(pzcActivityGroupApply.getMoney().subtract(new BigDecimal("0.1"))));
+            //无限制确认到达加3分
+            applyUser.setIntegration(applyUser.getIntegration() + 3);
+            applyUser.setIntegrationNow(applyUser.getIntegrationNow() + 3);
+            groupUser.setIntegration(groupUser.getIntegration() + 3);
+            groupUser.setIntegrationNow(groupUser.getIntegrationNow() + 3);
             pzcUserMapper.updateById(applyUser);
             pzcUserMapper.updateById(groupUser);
             //更新余额变动
             wxUtils.insertUserHistory(applyUser.getUserId(), pzcActivityGroup.getActivityId(),2L, "组队结束，退还保证金 并收取活动费用 0.1派币", pzcActivityGroupApply.getMoney().subtract(new BigDecimal("0.1")));
             wxUtils.insertUserHistory(groupUser.getUserId(), pzcActivityGroup.getActivityId(),2L, "组队结束，退还保证金 并收取活动费用 0.1派币", pzcActivityGroupApply.getMoney().subtract(new BigDecimal("0.1")));
+
+
 
             pzcActivityGroup.setStatus(1); //已结束
             pzcActivityGroupMapper.updateById(pzcActivityGroup);
