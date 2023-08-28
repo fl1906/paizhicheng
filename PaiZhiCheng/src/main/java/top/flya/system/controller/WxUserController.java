@@ -42,7 +42,6 @@ import top.flya.system.mapper.*;
 import top.flya.system.utils.CreateSign;
 import top.flya.system.utils.WxUtils;
 
-import javax.annotation.security.PermitAll;
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -168,7 +167,7 @@ public class WxUserController extends BaseController {
             if (!pzcUserHistoryVos.isEmpty()) {
                 return R.fail("一年内只能修改一次昵称");
             } else {
-               wxUtils.checkMgc(pzcUserBo.getNickname());
+                wxUtils.checkMgc(pzcUserBo.getNickname());
 
                 //更新用户信息
                 user.setNickname(pzcUserBo.getNickname());
@@ -342,7 +341,11 @@ public class WxUserController extends BaseController {
                 String fieldName = entry.getKey();
                 Object fieldValue = entry.getValue();
                 log.info("fieldName is {} , fieldValue is {}", fieldName, fieldValue);
-                wxUtils.checkMgc(fieldValue.toString()); //敏感词检测
+                if (fieldValue != null) {
+                    wxUtils.checkMgc(String
+                        .valueOf(fieldValue)); //敏感词检测
+                }
+
 
                 if (fieldValue instanceof Map) //跳过map类型
                 {
@@ -434,7 +437,7 @@ public class WxUserController extends BaseController {
 
 
     @PostMapping("/sendArriveMsg") //推送微信小程序通知
-    public R sendArriveMsg(String toUserOpenId,String data) {
+    public R sendArriveMsg(String toUserOpenId, String data) {
         String getTokenUrl = "https://api.weixin.qq.com/cgi-bin/token?" + "grant_type=client_credential&appid=" + appId + "&secret=" + secret;
         String response = HttpUtil.get(getTokenUrl);
         log.info("微信小程序获取token url : {}，response is {}", getTokenUrl, response);
@@ -443,13 +446,13 @@ public class WxUserController extends BaseController {
             throw new RuntimeException("微信登录失败 可能是code过期了");
         }
         String accessToken = wxUser.get("access_token").toString();
-        String msgUrl= "https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token="+accessToken;
+        String msgUrl = "https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=" + accessToken;
         Map<String, Object> map = new HashMap<>();
-        map.put("template_id","MMHCiz9Z5faTwbDI9ywE0ScIvGMeDduTxXm00wdLxmw");
-        map.put("touser",toUserOpenId);
-        map.put("data",data);
-        map.put("miniprogram_state","trial");//developer为开发版；trial为体验版；formal为正式版；默认为正式版
-        map.put("lang","zh_CN");
+        map.put("template_id", "MMHCiz9Z5faTwbDI9ywE0ScIvGMeDduTxXm00wdLxmw");
+        map.put("touser", toUserOpenId);
+        map.put("data", data);
+        map.put("miniprogram_state", "trial");//developer为开发版；trial为体验版；formal为正式版；默认为正式版
+        map.put("lang", "zh_CN");
         String msgResponse = HttpUtil.post(msgUrl, JSONUtil.toJsonStr(map));
         log.info("微信小程序推送消息 url : {}，response is {}", msgUrl, msgResponse);
         JSONObject msgJson = JSONObject.parseObject(msgResponse);
