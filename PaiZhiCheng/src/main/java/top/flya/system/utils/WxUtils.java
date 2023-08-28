@@ -48,7 +48,10 @@ public class WxUtils {
 
     public void checkMgc(String msg)
     {
-
+        if(msg==null|| msg.isEmpty())
+        {
+            return;
+        }
        if(WorldsFilterUtils.checkBySystemWords(msg))
        {
            throw new RuntimeException("输入内容包含敏感词汇,请重新输入");
