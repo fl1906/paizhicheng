@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.extern.slf4j.Slf4j;
 import top.flya.common.constant.UserConstants;
 import top.flya.common.core.domain.PageQuery;
 import top.flya.common.core.domain.entity.SysRole;
@@ -39,6 +40,7 @@ import java.util.*;
  */
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class SysRoleServiceImpl implements ISysRoleService {
 
     private final SysRoleMapper baseMapper;
@@ -424,6 +426,7 @@ public class SysRoleServiceImpl implements ISysRoleService {
         if (CollUtil.isEmpty(keys)) {
             return;
         }
+        log.info("清除角色为{}的在线用户,keys is {}", roleId, keys);
         // 角色关联的在线用户量过大会导致redis阻塞卡顿 谨慎操作
         keys.parallelStream().forEach(key -> {
             String token = StringUtils.substringAfterLast(key, ":");
@@ -432,6 +435,9 @@ public class SysRoleServiceImpl implements ISysRoleService {
                 return;
             }
             LoginUser loginUser = LoginHelper.getLoginUser(token);
+            if(loginUser == null|loginUser.getRoles()==null){
+                return;
+            }
             if (loginUser.getRoles().stream().anyMatch(r -> r.getRoleId().equals(roleId))) {
                 try {
                     StpUtil.logoutByTokenValue(token);
