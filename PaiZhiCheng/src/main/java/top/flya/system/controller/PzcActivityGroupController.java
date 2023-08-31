@@ -2,6 +2,7 @@ package top.flya.system.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.map.MapBuilder;
+import cn.hutool.json.JSONUtil;
 import com.alibaba.excel.util.DateUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.RequiredArgsConstructor;
@@ -169,6 +170,7 @@ public class PzcActivityGroupController extends BaseController {
             refurbishVO.setApplyId(refurbishBo.getApplyId());
             refurbishVO.setStartAddress(pzcActivityGroupApply.getStartAddress());
             refurbishVO.setDistance(data);
+            log.info("刷新返回的信息为： {}", JSONUtil.toJsonPrettyStr(refurbishVO));
 
             return R.ok(refurbishVO);
 
@@ -180,6 +182,7 @@ public class PzcActivityGroupController extends BaseController {
             refurbishVO.setApplyId(refurbishBo.getApplyId());
             refurbishVO.setStartAddress(refurbishBo.getAddress());
             refurbishVO.setDistance(data);
+            log.info("刷新返回的信息为： {}", JSONUtil.toJsonPrettyStr(refurbishVO));
 
             return R.ok(refurbishVO);
         }
@@ -764,6 +767,7 @@ public class PzcActivityGroupController extends BaseController {
         if (!pzcActivityGroupVo.getUserId().equals(userId)) {
             return R.fail("你不是组队发起人");
         }
+
         //判断对方是否 处于 组队进程 如果是 则不可同意
         Long applyUserId = pzcActivityGroupApplyVo.getUserId();
         //获取活动Id
@@ -784,6 +788,15 @@ public class PzcActivityGroupController extends BaseController {
             );
         }
 
+        //判断一下 我是否在当前活动下 有未完成的组队 如果有就不能 同意其他的申请
+        List<PzcActivityGroupApply> applies = pzcActivityGroupApplyMapper.selectList(new QueryWrapper<PzcActivityGroupApply>().eq("group_id", groupId).
+            eq("activity_id", activityId).notIn("apply_status",-1,0,3,13,14,15));
+
+        log.info("当前申请人的申请列表为：{}",JSONUtil.toJsonPrettyStr(applies));
+        if(applies.size()>1)
+        {
+            return R.fail("您当前有未完成的组队，无法同意其他申请");
+        }
 
         //修改状态为 已同意
         Integer integer = iPzcActivityGroupApplyService.updateStatus(applyId, 1);
