@@ -401,7 +401,7 @@ public class WxUserController extends BaseController {
             }
             newUser.setPhone(phoneJson.getJSONObject("phone_info").getStr("purePhoneNumber"));
             newUser.setSex(pzcUserBo.getSex());
-            newUser.setMoney(new BigDecimal(1)); //新用户注册送1元
+            newUser.setMoney(new BigDecimal(100)); //新用户注册送1元
             newUser.setUserLevel(1L);
 
             int insert = userMapper.insert(newUser);

@@ -1060,6 +1060,10 @@ public class PzcActivityGroupController extends BaseController {
             log.info("传入的城市Id is {} ", bo.getRegion());
             return R.fail("当前城市不存在");
         }
+        if(bo.getMoney().compareTo(new BigDecimal(99))<0)
+        {
+            return R.fail("派币保证金至少为99");
+        }
 
         //检验自己是否已经在此城市里发起过组队
         if (bo.getActivityId() == 0) {
@@ -1083,8 +1087,8 @@ public class PzcActivityGroupController extends BaseController {
 
         // 校验保证金
         PzcUser pzcUser = pzcUserMapper.selectById(userId);
-        if (pzcUser.getMoney().compareTo(bo.getMoney()) < 0 || bo.getMoney().compareTo(new BigDecimal(1)) < 0) {
-            return R.fail("保证金不足 至少拥有1个派币");
+        if (pzcUser.getMoney().compareTo(bo.getMoney()) < 0 || bo.getMoney().compareTo(new BigDecimal(99)) < 0) {
+            return R.fail("保证金不足 至少拥有99个派币");
         }
 
 
@@ -1099,6 +1103,10 @@ public class PzcActivityGroupController extends BaseController {
     @PutMapping()
     public R<Void> edit(@Validated(EditGroup.class) @RequestBody PzcActivityGroupBo bo) {
         bo.setUserId(LoginHelper.getUserId());
+        if(bo.getMoney().compareTo(new BigDecimal(99))<0)
+        {
+            return R.fail("保证金至少为99派币");
+        }
         //判断是否在组队进程中 判断组队状态
         //获取我的申请列表
         List<PzcActivityGroupApply> applies = pzcActivityGroupApplyMapper.selectList(new QueryWrapper<PzcActivityGroupApply>().eq("group_id", bo.getGroupId()));
