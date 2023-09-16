@@ -40,7 +40,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="地区" prop="classify">
-          <el-select v-model="queryParams.region" placeholder="请选择">
+          <el-select filterable v-model="queryParams.region" placeholder="请选择">
             <el-option
               v-for="item in region"
               :key="item.value"
@@ -50,7 +50,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="艺人" prop="artistList">
-          <el-select v-model="queryParams.artistList" placeholder="请选择" multiple>
+          <el-select filterable v-model="queryParams.artistList" placeholder="请选择" multiple>
             <el-option
               v-for="item in listArtist"
               :key="item.artistId"
@@ -98,7 +98,7 @@
         </el-form-item>
       </div>
       <el-form-item label="活动主办方" prop="organizerLists">
-        <el-select v-model="queryParams.organizerLists" placeholder="请选择">
+        <el-select filterable v-model="queryParams.organizerLists" placeholder="请选择">
           <el-option
             v-for="item in listOrganizer"
             :key="item.organizerId"
@@ -125,7 +125,7 @@
       </el-form-item>
       <div class="flex">
         <el-form-item label="舞台介绍" prop="introList">
-          <el-select v-model="queryParams.stageList" placeholder="请选择" multiple>
+          <el-select filterable v-model="queryParams.stageList" placeholder="请选择" multiple>
             <el-option
               v-for="item in wtIntro"
               :key="item.introId"
@@ -135,7 +135,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="更多介绍" prop="introList">
-          <el-select v-model="queryParams.introList" placeholder="请选择" multiple>
+          <el-select filterable v-model="queryParams.introList" placeholder="请选择" multiple>
             <el-option
               v-for="item in listIntro"
               :key="item.introId"
